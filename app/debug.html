@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Modeller - DEBUG</title>
+    <script type="text/javascript" src="../lib/sylvester.src.js"></script>
+    <script type="text/javascript" src="../lib/glUtils.js"></script>
+    <script type="text/javascript" src="../src/Modeler.js"></script>
+    <script type="text/javascript" src="../src/core/Utils.js"></script>
+    <script type="text/javascript" src="../src/core/Scene.js"></script>
+    <script type="text/javascript" src="../src/core/Camera.js"></script>
+    <script type="text/javascript" src="../src/core/Object3D.js"></script>
+    <script type="text/javascript" src="../src/core/Shader.js"></script>
+    <script type="text/javascript" src="../src/renderer/WebGLRenderer.js"></script>
+    <script id="shader-fs" type="x-shader/x-fragment">
+      #ifdef GL_ES
+      precision highp float;
+      #endif
+
+      void main(void) {
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+      }
+    </script>
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+      attribute vec3 aVertexPosition;
+
+      uniform mat4 uMVMatrix;
+      uniform mat4 uPMatrix;
+
+      void main(void) {
+        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+      }
+    </script>
+    
+    <script type="text/javascript">
+      function pageLoaded() {
+      var scene = new MODELER.Scene();
+      var camera = new MODELER.Camera();  
+
+      //Send some geometry to the scene
+      var triangle = new MODELER.Object3D({
+        vertices: [
+          [0.0,   1.0,  0.0],
+          [-1.0,  -1.0, 0.0],
+          [1.0,   -1.0, 0.0]
+        ],
+        x: -1.5,
+        y: 0.0,
+        z: -7.0
+      });
+      
+      var square = new MODELER.Object3D({
+        vertices: [
+          [1.0,   1.0,  0.0],
+          [-1.0,  1.0,  0.0],
+          [1.0,   -1.0, 0.0],
+          [-1.0,  -1.0, 0.0]
+        ],
+        x: 1.5,
+        y: 0.0,
+        z: -7.0
+      });
+      
+      scene.addChild(triangle);
+      scene.addChild(square);
+      
+      var renderer = new MODELER.WebGLRenderer( { scene: scene, camera: camera} );
+      
+      //Render loop
+      setInterval(function(){
+        renderer.render();
+      }, 60 / 1000);
+    }
+    window.onload = pageLoaded;
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

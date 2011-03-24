@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+  <head>
+    <script type="text/javascript">
+      var B3D = B3D || {};
+      (function (b3d) {
+        var clickListeners = [];
+
+        //Public API information
+
+        //Fires given function when the window is loaded
+        b3d.ready = function (callback) {
+          addEventListenerToObj(window, 'load', callback);
+        };
+
+        b3d.click = function (callback) {
+          clickListeners.push(callback);
+        };
+
+        //Private
+
+        //Handle adding listeners to events in a cross browser way
+        function addEventListenerToObj(obj, event, callback) {
+          if (window.addEventListener) {
+            obj.addEventListener(event, callback, false);
+          } else if (window.attachEvent) {
+            obj.attachEvent('on' + event, callback);
+          }
+        };
+
+        //Register a global click listener
+        addEventListenerToObj(document, 'click', function(e) {
+          var e = e || window.event;
+          //Massage some data
+          e.mouseX = e.pageX || e.clientX + document.body.scrollLeft;
+          e.mouseY = e.pageY || e.clientY + document.body.scrollTop;
+          for (var i = 0; i < clickListeners.length; i++) {
+            console.log(e);  
+            clickListeners[i].call(e);
+          }
+        });
+      })(B3D);
+    </script>
+    <script type="text/javascript">
+      B3D.ready(function(){
+        B3D.click(function(e){
+          console.log(e);
+          alert('clicked! x:' + e.mouseX + ", y: " + e.mouseY);
+        });
+      });
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
