@@ -2,6 +2,33 @@
 <html>
   <head>
     <title>Modeller - DEBUG</title>
+    <style>
+      body{ margin: 0; padding: 0; }
+      #debugger { 
+        position: absolute; 
+        right: 0; 
+        width: 350px; 
+        height: 100%; 
+        border-left: solid 1px;
+        font-family: Consolas, monospace;
+        font-size: 10px;
+        overflow: auto;
+      }
+      #debugger p {
+        border-bottom: solid 1px;
+        padding: 3px;
+        margin: 0;
+      }
+      #debugger .debug-log {
+        background: #eeeeff;
+      }
+      #debugger .debug-warn {
+        background: #f5f5dc;
+      }
+      #debugger .debug-error {
+        background: #ffc7c7;
+      }
+    </style>
     <script type="text/javascript" src="../lib/sylvester.src.js"></script>
     <script type="text/javascript" src="../lib/glUtils.js"></script>
     <script type="text/javascript" src="../src/Modeler.js"></script>
@@ -11,6 +38,7 @@
     <script type="text/javascript" src="../src/core/Object3D.js"></script>
     <script type="text/javascript" src="../src/core/Shader.js"></script>
     <script type="text/javascript" src="../src/renderer/WebGLRenderer.js"></script>
+    <script type="text/javascript" src="../src/debug/Debugger.js"></script>
     <script id="shader-fs" type="x-shader/x-fragment">
       #ifdef GL_ES
       precision highp float;
@@ -20,7 +48,6 @@
         gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
       }
     </script>
-
     <script id="shader-vs" type="x-shader/x-vertex">
       attribute vec3 aVertexPosition;
 
@@ -31,50 +58,51 @@
         gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
       }
     </script>
-    
     <script type="text/javascript">
       function pageLoaded() {
-      var scene = new MODELER.Scene();
-      var camera = new MODELER.Camera();  
+      
+        //DEBUG ONLY
+        $C = new MODELER.Debugger( { force: true } );
+        //END DEBUG
+        
+        var scene = new MODELER.Scene();
+        var camera = new MODELER.Camera();  
 
-      //Send some geometry to the scene
-      var triangle = new MODELER.Object3D({
-        vertices: [
-          [0.0,   1.0,  0.0],
-          [-1.0,  -1.0, 0.0],
-          [1.0,   -1.0, 0.0]
-        ],
-        x: -1.5,
-        y: 0.0,
-        z: -7.0
-      });
+        //Send some geometry to the scene
+        var triangle = new MODELER.Object3D({
+          vertices: [
+            [0.0,   1.0,  0.0],
+            [-1.0,  -1.0, 0.0],
+            [1.0,   -1.0, 0.0]
+          ],
+          x: -1.5,
+          y: 0.0,
+          z: -7.0
+        });
       
-      var square = new MODELER.Object3D({
-        vertices: [
-          [1.0,   1.0,  0.0],
-          [-1.0,  1.0,  0.0],
-          [1.0,   -1.0, 0.0],
-          [-1.0,  -1.0, 0.0]
-        ],
-        x: 1.5,
-        y: 0.0,
-        z: -7.0
-      });
+        var square = new MODELER.Object3D({
+          vertices: [
+            [1.0,   1.0,  0.0],
+            [-1.0,  1.0,  0.0],
+            [1.0,   -1.0, 0.0],
+            [-1.0,  -1.0, 0.0]
+          ],
+          x: 1.5,
+          y: 0.0,
+          z: -7.0
+        });
       
-      scene.addChild(triangle);
-      scene.addChild(square);
+        scene.addChild(triangle);
+        scene.addChild(square);
       
-      console.log(triangle.getID());
-      console.log(square.getID());
+        var renderer = new MODELER.WebGLRenderer( { scene: scene, camera: camera} );
       
-      var renderer = new MODELER.WebGLRenderer( { scene: scene, camera: camera} );
-      
-      //Render loop
-      setInterval(function(){
-        renderer.render();
-      }, 60 / 1000);
-    }
-    window.onload = pageLoaded;
+        //Render loop
+        setInterval(function(){
+          renderer.render();
+        }, 60 / 1000);
+      }
+      window.onload = pageLoaded;
     </script>
   </head>
   <body>

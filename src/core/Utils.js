@@ -29,6 +29,7 @@
     if (!exp) throw message || "Assert was false";
   };
   
+  //Shamelessly stolen from underscore.js
   m.Utils.equals = function(a, b) {
     // Check object identity.
     if (a === b) return true;
