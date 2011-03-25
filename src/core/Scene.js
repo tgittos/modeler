@@ -1,12 +1,16 @@
 (function(m){
   m.Scene = function () {
-    var children = [];
+    var children = [],
+    nextObjectID = 0;
     
     //PUBLIC FUNCTIONS
     this.addChild = function (obj) {
       assert(obj, "No object given");
       assert(obj instanceof m.Object3D, "Not a Object3D");
-      if (!children.contains(obj)) { children.push(obj); }
+      if (!children.contains(obj)) { 
+        obj.setID("Object" + nextObjectID++);
+        children.push(obj); 
+      }
       return true;
     };
     

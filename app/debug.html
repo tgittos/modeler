@@ -64,6 +64,9 @@
       scene.addChild(triangle);
       scene.addChild(square);
       
+      console.log(triangle.getID());
+      console.log(square.getID());
+      
       var renderer = new MODELER.WebGLRenderer( { scene: scene, camera: camera} );
       
       //Render loop

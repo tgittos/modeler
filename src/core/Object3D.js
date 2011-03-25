@@ -1,10 +1,9 @@
 (function(m){
-  m.Object3D = function (params) {
-    
-    var id = Math.floor(new Date().getTime() * Math.random()); //Consider moving into the prototype
-    
+  m.Object3D = function (params) {    
     //Array of vectorss
-    var vertices = [];
+    var vertices = [],
+    id = null;
+
     this.x = 0, this.y = 0, this.z = 0,
     this.rotX = 0, this.rotY = 0, this.rotZ = 0;
     
@@ -21,7 +20,8 @@
     };
     
     //PUBLIC FUNCTIONS
-    this.getID = function() { return id; };
+    this.setID = function(value)  { id = id || value; }
+    this.getID = function()       { return id; };
     this.getVertices = function() { return vertices; };
     this.flatten = function() {
       var data = [];
