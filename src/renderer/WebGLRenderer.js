@@ -38,6 +38,7 @@
     };
     
     //PUBLIC FUNCTIONS
+    this.getCanvas = function() { return canvas; }
     this.setSize = function (pWidth, pHeight) {
       width = pWidth || width;
       height = pHeight || height;

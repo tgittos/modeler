@@ -98,9 +98,11 @@
         var renderer = new MODELER.WebGLRenderer( { scene: scene, camera: camera} );
       
         //Render loop
-        setInterval(function(){
+        function render() {
+          window.requestAnimationFrame(render, renderer.getCanvas());
           renderer.render();
-        }, 60 / 1000);
+        }
+        render();
       }
       window.onload = pageLoaded;
     </script>

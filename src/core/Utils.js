@@ -29,6 +29,17 @@
     if (!exp) throw message || "Assert was false";
   };
   
+  //requestAnimationFrame as per Google recommendation
+  if (!window.requestAnimationFrame) {
+    window.requestAnimationFrame = (function() {
+      return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+      function(callback, element) {
+        //60fps
+        window.setTimeout(callback, 1000 / 60);
+      };
+    })();
+  }
+  
   //Shamelessly stolen from underscore.js
   m.Utils.equals = function(a, b) {
     // Check object identity.
