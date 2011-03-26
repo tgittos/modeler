@@ -6,6 +6,7 @@
     width = 800,
     height = 600,
     buffers = {},
+    colour_buffers = {},
     scene = null,
     camera = null,
     shaderProgram = null;
@@ -70,12 +71,24 @@
         
         //Set current buffer to objects buffer
         //TODO: HERE!
+        
+        //Vertex positions
         var buffer = buffers[obj.getID()];
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
         gl.vertexAttribPointer(
           shaderProgram.vertexPositionAttribute, 
-          obj.getVertexDimensions(), 
+          obj.getVertexDimensions(obj.getVertices()), 
           gl.FLOAT, false, 0, 0);
+          
+        //Vertex colours
+        var colour_buffer = colour_buffers[obj.getID()];
+        gl.bindBuffer(gl.ARRAY_BUFFER, colour_buffer);
+        gl.vertexAttribPointer(
+          shaderProgram.vertexColorAttribute, 
+          obj.getVertexDimensions(obj.getColours()), 
+          gl.FLOAT, false, 0, 0);
+        
+        //Send matricies for translation and perspective to vertex shader
         gl.uniformMatrix4fv(
           shaderProgram.pMatrixUniform, 
           false, 
@@ -86,6 +99,8 @@
           false, 
           new Float32Array(objMvMatrix.flatten())
         );
+        
+        //Draw
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, obj.getVertices().length);
         //gl.drawArrays(gl.TRIANGLES, 0, obj.getVertices().length);
       }
@@ -102,11 +117,21 @@
     };
     sendObjectToBuffer = function(obj) {
       assert(obj instanceof m.Object3D);
+      //Position buffer
       var vertexBuffer = gl.createBuffer();
       buffers[obj.getID()] = vertexBuffer;
       gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-      var vertices = obj.flatten();
+      var vertices = obj.flatten(obj.getVertices());
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+      console.log(vertices);
+      
+      //Colour buffer
+      var colourBuffer = gl.createBuffer();
+      colour_buffers[obj.getID()] = colourBuffer;
+      gl.bindBuffer(gl.ARRAY_BUFFER, colourBuffer);
+      var colours = obj.flatten(obj.getColours());
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colours), gl.STATIC_DRAW);
+      console.log(colours);
     };
     initShader = function() {
       var fragmentShader = loadShader('shader-fs', m.Shader.Type.Fragment);
@@ -125,6 +150,9 @@
   
       shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
       gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+      
+      shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
+      gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
   
       shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
       shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
