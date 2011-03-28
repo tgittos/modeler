@@ -6,7 +6,7 @@
     id = null;
 
     this.x = 0, this.y = 0, this.z = 0,
-    this.rotX = 0, this.rotY = 0, this.rotZ = 0;
+    this.rotVector = null, this.rotDegrees = 0;
     
     //CONSTRUCTOR
     this.init = function (params) {
@@ -21,9 +21,11 @@
           colours.push($V(this));
         });
       }
-      if (params.x) { this.x = params.x; };
-      if (params.y) { this.y = params.y; };
-      if (params.z) { this.z = params.z; };
+      if (params.x)           { this.x = params.x; };
+      if (params.y)           { this.y = params.y; };
+      if (params.z)           { this.z = params.z; };
+      if (params.rotVector)   { this.rotVector = $V(params.rotVector); };
+      if (params.rotDegrees)  { this.rotDegrees = params.rotDegrees; };
     };
     
     //PUBLIC FUNCTIONS
@@ -43,12 +45,9 @@
       });
       return data;
     };
-    //TODO: Refactor this so it doesn't require calling getVertices or getColours
-    //and passing it to this function
-    this.getVertexDimensions = function(arr) { 
-      return (arr[0]) ? arr[0].dimensions() : null; 
-    }
     
     this.init(params);
   };
+  m.Object3D.VertexSize = 3;
+  m.Object3D.ColourSize = 4;
 })(MODELER);

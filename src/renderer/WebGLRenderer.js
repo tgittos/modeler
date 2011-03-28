@@ -39,7 +39,6 @@
     };
     
     //PUBLIC FUNCTIONS
-    this.getCanvas = function() { return canvas; }
     this.setSize = function (pWidth, pHeight) {
       width = pWidth || width;
       height = pHeight || height;
@@ -54,7 +53,7 @@
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   
       //Set up the perspective of the rendered scene -> Camera
-      var pMatrix = gluPerspective(
+      var perspectiveMatrix = gluPerspective(
         camera.getFov() || 45,
         camera.getRatio() || gl.viewportWidth / gl.viewportHeight,
         camera.getNearClip() || 0.1,
@@ -66,8 +65,11 @@
       for (var i = 0; i < objects.length; i++) {
         var obj = objects[i];
         
-        var m = Matrix.Translation($V([obj.x, obj.y, obj.z])).ensure4x4();
-        var objMvMatrix = Matrix.I(4).x(m); //Matrix multiplication
+        //Position of object
+        var translationMatrix = Matrix.Translation($V([obj.x, obj.y, obj.z])).ensure4x4();
+        //Rotation of object
+        var rotationMatrix = Matrix.Rotation(Math.degreesToRadians(obj.rotDegrees), obj.rotVector).ensure4x4();
+        var vertexMatrix = translationMatrix.x(rotationMatrix);
         
         //Set current buffer to objects buffer
         //TODO: HERE!
@@ -77,7 +79,7 @@
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
         gl.vertexAttribPointer(
           shaderProgram.vertexPositionAttribute, 
-          obj.getVertexDimensions(obj.getVertices()), 
+          MODELER.Object3D.VertexSize, 
           gl.FLOAT, false, 0, 0);
           
         //Vertex colours
@@ -85,19 +87,19 @@
         gl.bindBuffer(gl.ARRAY_BUFFER, colour_buffer);
         gl.vertexAttribPointer(
           shaderProgram.vertexColorAttribute, 
-          obj.getVertexDimensions(obj.getColours()), 
+          MODELER.Object3D.ColourSize, 
           gl.FLOAT, false, 0, 0);
         
         //Send matricies for translation and perspective to vertex shader
         gl.uniformMatrix4fv(
           shaderProgram.pMatrixUniform, 
           false, 
-          new Float32Array(pMatrix.flatten())
+          new Float32Array(perspectiveMatrix.flatten())
         );
         gl.uniformMatrix4fv(
           shaderProgram.mvMatrixUniform, 
           false, 
-          new Float32Array(objMvMatrix.flatten())
+          new Float32Array(vertexMatrix.flatten())
         );
         
         //Draw
@@ -123,7 +125,6 @@
       gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
       var vertices = obj.flatten(obj.getVertices());
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-      console.log(vertices);
       
       //Colour buffer
       var colourBuffer = gl.createBuffer();
@@ -131,7 +132,6 @@
       gl.bindBuffer(gl.ARRAY_BUFFER, colourBuffer);
       var colours = obj.flatten(obj.getColours());
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colours), gl.STATIC_DRAW);
-      console.log(colours);
     };
     initShader = function() {
       var fragmentShader = loadShader('shader-fs', m.Shader.Type.Fragment);

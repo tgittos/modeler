@@ -24,6 +24,9 @@
       }
     }
   };
+  Math.degreesToRadians = function(a) {
+    return Math.PI * (a / 180);
+  }
 
   window.assert = function(exp, message) {
     if (!exp) throw message || "Assert was false";

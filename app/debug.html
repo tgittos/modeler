@@ -69,7 +69,7 @@
       function pageLoaded() {
       
         //DEBUG ONLY
-        $C = new MODELER.Debugger( { force: true } );
+        //$C = new MODELER.Debugger( { force: true } );
         //END DEBUG
         
         var scene = new MODELER.Scene();
@@ -89,7 +89,8 @@
           ],
           x: -1.5,
           y: 0.0,
-          z: -7.0
+          z: -7.0,
+          rotVector: [0, 1, 0]
         });
       
         var square = new MODELER.Object3D({
@@ -107,7 +108,8 @@
           ],
           x: 1.5,
           y: 0.0,
-          z: -7.0
+          z: -7.0,
+          rotVector: [1, 0, 0]
         });
       
         scene.addChild(triangle);
@@ -116,11 +118,25 @@
         var renderer = new MODELER.WebGLRenderer( { scene: scene, camera: camera} );
       
         //Render loop
+        var lastTime = 0;
         function render() {
-          window.requestAnimationFrame(render, renderer.getCanvas());
+          window.requestAnimationFrame(render);
+          
+          //Rotation logic
+          var timeNow = new Date().getTime();
+          if (lastTime != 0) {
+            var elapsed = timeNow - lastTime;
+
+            //Rotating at 90 degrees per second
+            triangle.rotDegrees += (90 * elapsed) / 1000.0;
+            square.rotDegrees += (75 * elapsed) / 1000.0;
+          }
+          lastTime = timeNow;
+          
           renderer.render();
         }
         render();
+        
       }
       window.onload = pageLoaded;
     </script>
