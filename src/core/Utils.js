@@ -24,9 +24,21 @@
       }
     }
   };
+  
   Math.degreesToRadians = function(a) {
     return Math.PI * (a / 180);
-  }
+  };
+  
+  //Douglas Crockford's "Javascript: The Good Parts", pg 24
+  //Creates a new object with the same properties and methods
+  //as the given object.
+  if (typeof Object.new !== 'function') {
+    Object.new = function (o) {
+      var F = function() {};
+      F.prototype = o;
+      return new F();
+    };
+  };
 
   window.assert = function(exp, message) {
     if (!exp) throw message || "Assert was false";

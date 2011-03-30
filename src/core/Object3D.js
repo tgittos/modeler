@@ -1,3 +1,6 @@
+//An Object3D is a collection of geometries
+//All this junk needs to be distributed into
+//Geometry, Quad & Tri and Vertex
 (function(m){
   m.Object3D = function (params) {    
     //Array of vectorss

@@ -1,3 +1,7 @@
+//This should be able to render anything that can pump
+//vertices into a buffer, but right now type checks for
+//Object3D
+
 (function(m){
   m.WebGLRenderer = function (params) {
     var webGLContextString = 'experimental-webgl',
