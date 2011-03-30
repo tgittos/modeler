@@ -2,6 +2,7 @@
   m.Object3D = function (params) {    
     //Array of vectorss
     var vertices = [],
+    faces = [],
     colours = [],
     id = null;
 
@@ -15,8 +16,8 @@
           vertices.push($V(this));
         });
       }
+      if (params.faces) { faces = params.faces; }
       if (params.colours) {
-        console.log(params.colours);
         params.colours.each(function(i){
           colours.push($V(this));
         });
@@ -32,6 +33,17 @@
     this.setID = function(value)  { id = id || value; };
     this.getID = function()       { return id; };
     this.getVertices = function() { return vertices; };
+    this.getFaces = function()    {
+      if (faces.length == 0) {
+        //Replace with a range function
+        var temp_faces = [];
+        for (var i = 0; i < vertices.length; i++) {
+          temp_faces.push(i);
+        }
+        return temp_faces;
+      }
+      return faces;
+    }
     this.getColours = function()  { return colours; };
     //TODO: Refactor this so it doesnt require calling getVertices or getColours
     //and passing it to this function

@@ -5,7 +5,8 @@
     gl = null,
     width = 800,
     height = 600,
-    buffers = {},
+    vertex_buffers = {},
+    face_buffers = {},
     colour_buffers = {},
     scene = null,
     camera = null,
@@ -75,8 +76,8 @@
         //TODO: HERE!
         
         //Vertex positions
-        var buffer = buffers[obj.getID()];
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        var vertex_buffer = vertex_buffers[obj.getID()];
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
         gl.vertexAttribPointer(
           shaderProgram.vertexPositionAttribute, 
           MODELER.Object3D.VertexSize, 
@@ -89,6 +90,10 @@
           shaderProgram.vertexColorAttribute, 
           MODELER.Object3D.ColourSize, 
           gl.FLOAT, false, 0, 0);
+          
+        //Object faces
+        var face_buffer = face_buffers[obj.getID()];
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, face_buffer);
         
         //Send matricies for translation and perspective to vertex shader
         gl.uniformMatrix4fv(
@@ -103,8 +108,11 @@
         );
         
         //Draw
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, obj.getVertices().length);
+        //TRIANGLE_STRIP tris can share vertices.
+        //TRIANGLES tris need every vertex to be specified
+        //gl.drawArrays(gl.TRIANGLE_STRIP, 0, obj.getVertices().length);
         //gl.drawArrays(gl.TRIANGLES, 0, obj.getVertices().length);
+        gl.drawElements(gl.TRIANGLES, obj.getFaces().length, gl.UNSIGNED_SHORT, 0);
       }
     };
     
@@ -119,19 +127,34 @@
     };
     sendObjectToBuffer = function(obj) {
       assert(obj instanceof m.Object3D);
-      //Position buffer
+      //Vertex position buffer
       var vertexBuffer = gl.createBuffer();
-      buffers[obj.getID()] = vertexBuffer;
       gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
       var vertices = obj.flatten(obj.getVertices());
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
       
+      //Face buffer
+      var faceBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
+      var faces = obj.getFaces();
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(faces), gl.STATIC_DRAW);
+      
       //Colour buffer
       var colourBuffer = gl.createBuffer();
-      colour_buffers[obj.getID()] = colourBuffer;
       gl.bindBuffer(gl.ARRAY_BUFFER, colourBuffer);
       var colours = obj.flatten(obj.getColours());
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colours), gl.STATIC_DRAW);
+      
+      //Store the buffers for later drawing
+      var obj_id = obj.getID();
+      vertex_buffers[obj_id] = vertexBuffer;
+      face_buffers[obj_id] = faceBuffer;
+      colour_buffers[obj_id] = colourBuffer;
+      
+      //DEBUG
+      console.log(vertices);
+      console.log(faces);
+      console.log(colours);
     };
     initShader = function() {
       var fragmentShader = loadShader('shader-fs', m.Shader.Type.Fragment);
