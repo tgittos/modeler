@@ -110,8 +110,9 @@
           false, 
           new Float32Array(vertexMatrix.flatten())
         );
-        
-        gl.drawElements(gl.TRIANGLES, obj.getFaces().length, gl.UNSIGNED_SHORT, 0);
+        //TODO: Refactor the obj.getForRender().elementIndices.length function
+        //into something a little more sane
+        gl.drawElements(gl.TRIANGLES, obj.getForRender().elementIndices.length, gl.UNSIGNED_SHORT, 0);
       }
     };
     

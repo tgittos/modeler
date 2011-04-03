@@ -28,9 +28,7 @@
     //PUBLIC FUNCTIONS
     this.setID = function(value)  { id = id || value; };
     this.getID = function()       { return id; };
-    this.getFaces = function()    {
-      return faces;
-    };
+    //this.getFaces = function()    { return faces; };
     this.getColours = function()  { return colours; };
     //TODO: Refactor this so it doesnt require calling getVertices or getColours
     //and passing it to this function
