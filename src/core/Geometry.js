@@ -2,5 +2,7 @@
 //It has location, rotation
 //It forms the base of all 3D objects in the scene
 MODELER.Geometry = function() {
-  
+  var location, 
+  rotation,
+  faces = [];
 };

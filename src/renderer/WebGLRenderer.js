@@ -111,11 +111,6 @@
           new Float32Array(vertexMatrix.flatten())
         );
         
-        //Draw
-        //TRIANGLE_STRIP tris can share vertices.
-        //TRIANGLES tris need every vertex to be specified
-        //gl.drawArrays(gl.TRIANGLE_STRIP, 0, obj.getVertices().length);
-        //gl.drawArrays(gl.TRIANGLES, 0, obj.getVertices().length);
         gl.drawElements(gl.TRIANGLES, obj.getFaces().length, gl.UNSIGNED_SHORT, 0);
       }
     };
@@ -123,25 +118,25 @@
     //PRIVATE FUNCTIONS
     loadSceneIntoBuffers = function() {
       assert(scene, "scene is set");
-      assert(scene instanceof m.Scene, "scene is instance of Scene");
+      assert(scene instanceof m.Scene, "scene is not an instance of Scene");
       objects = scene.getChildren();
       objects.each(function(){
         sendObjectToBuffer(this);
       });
     };
     sendObjectToBuffer = function(obj) {
-      assert(obj instanceof m.Object3D);
+      assert(typeof obj.getForRender === 'function', "Not a renderable object");
+      var renderBuffers = obj.getForRender();
+      
       //Vertex position buffer
       var vertexBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-      var vertices = obj.flatten(obj.getVertices());
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(renderBuffers.vertices), gl.STATIC_DRAW);
       
       //Face buffer
       var faceBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
-      var faces = obj.getFaces();
-      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(faces), gl.STATIC_DRAW);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(renderBuffers.elementIndices), gl.STATIC_DRAW);
       
       //Colour buffer
       var colourBuffer = gl.createBuffer();
@@ -154,11 +149,6 @@
       vertex_buffers[obj_id] = vertexBuffer;
       face_buffers[obj_id] = faceBuffer;
       colour_buffers[obj_id] = colourBuffer;
-      
-      //DEBUG
-      console.log(vertices);
-      console.log(faces);
-      console.log(colours);
     };
     initShader = function() {
       var fragmentShader = loadShader('shader-fs', m.Shader.Type.Fragment);

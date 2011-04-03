@@ -33,6 +33,9 @@
     <script type="text/javascript" src="../lib/glUtils.js"></script>
     <script type="text/javascript" src="../src/Modeler.js"></script>
     <script type="text/javascript" src="../src/core/Utils.js"></script>
+    <script type="text/javascript" src="../src/core/Vertex.js"></script>
+    <script type="text/javascript" src="../src/core/Face3.js"></script>
+    <script type="text/javascript" src="../src/core/Face4.js"></script>
     <script type="text/javascript" src="../src/core/Scene.js"></script>
     <script type="text/javascript" src="../src/core/Camera.js"></script>
     <script type="text/javascript" src="../src/core/Object3D.js"></script>
@@ -47,7 +50,8 @@
       varying vec4 vColor;
 
       void main(void) {
-        gl_FragColor = vColor;
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+        //gl_FragColor = vColor;
       }
     </script>
     <script id="shader-vs" type="x-shader/x-vertex">
@@ -64,8 +68,8 @@
         vColor = aVertexColor;
       }
     </script>
-    <script type="text/javascript" src="demos/rotating-objects.js">
-    /*
+    <!--script type="text/javascript" src="demos/rotating-objects.js" -->
+    <script type="text/javascript">
     function pageLoaded() {
 
       //DEBUG ONLY
@@ -76,14 +80,33 @@
       var camera = new MODELER.Camera();  
 
       //Send some geometry to the scene
+      var tri = MODELER.Face3({
+        vertices: [
+          [0.0,  1.0,  0.0],
+          [-1.0, -1.0,  1.0],
+          [1.0, -1.0,  1.0]
+        ]
+      });
+      var obj = new MODELER.Object3D({
+        faces: [tri],
+        colours: [
+          [1.0, 0.0, 0.0, 1.0],
+          [0.0, 1.0, 0.0, 1.0],
+          [0.0, 0.0, 1.0, 1.0]
+        ],
+        x: -1.5,
+        y: 0.0,
+        z: -7.0,
+        rotVector: [0, 1, 0]
+      });
+      scene.addChild(obj);
 
       var renderer = new MODELER.WebGLRenderer( { scene: scene, camera: camera} );
 
       //Render loop
       var lastTime = 0;
-      function render() {
-        window.requestAnimationFrame(render);
-        
+      (function render() {
+        /*
         var timeNow = new Date().getTime();
         if (lastTime != 0) {
           var elapsed = timeNow - lastTime;
@@ -92,14 +115,12 @@
           
         }
         lastTime = timeNow;
-
+*/
         renderer.render();
-      }
-      render();
-
+        requestAnimationFrame(render);
+      })();
     }
     window.onload = pageLoaded;
-    */
     </script>
   </head>
   <body>

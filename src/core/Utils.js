@@ -39,6 +39,17 @@
       return new F();
     };
   };
+  //Douglas Crockford's "Javascript: The Good Parts", pg 56
+  //Stores a reference to the parent's function to enable
+  //us to wrap it
+  if (typeof Object.superior !== 'function') {
+    Object.superior = function(name) {
+      var that = this, method = that[name];
+      return function() {
+        return method.apply(that, apply);
+      }
+    };
+  };
 
   window.assert = function(exp, message) {
     if (!exp) throw message || "Assert was false";

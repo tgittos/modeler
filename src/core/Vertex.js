@@ -1,3 +1,6 @@
-MODELER.Vertex = function(pos) {
-  this.position = $V(pos);
+MODELER.Vertex = function(pos, my) {
+  var that = {}, my = my || {},
+  position = $V(pos);
+  that.position = position;
+  return that;
 };

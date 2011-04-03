@@ -6,7 +6,7 @@
     //PUBLIC FUNCTIONS
     this.addChild = function (obj) {
       assert(obj, "No object given");
-      assert(obj instanceof m.Object3D, "Not a Object3D");
+      assert(typeof obj.getForRender === 'function', "Not a renderable object");
       if (!children.contains(obj)) { 
         obj.setID("Object" + nextObjectID++);
         children.push(obj); 
@@ -16,7 +16,7 @@
     
     this.removeChild = function (obj) {
       assert(obj, "No object given");
-      assert(obj instanceof m.Object3D, "Not an Object3D");
+      assert(typeof obj.getForRender === 'function', "Not a renderable object");
       if (children.contains(obj)) { 
         children.remove(obj); 
         return true;
@@ -26,7 +26,7 @@
     
     this.hasChild = function (obj) {
       assert(obj, "No object given");
-      assert(obj instanceof m.Object3D, "Not an Object3D");
+      assert(typeof obj.getForRender === 'function', "Not a renderable object");
       return children.contains(obj);
     };
     
