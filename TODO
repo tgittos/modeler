@@ -1,0 +1,15 @@
+Remove the tight dependency of colour of an object and the object itself.
+Currently, the WebGLRenderer calls a getColours method on Object3D. 
+Considering an Object3D is now a collection of meshes, each mesh having a geometry and a material,
+this call no longer makes sense.
+
+This is symptomatic of a general design problem, where Object3D, and all the 3D related objects
+down the line (Object3D -> Mesh -> Geometry -> Face3/4) are too tightly bound to WebGLRenderer.
+The getForRender method is guilty of this. Instead of serializing down into an array of floats for
+the WebGLRenderer, these objects should remain higher level.
+WebGLRenderer should do the heavy lifting of transforming these objects to a format that it can
+handle.
+
+Fixing this will relieve some of the issues as to how to gain access to colours, and generalize
+rendering more. It will also enable the addition of other rendering methods in the future, such as
+Canvas or SVG rendering for browsers that don't implement WebGL.

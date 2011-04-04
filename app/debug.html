@@ -37,7 +37,9 @@
     <script type="text/javascript" src="../src/core/Face3.js"></script>
     <script type="text/javascript" src="../src/core/Face4.js"></script>
     <script type="text/javascript" src="../src/core/Geometry.js"></script>
+    <script type="text/javascript" src="../src/core/Mesh.js"></script>
     <script type="text/javascript" src="../src/primitives/Cube.js"></script>
+    <script type="text/javascript" src="../src/materials/Basic.js"></script>
     <script type="text/javascript" src="../src/core/Scene.js"></script>
     <script type="text/javascript" src="../src/core/Camera.js"></script>
     <script type="text/javascript" src="../src/core/Object3D.js"></script>
@@ -89,19 +91,21 @@
         ]
       });
       
-      var tri_obj = new MODELER.Object3D({
-        faces: [tri],
-        colours: [
-          [1.0, 0.0, 0.0, 1.0],
-          [0.0, 1.0, 0.0, 1.0],
-          [0.0, 0.0, 1.0, 1.0]
-        ],
+      var tri_mesh = MODELER.Mesh({
+        geometry: tri,
+        material: MODELER.Materials.Basic({ 
+          colour: [1, 0, 0, 1],
+          wireframe: false 
+        })
+      });
+      
+      var tri_model = new MODELER.Object3D({
+        meshes: [tri_mesh],
         x: -1.5,
         y: 0.0,
-        z: -7.0,
-        rotVector: [0, 1, 0]
+        z: -7.0
       });
-      scene.addChild(tri_obj);
+      scene.addChild(tri_model);
       
       /*
       var quad = MODELER.Face4({
@@ -132,7 +136,8 @@
         width: 2, height: 2, depth: 2,
         x: 1.5, y: 0.0, z: -7.0,
         rotVector: [1, 1, 0],
-        rotDegrees: 45
+        rotDegrees: 45,
+        material: MODELER.Materials.Basic({ wireframe: true })
       });
       //scene.addChild(cube);
 

@@ -6,7 +6,7 @@
 MODELER.Cube = function(params, my) {
   var that, my = my || {},
   id = null,
-  geometry = null,
+  mesh = null,
   x = 0, y = 0, z = 0,
   width = 0, height = 0, depth = 0;
   rotVector = null, rotDegrees = 0;
@@ -20,7 +20,7 @@ MODELER.Cube = function(params, my) {
     if (params.z)           { z = params.z; };
     if (params.rotVector)   { rotVector = params.rotVector; };
     if (params.rotDegrees)  { rotDegrees = params.rotDegrees; };
-    geometry = MODELER.Geometry({
+    var geometry = MODELER.Geometry({
       faces: [
         createFace4(),
         createFace4({ y: 90 }, { x: width / -2 }),
@@ -30,9 +30,14 @@ MODELER.Cube = function(params, my) {
         createFace4({ x: -90 }, { y: width / -2 })
       ]
     });
+    mesh = MODELER.Mesh({
+      geometry: geometry,
+      material: params.material
+    });
   };
   function getForRender() {
-    return geometry.getForRender();
+    console.log('here');
+    return mesh.getForRender();
   };
   function createFace4(rotation, translation) {
     //Center face around origin

@@ -80,7 +80,7 @@
         //TODO: HERE!
         
         //Vertex positions
-        var vertex_buffer = vertex_buffers[obj.getID()];
+        var vertex_buffer = vertex_buffers[obj.id];
         gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
         gl.vertexAttribPointer(
           shaderProgram.vertexPositionAttribute, 
@@ -88,16 +88,12 @@
           gl.FLOAT, false, 0, 0);
           
         //Vertex colours
-        var colour_buffer = colour_buffers[obj.getID()];
+        var colour_buffer = colour_buffers[obj.id];
         gl.bindBuffer(gl.ARRAY_BUFFER, colour_buffer);
         gl.vertexAttribPointer(
           shaderProgram.vertexColorAttribute, 
           MODELER.Object3D.ColourSize, 
           gl.FLOAT, false, 0, 0);
-          
-        //Object faces
-        var face_buffer = face_buffers[obj.getID()];
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, face_buffer);
         
         //Send matricies for translation and perspective to vertex shader
         gl.uniformMatrix4fv(
@@ -112,7 +108,18 @@
         );
         //TODO: Refactor the obj.getForRender().elementIndices.length function
         //into something a little more sane
-        gl.drawElements(gl.TRIANGLES, obj.getForRender().elementIndices.length, gl.UNSIGNED_SHORT, 0);
+        var material = obj.getForRender().material;
+        if (material && material.wireframe) {
+          //Render lines
+          gl.lineWidth(1); //TODO: Remove hardcoded value
+          var line_buffer = line_buffers[obj.id];
+          gl.drawElements(gl.LINES, obj.getForRender().lines.length, gl.UNSIGNED_SHORT, 0);
+        } else {
+          //Render faces
+          var face_buffer = face_buffers[obj.id];
+          gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, face_buffer);
+          gl.drawElements(gl.TRIANGLES, obj.getForRender().elementIndices.length, gl.UNSIGNED_SHORT, 0);
+        }
       }
     };
     
@@ -142,11 +149,11 @@
       //Colour buffer
       var colourBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, colourBuffer);
-      var colours = obj.flatten(obj.getColours());
+      var colours = obj.getColours();
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colours), gl.STATIC_DRAW);
       
       //Store the buffers for later drawing
-      var obj_id = obj.getID();
+      var obj_id = obj.id;
       vertex_buffers[obj_id] = vertexBuffer;
       face_buffers[obj_id] = faceBuffer;
       colour_buffers[obj_id] = colourBuffer;

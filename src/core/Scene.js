@@ -8,7 +8,7 @@
       assert(obj, "No object given");
       assert(typeof obj.getForRender === 'function', "Not a renderable object");
       if (!children.contains(obj)) { 
-        obj.setID("Object" + nextObjectID++);
+        obj.id = "Object" + nextObjectID++;
         children.push(obj); 
       }
       return true;
