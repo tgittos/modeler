@@ -8,7 +8,7 @@ MODELER.Face4 = function(params, my){
     //Patch in one extra face, using the 4th vertex
     my.elements.push([0, 2, 3]);
   }
-  that = MODELER.Face3.new(params, my);
+  that = MODELER.Face3(params, my);
   initialize();
   return that;
 };

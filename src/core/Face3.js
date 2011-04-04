@@ -10,9 +10,6 @@ MODELER.Face3 = function(params, my){
   //as an array of 3 element arrays, where each element is an index
   //to a vertex in the vertex array
   elements = [];
-  //Shared data
-  my.vertices = vertices;
-  my.elements = elements;
   //Private functions
   var initialize = function() {
     if (params.vertices) {
@@ -57,5 +54,9 @@ MODELER.Face3 = function(params, my){
   that = {}; //Don't inherit from anything
   initialize();
   that.getForRender = getForRender;
+  //Shared data
+  my.vertices = vertices;
+  my.elements = elements;
+  
   return that; 
 };

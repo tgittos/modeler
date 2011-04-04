@@ -86,7 +86,7 @@
           [1.0, -1.0,  1.0]
         ]
       });
-      var obj = new MODELER.Object3D({
+      var tri_obj = new MODELER.Object3D({
         faces: [tri],
         colours: [
           [1.0, 0.0, 0.0, 1.0],
@@ -98,7 +98,30 @@
         z: -7.0,
         rotVector: [0, 1, 0]
       });
-      scene.addChild(obj);
+      scene.addChild(tri_obj);
+      
+      var quad = MODELER.Face4({
+        vertices: [
+          [-1.0, -1.0,  1.0],
+          [1.0, -1.0,  1.0],
+          [1.0,  1.0,  1.0],
+          [-1.0,  1.0,  1.0]
+        ]
+      });
+      var quad_obj = new MODELER.Object3D({
+        faces: [quad],
+        colours: [
+          [1.0, 0.0, 0.0, 1.0],     // Front face
+          [1.0, 0.0, 0.0, 1.0],     // Front face
+          [1.0, 0.0, 0.0, 1.0],     // Front face
+          [1.0, 0.0, 0.0, 1.0]      // Front face
+        ],
+        x: 1.5,
+        y: 0.0,
+        z: -7.0,
+        rotVector: [1, 1, 0]
+      });
+      scene.addChild(quad_obj);
 
       var renderer = new MODELER.WebGLRenderer( { scene: scene, camera: camera} );
 
