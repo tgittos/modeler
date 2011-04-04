@@ -13,15 +13,26 @@ MODELER.Face3 = function(params, my){
   //Private functions
   var initialize = function() {
     if (params.vertices) {
-      params.vertices.each(function(){
-        if (this instanceof MODELER.Vertex) {
-          vertices.push(this);
-        } else {
-          //Assume it's an array of floats
-          var v = MODELER.Vertex(this);
+      if (params.vertices instanceof Matrix) {
+        //Can decompose a matrix down to an array of vectors
+        //Send the vectors to MODELER.Vertex constructor
+        var rows = params.vertices.rows();
+        //TODO: Consider moving this to a Util - Matrix.eachRow & Matrix.eachCol
+        for (var i = 1; i <=  rows; i++) {
+          var v = MODELER.Vertex(params.vertices.row(i))
           vertices.push(v);
         }
-      });
+      } else {
+        params.vertices.each(function(){
+          if (this instanceof MODELER.Vertex) {
+            vertices.push(this);
+          } else {
+            //Assume it's an array of floats
+            var v = MODELER.Vertex(this);
+            vertices.push(v);
+          }
+        });
+      }
       //TODO: Review to remove magic numbers?
       elements = [[0, 1, 2]];
     }

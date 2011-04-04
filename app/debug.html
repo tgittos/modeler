@@ -36,6 +36,8 @@
     <script type="text/javascript" src="../src/core/Vertex.js"></script>
     <script type="text/javascript" src="../src/core/Face3.js"></script>
     <script type="text/javascript" src="../src/core/Face4.js"></script>
+    <script type="text/javascript" src="../src/core/Geometry.js"></script>
+    <script type="text/javascript" src="../src/primitives/Cube.js"></script>
     <script type="text/javascript" src="../src/core/Scene.js"></script>
     <script type="text/javascript" src="../src/core/Camera.js"></script>
     <script type="text/javascript" src="../src/core/Object3D.js"></script>
@@ -76,16 +78,17 @@
       //END DEBUG
 
       var scene = new MODELER.Scene();
-      var camera = new MODELER.Camera();  
+      var camera = new MODELER.Camera();
 
       //Send some geometry to the scene
       var tri = MODELER.Face3({
         vertices: [
-          [0.0,  1.0,  0.0],
+          [0.0,  1.0,  1.0],
           [-1.0, -1.0,  1.0],
           [1.0, -1.0,  1.0]
         ]
       });
+      
       var tri_obj = new MODELER.Object3D({
         faces: [tri],
         colours: [
@@ -100,6 +103,7 @@
       });
       scene.addChild(tri_obj);
       
+      /*
       var quad = MODELER.Face4({
         vertices: [
           [-1.0, -1.0,  1.0],
@@ -119,9 +123,18 @@
         x: 1.5,
         y: 0.0,
         z: -7.0,
-        rotVector: [1, 1, 0]
+        rotVector: [1, 1, 0],
+        rotDegrees: 45
       });
       scene.addChild(quad_obj);
+      */
+      var cube = MODELER.Cube({
+        width: 2, height: 2, depth: 2,
+        x: 1.5, y: 0.0, z: -7.0,
+        rotVector: [1, 1, 0],
+        rotDegrees: 45
+      });
+      //scene.addChild(cube);
 
       var renderer = new MODELER.WebGLRenderer( { scene: scene, camera: camera} );
 
