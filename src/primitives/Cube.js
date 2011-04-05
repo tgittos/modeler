@@ -5,7 +5,6 @@
 //m.Cube.new = function() { make a cube }
 MODELER.Cube = function(params, my) {
   var that, my = my || {},
-  id = null,
   mesh = null,
   x = 0, y = 0, z = 0,
   width = 0, height = 0, depth = 0;
@@ -18,7 +17,7 @@ MODELER.Cube = function(params, my) {
     if (params.x)           { x = params.x; };
     if (params.y)           { y = params.y; };
     if (params.z)           { z = params.z; };
-    if (params.rotVector)   { rotVector = params.rotVector; };
+    if (params.rotVector)   { rotVector = $V(params.rotVector); };
     if (params.rotDegrees)  { rotDegrees = params.rotDegrees; };
     var geometry = MODELER.Geometry({
       faces: [
@@ -36,23 +35,23 @@ MODELER.Cube = function(params, my) {
     });
   };
   function getForRender() {
-    console.log('here');
     return mesh.getForRender();
   };
   function createFace4(rotation, translation) {
     //Center face around origin
     var matrix = $M([
       [width / -2,  height / -2,  depth / 2],
-      [width / -2,  height / 2,   depth / 2],
+      [width / 2,  height / -2,   depth / 2],
       [width / 2,   height / 2,   depth / 2],
-      [width / 2,   height / -2,  depth / 2]
-    ]).ensure4x4();
+      [width / -2,   height / 2,  depth / 2]
+    ]);
+    matrix.ensure4x4();
     //Rotate the face
     if (rotation) {
-      var rotVector = null, rotDegrees = null;
-      if (rotation.x) { rotDegrees = Math.degreesToRadians(rotation.x); rotVector = Vector.create([1,0,0]); }
-      if (rotation.y) { rotDegrees = Math.degreesToRadians(rotation.y); rotVector = Vector.create([0,1,0]); }
-      var rot_matrix = Matrix.Rotation(Math.degreesToRadians(rotDegrees), rotVector).ensure4x4();
+      var rotVector = null, rotRads = null;
+      if (rotation.x) { rotRads = Math.degreesToRadians(rotation.x); rotVector = Vector.create([1,0,0]); }
+      if (rotation.y) { rotRads = Math.degreesToRadians(rotation.y); rotVector = Vector.create([0,1,0]); }
+      var rot_matrix = Matrix.Rotation(rotRads, rotVector).ensure4x4();
       matrix = matrix.x(rot_matrix);
     }
     //Translate the face
@@ -65,15 +64,21 @@ MODELER.Cube = function(params, my) {
     }
     //Build the face
     return MODELER.Face4({
-      vertices: matrix
+      vertices: matrix.make4x3()
     });
   };
-  setID = function(value)  { id = id || value; };
-  getID = function()       { return id; };
+  function getMeshes() { return [mesh]; }
+  function inspect() {
+    var string = '{';
+    string += 'mesh: ' + mesh.inspect();
+    return string + '}';
+  };
   initialize();
   that = {}; //No inheriting
-  that.setID = setID;
-  that.getID = getID;
-  that.getForRender = getForRender;
+  that.getMeshes = getMeshes,
+  that.getForRender = getForRender,
+  that.inspect = inspect,
+  that.x = x, that.y = y, that.z = z,
+  that.rotDegrees = rotDegrees, that.rotVector = rotVector;
   return that;
 };

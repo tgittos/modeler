@@ -75,7 +75,7 @@
         //Rotation of object
         var rotationMatrix = Matrix.Rotation(Math.degreesToRadians(obj.rotDegrees), obj.rotVector).ensure4x4();
         var vertexMatrix = translationMatrix.x(rotationMatrix);
-        
+
         //Set current buffer to objects buffer
         //TODO: HERE!
         
@@ -113,6 +113,7 @@
           //Render lines
           gl.lineWidth(1); //TODO: Remove hardcoded value
           var line_buffer = line_buffers[obj.id];
+          gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, line_buffer);
           gl.drawElements(gl.LINES, obj.getForRender().lines.length, gl.UNSIGNED_SHORT, 0);
         } else {
           //Render faces
@@ -125,7 +126,7 @@
     
     //PRIVATE FUNCTIONS
     loadSceneIntoBuffers = function() {
-      assert(scene, "scene is set");
+      assert(scene, "scene is not set");
       assert(scene instanceof m.Scene, "scene is not an instance of Scene");
       objects = scene.getChildren();
       objects.each(function(){
@@ -135,6 +136,8 @@
     sendObjectToBuffer = function(obj) {
       assert(typeof obj.getForRender === 'function', "Not a renderable object");
       var renderBuffers = obj.getForRender();
+      console.log(obj.id + ' [vertices]: ' + renderBuffers.vertices.inspect());
+      console.log(obj.id + ' [elementIndices]: ' + renderBuffers.elementIndices.inspect());
       
       //Vertex position buffer
       var vertexBuffer = gl.createBuffer();
@@ -149,14 +152,17 @@
       //Colour buffer
       var colourBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, colourBuffer);
-      var colours = obj.getColours();
+      var colours = []
+      obj.getMeshes().each(function(){
+        colours = colours.concat(renderBuffers.material.applyToMesh(this));
+      });
+      console.log(obj.id + ' [colours]: ' + colours.inspect());
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colours), gl.STATIC_DRAW);
       
       //Store the buffers for later drawing
-      var obj_id = obj.id;
-      vertex_buffers[obj_id] = vertexBuffer;
-      face_buffers[obj_id] = faceBuffer;
-      colour_buffers[obj_id] = colourBuffer;
+      vertex_buffers[obj.id] = vertexBuffer;
+      face_buffers[obj.id] = faceBuffer;
+      colour_buffers[obj.id] = colourBuffer;
     };
     initShader = function() {
       var fragmentShader = loadShader('shader-fs', m.Shader.Type.Fragment);

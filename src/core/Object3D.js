@@ -18,34 +18,34 @@
     };
     
     //PUBLIC FUNCTIONS
-    this.getColours = function() {
-      //Return a flat array with the material colour for every vertex
-      //TODO: This needs some serious work so that it will work with multiple meshes
-      var flattened_colours = [];
-      meshes.each(function(){
-        var render_obj = this.getForRender();
-        render_obj.vertices.each(function(){
-          flattened_colours = flattened_colours.concat(render_obj.material.colour.elements)
-        });
-      });
-      return flattened_colours;
-    }
     this.getForRender = function() {
       //Go through all the faces and call getForRender
       //Flatten each vertex array and face index array into
       //a pair of single arrays
       var flattened_vertices = [];
       var flattened_elementIndices = [];
+      var material = null;
       meshes.each(function(){
         var render_obj = this.getForRender();
         flattened_vertices = flattened_vertices.concat(render_obj.vertices);
         flattened_elementIndices = flattened_elementIndices.concat(render_obj.elementIndices);
+        material = render_obj.material; //Get only 1 material no matter how many meshes we have.
+        //Obviously that needs to change...
       });
       return {
         vertices: flattened_vertices,
-        elementIndices: flattened_elementIndices
+        elementIndices: flattened_elementIndices,
+        material: material
       };
     };
+    this.getMeshes = function() {
+      return meshes;
+    };
+    this.inspect = function() {
+      var string = '{';
+      string += 'meshes: ' + meshes.inspect();
+      return string + '}';
+    }
     this.init(params);
   };
   m.Object3D.VertexSize = 3;

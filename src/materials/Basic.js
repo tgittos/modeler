@@ -10,9 +10,28 @@ MODELER.Materials.Basic = function(params, my) {
     if (params.wireframe) { wireframe = params.wireframe; }
     if (params.colour)    { colour = $V(params.colour); }
   };
+  function applyToMesh(mesh) {
+    //Right now, we assume the whole mesh gets the material
+    //In the future, we might want different geometry groups to get
+    //different materials in a single mesh.
+    var flattened_colours = [];
+    var render_obj = mesh.getForRender();
+    render_obj.vertices.each(function(){
+      flattened_colours = flattened_colours.concat(colour.elements)
+    });
+    return flattened_colours;
+  };
+  function inspect() {
+    var string = '{';
+    string += 'colour: ' + colour.inspect();
+    string += ', wireframe: ' + wireframe;
+    return string + '}';
+  };
   that = {};
   initialize();
   that.wireframe = wireframe;
   that.colour = colour;
+  that.applyToMesh = applyToMesh;
+  that.inspect = inspect;
   return that;
 };

@@ -13,9 +13,16 @@ MODELER.Mesh = function(params, my) {
     var render_obj = geometry.getForRender();
     render_obj.material = material;
     return render_obj;
-  }
+  };
+  function inspect() {
+    var string = '{';
+    string += 'geometry: ' + geometry.inspect();
+    string += ', material: ' + material.inspect();
+    return string + '}';
+  };
   that = {};
   initialize();
+  that.inspect = inspect;
   that.getForRender = getForRender;
   return that;
 }

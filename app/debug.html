@@ -83,6 +83,7 @@
       var camera = new MODELER.Camera();
 
       //Send some geometry to the scene
+      /*
       var tri = MODELER.Face3({
         vertices: [
           [0.0,  1.0,  1.0],
@@ -90,7 +91,6 @@
           [1.0, -1.0,  1.0]
         ]
       });
-      
       var tri_mesh = MODELER.Mesh({
         geometry: tri,
         material: MODELER.Materials.Basic({ 
@@ -98,7 +98,6 @@
           wireframe: false 
         })
       });
-      
       var tri_model = new MODELER.Object3D({
         meshes: [tri_mesh],
         x: -1.5,
@@ -106,8 +105,7 @@
         z: -7.0
       });
       scene.addChild(tri_model);
-      
-      /*
+      */
       var quad = MODELER.Face4({
         vertices: [
           [-1.0, -1.0,  1.0],
@@ -116,46 +114,47 @@
           [-1.0,  1.0,  1.0]
         ]
       });
-      var quad_obj = new MODELER.Object3D({
-        faces: [quad],
-        colours: [
-          [1.0, 0.0, 0.0, 1.0],     // Front face
-          [1.0, 0.0, 0.0, 1.0],     // Front face
-          [1.0, 0.0, 0.0, 1.0],     // Front face
-          [1.0, 0.0, 0.0, 1.0]      // Front face
-        ],
-        x: 1.5,
-        y: 0.0,
-        z: -7.0,
+      var quad_mesh = MODELER.Mesh({
+        geometry: quad,
+        material: MODELER.Materials.Basic({
+          color: [0, 0, 1, 1],
+          wireframe: false
+        })
+      });
+      var quad_model = new MODELER.Object3D({
+        meshes: [quad_mesh],
+        x: -1.5, y: 0.0, z: -7.0,
         rotVector: [1, 1, 0],
         rotDegrees: 45
       });
-      scene.addChild(quad_obj);
-      */
+      scene.addChild(quad_model);
+      var quad_render_obj = quad_model.getForRender();
+      
       var cube = MODELER.Cube({
         width: 2, height: 2, depth: 2,
         x: 1.5, y: 0.0, z: -7.0,
         rotVector: [1, 1, 0],
         rotDegrees: 45,
-        material: MODELER.Materials.Basic({ wireframe: true })
+        material: MODELER.Materials.Basic({ wireframe: false })
       });
-      //scene.addChild(cube);
+      var cube_render_obj = cube.getForRender();
+      scene.addChild(cube);
 
       var renderer = new MODELER.WebGLRenderer( { scene: scene, camera: camera} );
 
       //Render loop
       var lastTime = 0;
       (function render() {
-        /*
         var timeNow = new Date().getTime();
         if (lastTime != 0) {
           var elapsed = timeNow - lastTime;
           
           //Do rendering magicks
+          cube.rotDegrees += (90 * elapsed) / 1000.0;
           
         }
         lastTime = timeNow;
-*/
+        
         renderer.render();
         requestAnimationFrame(render);
       })();

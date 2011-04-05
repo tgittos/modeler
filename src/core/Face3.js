@@ -53,6 +53,29 @@ MODELER.Face3 = function(params, my){
     });
     return flattened_elements;
   };
+  var getLinesArray = function() {
+    //Figure out lines based on element indices and vertices
+  };
+  var inspect = function() {
+    var string = '{';
+    //Vertices
+    var vertices_strings = [];
+    string += 'vertices: [';
+    vertices.each(function(){
+      vertices_strings.push(this.inspect());
+    });
+    string += vertices_strings.join(', ');
+    string += '],';
+    //Elements
+    var elements_strings = [];
+    string += 'elements: [';
+    elements.each(function(){
+      elements_strings.push(this.inspect());
+    });
+    string += elements_strings.join(', ');
+    string += ']';
+    return string += '}';
+  }
   var getForRender = function() {
     //Return a flat array of vertices, and an array of vertex positions that make up tris
     //for rendering. This is all the OpenGL cares about
@@ -64,6 +87,7 @@ MODELER.Face3 = function(params, my){
   //Public functions
   that = {}; //Don't inherit from anything
   initialize();
+  that.inspect = inspect;
   that.getForRender = getForRender;
   //Shared data
   my.vertices = vertices;

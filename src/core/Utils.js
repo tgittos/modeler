@@ -24,9 +24,54 @@
       }
     }
   };
+  Array.prototype.inspect = function() {
+    var string = '[';
+    var string_arrays = [];
+    this.each(function(){
+      if (typeof this.inspect === 'function') {
+        string_arrays.push(this.inspect.call(this));
+      } else { string_arrays.push(this) }
+    });
+    string += string_arrays.join(', ');
+    return string + ']';
+  };
+  Array.prototype.join = function(delim) {
+    var string = '';
+    this.each(function(){
+      string += this + delim;
+    });
+    return string.substr(0, string.length - 2);
+  };
+  
+  /*
+  Object.prototype.inspect = function(){
+    var string = '{';
+    var string_arrays = [];
+    for (var prop in this) {
+      var val = this[prop];
+      if (typeof val.inspect === 'function') { string_arrays.push(val.inspect.call(this)); }
+      else { string_arrays.push(val); }
+    }
+    string += string_arrays.join(', ');
+    return string + '}';
+  };
+  */
   
   Math.degreesToRadians = function(a) {
     return Math.PI * (a / 180);
+  };
+  
+  Matrix.prototype.make4x3 = function()
+  {
+    //Drop the last column in the matrix
+      if (this.elements.length != 4 ||
+          this.elements[0].length != 4)
+          return null;
+
+      return Matrix.create([[this.elements[0][0], this.elements[0][1], this.elements[0][2]],
+                            [this.elements[1][0], this.elements[1][1], this.elements[1][2]],
+                            [this.elements[2][0], this.elements[2][1], this.elements[2][2]],
+                            [this.elements[3][0], this.elements[3][1], this.elements[3][2]]]);
   };
   
   //Douglas Crockford's "Javascript: The Good Parts", pg 24
@@ -58,6 +103,7 @@
   //requestAnimationFrame as per Google recommendation
   if (!window.requestAnimationFrame) {
     window.requestAnimationFrame = (function() {
+      //TODO: Renable when not debugging
       return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
       function(callback, element) {
         //60fps
