@@ -1,23 +1,33 @@
-(function(m){
-  m.Camera = function() {
-    var fov = null, 
-    ratio = null, 
-    nearClip = null, 
-    farClip = null;
-    
-    //CONSTRUCTOR
-    this.init = function(pFov, pRatio, pNearClip, pFarClip) {
-      fov = pFov;
-      ratio = pRatio;
-      nearClip = pNearClip;
-      farClip = pFarClip;
-    };
-    //PUBLIC FUNCTIONS
-    this.getFov = function() { return fov; };
-    this.getRatio = function() { return ratio; };
-    this.getNearClip = function() { return nearClip; };
-    this.getFarClip = function() { return farClip; };
-    
-    this.init();
+MODELER.Camera = function(params, my) {
+  var that, my = my || {},
+  fov = null,
+  ratio = null,
+  nearClip = null,
+  farClip = null;
+  
+  var initialize = function(){
+    //Default params
+    params = params || {};
+    params.fov = params.fov || 45;
+    params.ratio = params.ratio || 800 / 600; //Fixed ratio, independent of dimensions
+    params.nearClip = params.nearClip || 0.1;
+    params.farClip = params.farClip || 100.0;
+    //Assign params
+    if (params.fov)       { fov = params.fov; };
+    if (params.ratio)     { ratio = params.ratio; };
+    if (params.nearClip)  { nearClip = params.nearClip; };
+    if (params.farClip)   { farClip = params.farClip; };
   };
-})(MODELER);
+  var getFov = function() { return fov; };
+  var getRatio = function() { return ratio; };
+  var getNearClip = function() { return nearClip; };
+  var getFarClip = function() { return farClip; };
+  
+  that = {};
+  initialize();
+  that.getFov = getFov;
+  that.getRatio = getRatio;
+  that.getNearClip = getNearClip;
+  that.getFarClip = getFarClip;
+  return that;
+};

@@ -79,8 +79,8 @@
       //$C = new MODELER.Debugger( { force: true } );
       //END DEBUG
 
-      var scene = new MODELER.Scene();
-      var camera = new MODELER.Camera();
+      var scene = MODELER.Scene();
+      var camera = MODELER.Camera();
 
       //Send some geometry to the scene
       /*
@@ -140,7 +140,7 @@
       var cube_render_obj = cube.getForRender();
       scene.addChild(cube);
 
-      var renderer = new MODELER.WebGLRenderer( { scene: scene, camera: camera} );
+      var renderer = MODELER.WebGLRenderer( { scene: scene, camera: camera} );
 
       //Render loop
       var lastTime = 0;

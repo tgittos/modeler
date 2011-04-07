@@ -3,14 +3,14 @@
 MODELER.Geometry = function(params, my) {
   var that, my = my || {},
   faces = [];
-  function initialize() {
+  var initialize = function() {
     //Process faces
     if (params.faces) {
       faces = faces.concat(params.faces);
       weldVertices();
     }
   };
-  function getForRender() {
+  var getForRender = function() {
     var flattened_vertices = [];
     var flattened_elementIndices = [];
     faces.each(function(i){
@@ -31,7 +31,7 @@ MODELER.Geometry = function(params, my) {
       elementIndices: flattened_elementIndices
     };
   };
-  function inspect() {
+  var inspect = function() {
     var string = '{';
     string += 'faces: ['
     var string_array = [];
@@ -41,7 +41,7 @@ MODELER.Geometry = function(params, my) {
     string += string_array.join(', ');
     return string += ']}';
   };
-  function weldVertices() {
+  var weldVertices = function() {
     //When adding vertices, we need to remove vertices that have been repeated
     //several times, and instead make a face using existing vertices
   };

@@ -1,3 +1,17 @@
+Implement weldVertices method to cut down on geometry sent to GPU
+--
+Refactor existing 'classes' into more intuitive style. For example:
+Old: Object3D
+New: Face3
+--
+Add pyramid primative and get demo file working again
+--
+Add support for materials to specify colours by face, vertex
+--
+Add method to calculate lines per face (Face3)
+--
+Add code to render lines from a wireframe material (WebGLRenderer)
+--
 Remove the tight dependency of colour of an object and the object itself.
 Currently, the WebGLRenderer calls a getColours method on Object3D. 
 Considering an Object3D is now a collection of meshes, each mesh having a geometry and a material,

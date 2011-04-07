@@ -5,16 +5,16 @@ MODELER.Mesh = function(params, my) {
   var that, my = my || {},
   geometry = null,
   material = null;
-  function initialize() {
+  var initialize = function() {
     if (params.geometry) { geometry = params.geometry; }
     if (params.material) { material = params.material; }
   };
-  function getForRender() {
+  var getForRender = function() {
     var render_obj = geometry.getForRender();
     render_obj.material = material;
     return render_obj;
   };
-  function inspect() {
+  var inspect = function() {
     var string = '{';
     string += 'geometry: ' + geometry.inspect();
     string += ', material: ' + material.inspect();
