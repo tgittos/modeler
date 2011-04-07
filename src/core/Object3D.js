@@ -22,17 +22,20 @@ MODELER.Object3D = function(params, my) {
     //a pair of single arrays
     var flattened_vertices = [];
     var flattened_elementIndices = [];
+    var flattened_lines = [];
     var material = null;
     meshes.each(function(){
       var render_obj = this.getForRender();
       flattened_vertices = flattened_vertices.concat(render_obj.vertices);
       flattened_elementIndices = flattened_elementIndices.concat(render_obj.elementIndices);
+      flattened_lines = flattened_lines.concat(render_obj.lines);
       material = render_obj.material; //Get only 1 material no matter how many meshes we have.
       //Obviously that needs to change...
     });
     return {
       vertices: flattened_vertices,
       elementIndices: flattened_elementIndices,
+      lines: flattened_lines,
       material: material
     };
   };

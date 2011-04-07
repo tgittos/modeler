@@ -11,6 +11,7 @@ MODELER.WebGLRenderer = function(params, my) {
   vertex_buffers = {},
   face_buffers = {},
   colour_buffers = {},
+  line_buffers = {},
   scene = null,
   camera = null,
   shaderProgram = null;
@@ -73,6 +74,10 @@ MODELER.WebGLRenderer = function(params, my) {
       //Rotation of object
       var rotationMatrix = Matrix.Rotation(Math.degreesToRadians(obj.rotDegrees), obj.rotVector).ensure4x4();
       var vertexMatrix = translationMatrix.x(rotationMatrix);
+      
+      //console.log(perspectiveMatrix.inspect());
+      //console.log(rotationMatrix.inspect());
+      //console.log(vertexMatrix.inspect());
 
       //Set current buffer to objects buffer
       //TODO: HERE!
@@ -132,8 +137,6 @@ MODELER.WebGLRenderer = function(params, my) {
   var sendObjectToBuffer = function(obj) {
     assert(typeof obj.getForRender === 'function', "Not a renderable object");
     var renderBuffers = obj.getForRender();
-    console.log(obj.id + ' [vertices]: ' + renderBuffers.vertices.inspect());
-    console.log(obj.id + ' [elementIndices]: ' + renderBuffers.elementIndices.inspect());
     
     //Vertex position buffer
     var vertexBuffer = gl.createBuffer();
@@ -145,6 +148,11 @@ MODELER.WebGLRenderer = function(params, my) {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(renderBuffers.elementIndices), gl.STATIC_DRAW);
     
+    //Line buffer
+    var lineBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lineBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(renderBuffers.lines), gl.STATIC_DRAW);
+    
     //Colour buffer
     var colourBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, colourBuffer);
@@ -152,12 +160,12 @@ MODELER.WebGLRenderer = function(params, my) {
     obj.getMeshes().each(function(){
       colours = colours.concat(renderBuffers.material.applyToMesh(this));
     });
-    console.log(obj.id + ' [colours]: ' + colours.inspect());
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colours), gl.STATIC_DRAW);
     
     //Store the buffers for later drawing
     vertex_buffers[obj.id] = vertexBuffer;
     face_buffers[obj.id] = faceBuffer;
+    line_buffers[obj.id] = lineBuffer;
     colour_buffers[obj.id] = colourBuffer;
   };
   var initShader = function() {

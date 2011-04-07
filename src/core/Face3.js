@@ -9,7 +9,8 @@ MODELER.Face3 = function(params, my){
   //Elements are 3 sided polygons (triangles), ergo will be stored
   //as an array of 3 element arrays, where each element is an index
   //to a vertex in the vertex array
-  elements = [];
+  elements = [],
+  lines = [];
   //Private functions
   var initialize = function() {
     if (params.vertices) {
@@ -35,18 +36,23 @@ MODELER.Face3 = function(params, my){
       }
       //TODO: Review to remove magic numbers?
       elements = [[0, 1, 2]];
+      lines = [
+        [0, 1],
+        [1, 2],
+        [2, 0]
+      ];
     }
   };
   var getVerticesAsArray = function() {
     var flattened_vertices = [];
-    vertices.each(function(){
+    my.vertices.each(function(){
       flattened_vertices = flattened_vertices.concat(this.position.elements);
     });
     return flattened_vertices;
   };
   var getElementIndicesArray = function() {
     var flattened_elements = [];
-    elements.each(function(){
+    my.elements.each(function(){
       flattened_elements.push(
         this[0], this[1], this[2]
       );
@@ -55,13 +61,18 @@ MODELER.Face3 = function(params, my){
   };
   var getLinesArray = function() {
     //Figure out lines based on element indices and vertices
+    var flattened_lines = [];
+    my.lines.each(function(){
+      flattened_lines = flattened_lines.concat(this);
+    });
+    return flattened_lines;
   };
   var inspect = function() {
     var string = '{';
     //Vertices
     var vertices_strings = [];
     string += 'vertices: [';
-    vertices.each(function(){
+    my.vertices.each(function(){
       vertices_strings.push(this.inspect());
     });
     string += vertices_strings.join(', ');
@@ -69,10 +80,18 @@ MODELER.Face3 = function(params, my){
     //Elements
     var elements_strings = [];
     string += 'elements: [';
-    elements.each(function(){
+    my.elements.each(function(){
       elements_strings.push(this.inspect());
     });
     string += elements_strings.join(', ');
+    string += '],';
+    //Lines
+    var lines_strings = [];
+    string += 'lines: [';
+    my.lines.each(function(){
+      lines_strings.push(this.inspect());
+    });
+    string += lines_strings.join(', ');
     string += ']';
     return string += '}';
   }
@@ -81,17 +100,22 @@ MODELER.Face3 = function(params, my){
     //for rendering. This is all the OpenGL cares about
     return {
       vertices: getVerticesAsArray(),
-      elementIndices: getElementIndicesArray()
+      elementIndices: getElementIndicesArray(),
+      lines: getLinesArray()
     };
   };
-  //Public functions
+  
   that = {}; //Don't inherit from anything
   initialize();
-  that.inspect = inspect;
-  that.getForRender = getForRender;
+  
   //Shared data
   my.vertices = vertices;
   my.elements = elements;
+  my.lines = lines;
+  
+  //Public stuff
+  that.inspect = inspect;
+  that.getForRender = getForRender;
   
   return that; 
 };

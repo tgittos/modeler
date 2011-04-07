@@ -118,7 +118,7 @@
         geometry: quad,
         material: MODELER.Materials.Basic({
           color: [0, 0, 1, 1],
-          wireframe: false
+          wireframe: true
         })
       });
       var quad_model = new MODELER.Object3D({
@@ -128,16 +128,14 @@
         rotDegrees: 45
       });
       scene.addChild(quad_model);
-      var quad_render_obj = quad_model.getForRender();
       
       var cube = MODELER.Cube({
         width: 2, height: 2, depth: 2,
         x: 1.5, y: 0.0, z: -7.0,
         rotVector: [1, 1, 0],
         rotDegrees: 45,
-        material: MODELER.Materials.Basic({ wireframe: false })
+        material: MODELER.Materials.Basic({ wireframe: true })
       });
-      var cube_render_obj = cube.getForRender();
       scene.addChild(cube);
 
       var renderer = MODELER.WebGLRenderer( { scene: scene, camera: camera} );
