@@ -11,12 +11,22 @@ MODELER.Geometry = function(params, my) {
       weldVertices();
     }
   };
-  var createFace3 = function() {
-    
+  var createFace3 = function(dimensions) {
+    assert(dimensions.width && dimensions.height, "dimensions are required for a face3");
+    // 3x3 matrix
+    var matrix = [
+      dimensions.width / -2, dimensions.height / -2, 0,
+      0, dimensions.height / 2, 0,
+      dimensions.width / 2, dimensions.height / -2, 0
+    ]
+    var face = MODELER.Face3({
+      vertices: matrix
+    });
+    faces.push(face);
+    return face;
   };
   var createFace4 = function(dimensions) {
-    assert(dimensions.width && dimensions.height, "dimensions are required for a face4")
-    //Center face around origin
+    assert(dimensions.width && dimensions.height, "dimensions are required for a face4");
     //TODO: Consider passing in a position attribute that modifies the start position of each vertex
     var matrix = [
       dimensions.width / -2,  dimensions.height / -2, 0,

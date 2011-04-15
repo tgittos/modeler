@@ -3,7 +3,7 @@ MODELER.Pyramid = function(params, my) {
   mesh = null,
   x = 0, y = 0, z = 0,
   width = 0, height = 0, depth = 0;
-  rotVector = null, rotDegrees = 0;
+  rotVector = V3.x, rotDegrees = 0;
   
   function initialize(){
     if (params.width)       { width = params.width; };
@@ -12,17 +12,23 @@ MODELER.Pyramid = function(params, my) {
     if (params.x)           { x = params.x; };
     if (params.y)           { y = params.y; };
     if (params.z)           { z = params.z; };
-    if (params.rotVector)   { rotVector = $V(params.rotVector); };
+    if (params.rotVector)   { rotVector = params.rotVector; };
     if (params.rotDegrees)  { rotDegrees = params.rotDegrees; };
     var dimensions = {
       width: 2, height: 2, depth: 2
     };
+    var sin60 = 0.866025404;
+    var cos60 = 0.5;
+    var adjusted_height = (height / -2) - ((height / -2) * sin60);
+    //var hyp = height / 2;
+    //var new_height = hyp * sin60;
     var geometry = MODELER.Geometry();
-    geometry.addFace3(dimensions, { x: 45}/*, {z: depth / 2 }*/);
-    //geometry.addFace3(dimensions, { y: 45 }/*, { y: width / -2 }*/);
-    //geometry.addFace3(dimensions, { x: -45 }/*, { z: width / -2 }*/);
-    //geometry.addFace3(dimensions, { z: -45, y: -90 }/*, { x: width / 2 }*/);
-    //geometry.addFace4(dimensions, { x: 90 }, { y: height / -2 });
+    geometry.createFace4(dimensions).rotate({degrees: 90, axis: V3.x}).translate({ y: height / -2 });
+    geometry.createFace3(dimensions).rotate({ degrees: -30, axis: V3.x }).translate({ y: adjusted_height, z: depth / 2 * cos60 });
+    geometry.createFace3(dimensions).rotate({ degrees: 90, axis: V3.y }).rotate({ degrees: 30, axis: V3.z }).translate({y: adjusted_height, x: depth / 2 * cos60 });
+    geometry.createFace3(dimensions).rotate({ degrees: 30, axis: V3.x }).translate({ y: adjusted_height, z: depth / -2 * cos60 });
+    geometry.createFace3(dimensions).rotate({ degrees: -90, axis: V3.y}).rotate({ degrees: -30, axis: V3.z }).translate({y: adjusted_height, x: depth / -2 * cos60 });
+    
     mesh = MODELER.Mesh({
       geometry: geometry,
       material: params.material

@@ -17,7 +17,13 @@ M4x3.make4x4 = function(m) {
 
 M3x3 = {};
 M3x3.make4x4 = function(m) {
-  throw 'not implemented'
+  console.log('M3x3.make4x4');
+  r = []
+  r[0] = m[0]; r[1] = m[1]; r[2] = m[2]; r[3] = 1;
+  r[4] = m[3]; r[5] = m[4]; r[6] = m[5]; r[7] = 1;
+  r[8] = m[6]; r[9] = m[7]; r[10] = m[8]; r[11] = 1;
+  r[12] = r[13] = r[14] = r[15] = 1;
+  return r;
 }
 
 M4x4.left4x3 = function(m) {

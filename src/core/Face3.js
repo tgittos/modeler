@@ -24,7 +24,6 @@ MODELER.Face3 = function(params, my){
     }
   };
   var rotate = function(rotation) {
-    
     var rotation = M4x4.makeRotate(Math.degreesToRadians(rotation.degrees), rotation.axis);
     console.log(rotation);
     console.log(my.vertices);
@@ -37,11 +36,11 @@ MODELER.Face3 = function(params, my){
   var translate = function(translation) {
     var v3 = [ translation.x || 0, translation.y || 0, translation.z || 0 ];
     var translation = M4x4.makeTranslate(v3);
-    //console.log(translation);
-    //console.log(my.vertices);
+    console.log(translation);
+    console.log(my.vertices);
     my.vertices = M4x4.mul(translation, my.convertTo4x4(my.vertices));
     my.ensure();
-    //console.log(my.vertices);
+    console.log(my.vertices);
     return this;
   };
   var convertTo4x4 = function(m) {
@@ -50,7 +49,7 @@ MODELER.Face3 = function(params, my){
   var ensure = function() {
     //Ensure the vertices are 3x3
     my.vertices = M4x4.topLeft3x3(my.vertices);
-  }
+  };
   var getVerticesAsArray = function() {
     var flattened_vertices = [];
     my.vertices.each(function(){
