@@ -1,0 +1,6 @@
+.*~
+\.obj$
+\.o$
+\.pdb$
+bench/matrix-mult.exe
+bench/matrix-mult$
