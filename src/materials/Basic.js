@@ -5,10 +5,10 @@ MODELER.Materials = MODELER.Materials || {};
 MODELER.Materials.Basic = function(params, my) {
   var that, my = my || {},
   wireframe = false,
-  colour = $V([1, 1, 1, 1]); //Solid white
+  colour = [1, 1, 1, 1]; //Solid white
   function initialize() {
     if (params.wireframe) { wireframe = params.wireframe; }
-    if (params.colour)    { colour = $V(params.colour); }
+    if (params.colour)    { colour = params.colour; }
   };
   function applyToMesh(mesh) {
     //Right now, we assume the whole mesh gets the material
@@ -17,7 +17,7 @@ MODELER.Materials.Basic = function(params, my) {
     var flattened_colours = [];
     var render_obj = mesh.getForRender();
     render_obj.vertices.each(function(){
-      flattened_colours = flattened_colours.concat(colour.elements)
+      flattened_colours = flattened_colours.concat(colour)
     });
     return flattened_colours;
   };

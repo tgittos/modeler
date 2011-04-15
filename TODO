@@ -1,23 +1,31 @@
-Implement weldVertices method to cut down on geometry sent to GPU
---
-Add pyramid primative and get demo file working again
---
-Add support for materials to specify colours by face, vertex
---
-Add method to calculate lines per face (Face3)
---
-Remove the tight dependency of colour of an object and the object itself.
-Currently, the WebGLRenderer calls a getColours method on Object3D. 
-Considering an Object3D is now a collection of meshes, each mesh having a geometry and a material,
-this call no longer makes sense.
+TODO
+====
 
-This is symptomatic of a general design problem, where Object3D, and all the 3D related objects
-down the line (Object3D -> Mesh -> Geometry -> Face3/4) are too tightly bound to WebGLRenderer.
-The getForRender method is guilty of this. Instead of serializing down into an array of floats for
-the WebGLRenderer, these objects should remain higher level.
-WebGLRenderer should do the heavy lifting of transforming these objects to a format that it can
-handle.
+Now in order of importance!
 
-Fixing this will relieve some of the issues as to how to gain access to colours, and generalize
-rendering more. It will also enable the addition of other rendering methods in the future, such as
-Canvas or SVG rendering for browsers that don't implement WebGL.
+Immediate
+---------
+
+- Replace sylvester.js and glUtils.js with mjs [done]
+- Move translation and rotation functions from Cube into Face3 [done]
+- Review and fix translation/rotation math once it's in Face3, perhaps make it chainable [done]
+- Implement a Face3 vertex array to matrix function (for rotation and translation). Also consider 
+  just storing vertices as a Matrix rather than an array. Length will be fixed -> Face3 = 3x3
+  matrix, Face4 = 3x4 matrix. [done]
+- Finish pyramid primitive
+- Write more unit tests
+- Move the inspect method off of each object and into a util
+- Fix the dead load method on the shader loader so shaders can be stored as files
+- Implement weldVertices method to cut down on geometry sent to GPU
+- Add pyramid primitive and get demo file working again
+- Review tight coupling of graphics object classes and the renderer. Decouple for the ability to
+  add different kinds of rendering (canvas, for example). This will involve moving each object's
+  getForRender method out and into some sort of switch/map in the WebGLRenderer.
+- Implement per face colouring for materials, maybe as low as per vertex
+- Continue on with learningwebgl.com lessons - current lesson is 5
+
+Future
+------
+
+- Implement render to texture
+- Look into hard-core optimisation of code to make it super fast

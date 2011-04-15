@@ -14,27 +14,7 @@ MODELER.Face3 = function(params, my){
   //Private functions
   var initialize = function() {
     if (params.vertices) {
-      if (params.vertices instanceof Matrix) {
-        //Can decompose a matrix down to an array of vectors
-        //Send the vectors to MODELER.Vertex constructor
-        var rows = params.vertices.rows();
-        //TODO: Consider moving this to a Util - Matrix.eachRow & Matrix.eachCol
-        for (var i = 1; i <=  rows; i++) {
-          var v = MODELER.Vertex(params.vertices.row(i))
-          vertices.push(v);
-        }
-      } else {
-        params.vertices.each(function(){
-          if (this instanceof MODELER.Vertex) {
-            vertices.push(this);
-          } else {
-            //Assume it's an array of floats
-            var v = MODELER.Vertex(this);
-            vertices.push(v);
-          }
-        });
-      }
-      //TODO: Review to remove magic numbers?
+      vertices = params.vertices;
       elements = [[0, 1, 2]];
       lines = [
         [0, 1],
@@ -43,10 +23,38 @@ MODELER.Face3 = function(params, my){
       ];
     }
   };
+  var rotate = function(rotation) {
+    
+    var rotation = M4x4.makeRotate(Math.degreesToRadians(rotation.degrees), rotation.axis);
+    console.log(rotation);
+    console.log(my.vertices);
+    my.vertices = M4x4.mul(rotation, my.convertTo4x4(my.vertices));
+    console.log(my.vertices);
+    my.ensure();
+    console.log(my.vertices)
+    return this;
+  };
+  var translate = function(translation) {
+    var v3 = [ translation.x || 0, translation.y || 0, translation.z || 0 ];
+    var translation = M4x4.makeTranslate(v3);
+    //console.log(translation);
+    //console.log(my.vertices);
+    my.vertices = M4x4.mul(translation, my.convertTo4x4(my.vertices));
+    my.ensure();
+    //console.log(my.vertices);
+    return this;
+  };
+  var convertTo4x4 = function(m) {
+    return M3x3.make4x4(m);
+  };
+  var ensure = function() {
+    //Ensure the vertices are 3x3
+    my.vertices = M4x4.topLeft3x3(my.vertices);
+  }
   var getVerticesAsArray = function() {
     var flattened_vertices = [];
     my.vertices.each(function(){
-      flattened_vertices = flattened_vertices.concat(this.position.elements);
+      flattened_vertices = flattened_vertices.concat(this);
     });
     return flattened_vertices;
   };
@@ -70,13 +78,7 @@ MODELER.Face3 = function(params, my){
   var inspect = function() {
     var string = '{';
     //Vertices
-    var vertices_strings = [];
-    string += 'vertices: [';
-    my.vertices.each(function(){
-      vertices_strings.push(this.inspect());
-    });
-    string += vertices_strings.join(', ');
-    string += '],';
+    string += 'vertices: ' + my.vertices.inspect() + ', ';
     //Elements
     var elements_strings = [];
     string += 'elements: [';
@@ -84,7 +86,7 @@ MODELER.Face3 = function(params, my){
       elements_strings.push(this.inspect());
     });
     string += elements_strings.join(', ');
-    string += '],';
+    string += '], ';
     //Lines
     var lines_strings = [];
     string += 'lines: [';
@@ -112,8 +114,12 @@ MODELER.Face3 = function(params, my){
   my.vertices = vertices;
   my.elements = elements;
   my.lines = lines;
+  my.convertTo4x4 = convertTo4x4;
+  my.ensure = ensure;
   
   //Public stuff
+  that.rotate = rotate;
+  that.translate = translate;
   that.inspect = inspect;
   that.getForRender = getForRender;
   

@@ -12,7 +12,7 @@ MODELER.Object3D = function(params, my) {
     if (params.x)           { x = params.x; };
     if (params.y)           { y = params.y; };
     if (params.z)           { z = params.z; };
-    if (params.rotVector)   { rotVector = $V(params.rotVector); };
+    if (params.rotVector)   { rotVector = params.rotVector; };
     if (params.rotDegrees)  { rotDegrees = params.rotDegrees; };
   };
     

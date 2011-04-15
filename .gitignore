@@ -3,3 +3,5 @@ Icon?
 ._*
 *.swp
 *.swo
+.hg/
+.hgignore

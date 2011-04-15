@@ -5,10 +5,30 @@ MODELER.Geometry = function(params, my) {
   faces = [];
   var initialize = function() {
     //Process faces
+    if (!params) { params = {}; }
     if (params.faces) {
       faces = faces.concat(params.faces);
       weldVertices();
     }
+  };
+  var createFace3 = function() {
+    
+  };
+  var createFace4 = function(dimensions) {
+    assert(dimensions.width && dimensions.height, "dimensions are required for a face4")
+    //Center face around origin
+    //TODO: Consider passing in a position attribute that modifies the start position of each vertex
+    var matrix = [
+      dimensions.width / -2,  dimensions.height / -2, 0,
+      dimensions.width / 2,  dimensions.height / -2, 0,
+      dimensions.width / 2,   dimensions.height / 2, 0,
+      dimensions.width / -2,   dimensions.height / 2, 0
+    ];
+    var face = MODELER.Face4({
+      vertices: matrix
+    });
+    faces.push(face);
+    return face;
   };
   var getForRender = function() {
     var flattened_vertices = [];
@@ -53,6 +73,8 @@ MODELER.Geometry = function(params, my) {
   };
   initialize();
   that = {};
+  that.createFace3 = createFace3;
+  that.createFace4 = createFace4;
   that.inspect = inspect;
   that.getForRender = getForRender;
   return that;

@@ -14,7 +14,8 @@ MODELER.WebGLRenderer = function(params, my) {
   line_buffers = {},
   scene = null,
   camera = null,
-  shaderProgram = null;
+  shaderProgram = null,
+  logged = false;
   
   var initialize = function() {
     //Get a rendering context
@@ -57,12 +58,13 @@ MODELER.WebGLRenderer = function(params, my) {
 
     //Set up the perspective of the rendered scene -> Camera
     //TODO: Move the defaults into the Camera class instead of here
-    var perspectiveMatrix = gluPerspective(
+    var perspectiveMatrix = M4x4.makePerspective(
       camera.getFov(),
       camera.getRatio(),
       camera.getNearClip(),
       camera.getFarClip()
     );
+    if (!logged) { console.log('perspective matrix: ' + perspectiveMatrix.inspect()); }
     
     //Render out the objects in the buffers
     var objects = scene.getChildren();
@@ -70,14 +72,15 @@ MODELER.WebGLRenderer = function(params, my) {
       var obj = objects[i];
       
       //Position of object
-      var translationMatrix = Matrix.Translation($V([obj.x, obj.y, obj.z])).ensure4x4();
+      var translationMatrix = M4x4.translate(V3.$(obj.x, obj.y, obj.z), M4x4.I);
+      if (!logged) { console.log('translation matrix: ' + translationMatrix.inspect()); }
       //Rotation of object
-      var rotationMatrix = Matrix.Rotation(Math.degreesToRadians(obj.rotDegrees), obj.rotVector).ensure4x4();
-      var vertexMatrix = translationMatrix.x(rotationMatrix);
+      var rotationMatrix = M4x4.rotate(Math.degreesToRadians(obj.rotDegrees), obj.rotVector, translationMatrix);
+      if (!logged) { console.log('rotation matrix: ' + rotationMatrix.inspect()); }
+      var vertexMatrix = M4x4.mul(translationMatrix, rotationMatrix);
+      if (!logged) { console.log('vertex matrix: ' + vertexMatrix.inspect()); }
       
-      //console.log(perspectiveMatrix.inspect());
-      //console.log(rotationMatrix.inspect());
-      //console.log(vertexMatrix.inspect());
+      logged = true;
 
       //Set current buffer to objects buffer
       //TODO: HERE!
@@ -102,12 +105,12 @@ MODELER.WebGLRenderer = function(params, my) {
       gl.uniformMatrix4fv(
         shaderProgram.pMatrixUniform, 
         false, 
-        new Float32Array(perspectiveMatrix.flatten())
+        new Float32Array(perspectiveMatrix)
       );
       gl.uniformMatrix4fv(
         shaderProgram.mvMatrixUniform, 
         false, 
-        new Float32Array(vertexMatrix.flatten())
+        new Float32Array(vertexMatrix)
       );
       //TODO: Refactor the obj.getForRender().elementIndices.length function
       //into something a little more sane
@@ -137,6 +140,7 @@ MODELER.WebGLRenderer = function(params, my) {
   var sendObjectToBuffer = function(obj) {
     assert(typeof obj.getForRender === 'function', "Not a renderable object");
     var renderBuffers = obj.getForRender();
+    //console.log(renderBuffers);
     
     //Vertex position buffer
     var vertexBuffer = gl.createBuffer();
@@ -160,6 +164,7 @@ MODELER.WebGLRenderer = function(params, my) {
     obj.getMeshes().each(function(){
       colours = colours.concat(renderBuffers.material.applyToMesh(this));
     });
+    console.log('colours: ' + colours.inspect());
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colours), gl.STATIC_DRAW);
     
     //Store the buffers for later drawing

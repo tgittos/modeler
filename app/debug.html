@@ -29,16 +29,17 @@
         background: #ffc7c7;
       }
     </style>
-    <script type="text/javascript" src="../lib/sylvester.src.js"></script>
-    <script type="text/javascript" src="../lib/glUtils.js"></script>
+    <script type="text/javascript" src="../lib/webgl-mjs/mjs.js"></script>
+    <script type="text/javascript" src="../src/utils/mjs.js"></script>
+    <script type="text/javascript" src="../src/utils/language.js"></script>
     <script type="text/javascript" src="../src/Modeler.js"></script>
-    <script type="text/javascript" src="../src/core/Utils.js"></script>
     <script type="text/javascript" src="../src/core/Vertex.js"></script>
     <script type="text/javascript" src="../src/core/Face3.js"></script>
     <script type="text/javascript" src="../src/core/Face4.js"></script>
     <script type="text/javascript" src="../src/core/Geometry.js"></script>
     <script type="text/javascript" src="../src/core/Mesh.js"></script>
     <script type="text/javascript" src="../src/primitives/Cube.js"></script>
+    <script type="text/javascript" src="../src/primitives/Pyramid.js"></script>
     <script type="text/javascript" src="../src/materials/Basic.js"></script>
     <script type="text/javascript" src="../src/core/Scene.js"></script>
     <script type="text/javascript" src="../src/core/Camera.js"></script>
@@ -106,12 +107,14 @@
       });
       scene.addChild(tri_model);
       */
+      
+      /*
       var quad = MODELER.Face4({
         vertices: [
-          [-1.0, -1.0,  1.0],
-          [1.0, -1.0,  1.0],
-          [1.0,  1.0,  1.0],
-          [-1.0,  1.0,  1.0]
+          -1.0, -1.0,  1.0,
+          1.0, -1.0,  1.0,
+          1.0,  1.0,  1.0,
+          -1.0,  1.0,  1.0
         ]
       });
       var quad_mesh = MODELER.Mesh({
@@ -127,7 +130,9 @@
         rotVector: [1, 1, 0],
         rotDegrees: 45
       });
+      //console.log('quad_model: ' + quad_model.inspect());
       scene.addChild(quad_model);
+      */
       
       var cube = MODELER.Cube({
         width: 2, height: 2, depth: 2,
@@ -136,7 +141,7 @@
         rotDegrees: 45,
         material: MODELER.Materials.Basic({ wireframe: true })
       });
-      scene.addChild(cube);
+      scene.addChild(cube);      
 
       var renderer = MODELER.WebGLRenderer( { scene: scene, camera: camera} );
 
