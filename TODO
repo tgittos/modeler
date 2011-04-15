@@ -12,7 +12,7 @@ Immediate
 - Implement a Face3 vertex array to matrix function (for rotation and translation). Also consider 
   just storing vertices as a Matrix rather than an array. Length will be fixed -> Face3 = 3x3
   matrix, Face4 = 3x4 matrix. [done]
-- Finish pyramid primitive
+- Finish pyramid primitive [done]
 - Write more unit tests
 - Move the inspect method off of each object and into a util
 - Fix the dead load method on the shader loader so shaders can be stored as files
