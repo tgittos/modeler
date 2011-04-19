@@ -16,7 +16,8 @@ Immediate
 - Create event framework so that code can be asynchronous
 - Write more unit tests
 - Move the inspect method off of each object and into a util
-- Fix the dead load method on the shader loader so shaders can be stored as files
+- Fix the dead load method on the shader loader so shaders can be stored as files. Include a simple
+  file server, maybe Java, so you can run it on Chrome and it won't cack itself with AJAX requests.
 - Implement weldVertices method to cut down on geometry sent to GPU
 - Add pyramid primitive and get demo file working again
 - Review tight coupling of graphics object classes and the renderer. Decouple for the ability to
