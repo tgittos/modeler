@@ -1,8 +1,9 @@
 var MODELER = MODELER || {};
+MODELER.webGLContextString = 'experimental-webgl';
 (function(){
-  var webGLContextString = 'experimental-webgl';
   try {
-    window.gl = document.createElement('canvas').getContext(webGLContextString);
+    window.canvas = document.createElement('canvas');
+    window.gl = canvas.getContext(MODELER.webGLContextString);
   } catch (e) { };
   if (!gl) {
     throw "Could not initialize WebGL. Does your browser support it?";

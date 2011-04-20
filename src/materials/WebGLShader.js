@@ -28,7 +28,7 @@ MODELER.WebGLShader = function(params, my) {
       gl.linkProgram(shaderProgram);
 
       if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-        alert("Could not initialise shaders");
+        alert("Could not initialise shaders: ", gl.getProgramInfoLog(shaderProgram));
       }
       MODELER.Event.dispatch('MODELER:WebGLShader:programReady', shaderProgram);
     });

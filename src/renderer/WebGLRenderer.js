@@ -3,7 +3,6 @@
 //Object3D
 MODELER.WebGLRenderer = function(params, my) {
   var that, my = my || {},
-  canvas = document.createElement('canvas'),
   width = 800,
   height = 600,
   vertex_buffers = {},
@@ -16,6 +15,7 @@ MODELER.WebGLRenderer = function(params, my) {
   logged = false;
   
   var initialize = function() {
+    // reassign gl to be our 
     if (!gl) {
       return;
     };
@@ -27,7 +27,7 @@ MODELER.WebGLRenderer = function(params, my) {
     
     //Load data into buffers on the GPU from the scene
     loadSceneIntoBuffers();
-    initShader();
+    //initShader();
     
     //Set some defaults for gl
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -72,7 +72,10 @@ MODELER.WebGLRenderer = function(params, my) {
       if (!logged) { console.log('rotation matrix: ' + rotationMatrix.inspect()); }
       var vertexMatrix = M4x4.mul(translationMatrix, rotationMatrix);
       if (!logged) { console.log('vertex matrix: ' + vertexMatrix.inspect()); }
-      
+      if (!logged) { 
+        console.log('shader program: ');
+        console.log(shaderProgram);
+      }
       logged = true;
 
       //Set current buffer to objects buffer
@@ -166,6 +169,22 @@ MODELER.WebGLRenderer = function(params, my) {
     line_buffers[obj.id] = lineBuffer;
     colour_buffers[obj.id] = colourBuffer;
   };
+  
+  var attachShaderProgram = function(program) {
+    shaderProgram = program;
+    gl.useProgram(shaderProgram);
+
+    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+    
+    shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
+    gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
+
+    shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+    shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+  }
+  
+  /*
   var initShader = function() {
     var fragmentShader = loadShader('shader-fs', MODELER.Shader.Type.Fragment);
     var vertexShader = loadShader('shader-vs', MODELER.Shader.Type.Vertex);
@@ -192,14 +211,6 @@ MODELER.WebGLRenderer = function(params, my) {
   };
   // Adapted from learningwebgl.com
   var loadShader = function(filename, type) {
-    /*
-    var url = "../shaders/" + filename;
-    var script = document.createElement('script');
-    script.setAttribute("type", type);
-    script.setAttribute("src", url);
-    script.setAttribute("id", filename);
-    document.getElementsByTagName("head")[0].appendChild(script);
-    */
     
     var shaderScript = document.getElementById(filename);
     if (!shaderScript) {
@@ -233,10 +244,12 @@ MODELER.WebGLRenderer = function(params, my) {
     }
     return shader;
   };
+  */
     
   that = {};
   initialize();
   that.setSize = setSize;
+  that.attachShaderProgram = attachShaderProgram;
   that.render = render;
   return that;
 }

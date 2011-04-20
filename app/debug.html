@@ -50,31 +50,6 @@
     <script type="text/javascript" src="../src/renderer/WebGLRenderer.js"></script>
     <script type="text/javascript" src="../src/debug/Debugger.js"></script>
     <script type="text/javascript" src="../src/materials/WebGLShader.js"></script>
-    <script id="shader-fs" type="x-shader/x-fragment">
-      #ifdef GL_ES
-      precision highp float;
-      #endif
-
-      varying vec4 vColor;
-
-      void main(void) {
-        gl_FragColor = vColor;
-      }
-    </script>
-    <script id="shader-vs" type="x-shader/x-vertex">
-      attribute vec3 aVertexPosition;
-      attribute vec4 aVertexColor;
-
-      uniform mat4 uMVMatrix;
-      uniform mat4 uPMatrix;
-
-      varying vec4 vColor;
-
-      void main(void) {
-        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-        vColor = aVertexColor;
-      }
-    </script>
     <!--script type="text/javascript" src="demos/rotating-objects.js" -->
     <script type="text/javascript">
     
@@ -104,15 +79,17 @@
       var renderer = MODELER.WebGLRenderer( { scene: scene, camera: camera} );
       
       //TESTING STUFF
-      MODELER.Event.listen('MODELER:WebGLShader:programReady', function(d) {
-        console.log(d.data);
-      });
-      
         var shader = MODELER.WebGLShader({
           fragmentShader: '../src/shaders/Fragment.shader',
           vertexShader: '../src/shaders/Vertex.shader'
         });
         shader.getShaderProgram();
+        
+        MODELER.Event.listen('MODELER:WebGLShader:programReady', function(d) {
+          program = d.data;
+          renderer.attachShaderProgram(program);
+          render();
+        });
       //END TESTING
       
       //Render loop
@@ -131,10 +108,6 @@
         renderer.render();
         requestAnimationFrame(render);
       };
-      
-      MODELER.Event.listen('MODELER:WebGLShader:programLoaded', function(program){
-        console.log(program);
-      });
     }
     window.onload = pageLoaded;
     </script>
