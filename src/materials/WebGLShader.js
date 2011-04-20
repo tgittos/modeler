@@ -16,26 +16,32 @@ MODELER.WebGLShader = function(params, my) {
     if (params.fragmentShader) { fragmentShader_url = params.fragmentShader; }
   };
   var getShaderProgram = function() {
-    MODELER.Event.listen('MODELER:shaders:loaded:success', function(d){
-      vertexShader_src = d.data[0];
-      fragmentShader_src = d.data[1];
-      vertexShader = compileShader(vertexShader_src, MODELER.Shader.Type.Vertex);
-      fragmentShader = compileShader(fragmentShader_src, MODELER.Shader.Type.Fragment);
-      
-      shaderProgram = gl.createProgram();
-      gl.attachShader(shaderProgram, vertexShader);
-      gl.attachShader(shaderProgram, fragmentShader);
-      gl.linkProgram(shaderProgram);
-
-      if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-        alert("Could not initialise shaders: ", gl.getProgramInfoLog(shaderProgram));
-      }
-      MODELER.Event.dispatch('MODELER:WebGLShader:programReady', shaderProgram);
-    });
-    MODELER.Event.listen('MODELER:shaders:loaded:failure', function(urls){
-      alert('failed to load ', url);
-    });
+    MODELER.Event.listen('MODELER:shaders:loaded:success', shaderLoadSuccess, true);
+    MODELER.Event.listen('MODELER:shaders:loaded:failure', shaderLoadFailure, true);
     MODELER.Loader.loadFiles([vertexShader_url, fragmentShader_url], 'MODELER:shaders:loaded');
+  };
+  var shaderLoadSuccess = function(d){
+    //unsub the failure listener
+    MODELER.Event.stopListening('MODELER:shaders:loaded:failure', shaderLoadFailure);
+    
+    vertexShader_src = d.data[0];
+    fragmentShader_src = d.data[1];
+    vertexShader = compileShader(vertexShader_src, MODELER.Shader.Type.Vertex);
+    fragmentShader = compileShader(fragmentShader_src, MODELER.Shader.Type.Fragment);
+    
+    shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
+
+    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+      alert("Could not initialise shaders: ", gl.getProgramInfoLog(shaderProgram));
+    }
+    MODELER.Event.dispatch('MODELER:WebGLShader:programReady', shaderProgram);
+  };
+  var shaderLoadFailure = function(urls){
+    MODELER.Event.stopListening('MODELER:shaders:loaded:success', shaderLoadSuccess);
+    alert('failed to load ', url);
   };
   var compileShader = function(src, type) {
     var shader;

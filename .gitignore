@@ -5,3 +5,4 @@ Icon?
 *.swo
 .hg/
 .hgignore
+bonus/

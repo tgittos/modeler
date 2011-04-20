@@ -13,8 +13,10 @@ Immediate
   just storing vertices as a Matrix rather than an array. Length will be fixed -> Face3 = 3x3
   matrix, Face4 = 3x4 matrix. [done]
 - Finish pyramid primitive [done]
-- Create event framework so that code can be asynchronous
-- Add code to include files to prevent dependency hell
+- Create event framework so that code can be asynchronous - TODO: make loader event listeners expire
+- Implement a standard for app events
+- Create a general program structure with proper event handlers
+- See if I can refactor out the global canvas that's attached to the global gl context
 - Write more unit tests
 - Move the inspect method off of each object and into a util
 - Fix the dead load method on the shader loader so shaders can be stored as files. Include a simple

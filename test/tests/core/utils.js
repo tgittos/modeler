@@ -31,9 +31,9 @@ test("assert works properly", function(){
   }, "This should be thrown");
 });
 
-test("m.Utils.equals works propertly", function(){
+test("equals works propertly", function(){
   var one = { foo: "bar" };
   var two = { foo: "baz" };
-  equals(MODELER.Utils.equals(one, two), false);
-  equals(MODELER.Utils.equals(one, { foo: "bar"} ), true);
+  equals(equals(one, two), false);
+  equals(equals(one, { foo: "bar"} ), true);
 });

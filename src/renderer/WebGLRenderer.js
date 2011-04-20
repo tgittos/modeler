@@ -45,6 +45,12 @@ MODELER.WebGLRenderer = function(params, my) {
     gl.viewportHeight = canvas.height;  
   };
   var render = function () {
+    // multiple viewport nonsense
+    //glViewport(width/2,height/2,width/2,height/2);
+    //glScissor(width/2,height/2,width/2,height/2);
+    // render as per normal
+    // repeat for each viewport
+    
     //Set the viewport dimensions ?
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
