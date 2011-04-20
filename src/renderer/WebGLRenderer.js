@@ -3,9 +3,7 @@
 //Object3D
 MODELER.WebGLRenderer = function(params, my) {
   var that, my = my || {},
-  webGLContextString = 'experimental-webgl',
   canvas = document.createElement('canvas'),
-  gl = null,
   width = 800,
   height = 600,
   vertex_buffers = {},
@@ -18,12 +16,7 @@ MODELER.WebGLRenderer = function(params, my) {
   logged = false;
   
   var initialize = function() {
-    //Get a rendering context
-    try {
-      gl = canvas.getContext(webGLContextString);
-    } catch (e) { };
     if (!gl) {
-      throw "Could not initialize WebGL. Does your browser support it?";
       return;
     };
     document.body.appendChild(canvas);

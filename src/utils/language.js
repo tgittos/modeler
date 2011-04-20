@@ -47,6 +47,33 @@ window.assert = function(exp, message) {
   if (!exp) throw message || "Assert was false";
 };
 
+window.include = function(url) {
+  var element;
+    switch(url.split(".").pop()){
+    case "css":
+      element = document.createElement("link");
+      element.setAttribute("rel","stylesheet");
+      element.setAttribute("type","text/css")
+      element.setAttribute("href",url)
+      break;
+    case "js":
+      element = document.createElement("script");
+      element.setAttribute("language","javascript")
+      element.setAttribute("src",url)
+      break;
+    default:
+      window.console && window.console.error("could not identify", url, "skip include");
+      return;
+  }
+  var head = document.querySelector("head");
+  if (head.innerHTML.indexOf(element.outerHTML) != -1) {
+    window.console && window.console.warn("Duplicate include, skipping:", url);
+  } else {
+    head.appendChild(element);
+  }
+};
+
+/*
 //Douglas Crockford's "Javascript: The Good Parts", pg 24
 //Creates a new object with the same properties and methods
 //as the given object.
@@ -68,6 +95,7 @@ if (typeof Object.superior !== 'function') {
     }
   };
 };
+*/
 
 //requestAnimationFrame as per Google recommendation
 if (!window.requestAnimationFrame) {

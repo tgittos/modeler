@@ -14,6 +14,7 @@ Immediate
   matrix, Face4 = 3x4 matrix. [done]
 - Finish pyramid primitive [done]
 - Create event framework so that code can be asynchronous
+- Add code to include files to prevent dependency hell
 - Write more unit tests
 - Move the inspect method off of each object and into a util
 - Fix the dead load method on the shader loader so shaders can be stored as files. Include a simple

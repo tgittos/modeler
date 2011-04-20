@@ -15,10 +15,10 @@ MODELER.WebGLShader = function(params, my) {
     if (params.vertexShader) { vertexShader_url = params.vertexShader; }
     if (params.fragmentShader) { fragmentShader_url = params.fragmentShader; }
   };
-  var getShaderProgram = function(callback) {
-    MODELER.Loader.loadFiles([vertexShader_url, fragmentShader_url], function(srcs){
-      vertexShader_src = srcs[0];
-      fragmentShader_src = srcs[1];
+  var getShaderProgram = function() {
+    MODELER.Event.listen('MODELER:shaders:loaded:success', function(d){
+      vertexShader_src = d.data[0];
+      fragmentShader_src = d.data[1];
       vertexShader = compileShader(vertexShader_src, MODELER.Shader.Type.Vertex);
       fragmentShader = compileShader(fragmentShader_src, MODELER.Shader.Type.Fragment);
       
@@ -30,11 +30,12 @@ MODELER.WebGLShader = function(params, my) {
       if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
         alert("Could not initialise shaders");
       }
-      
-      callback(shaderProgram);
-    }, function(url){
-      alert('Failed to load ' + url);
+      MODELER.Event.dispatch('MODELER:WebGLShader:programReady', shaderProgram);
     });
+    MODELER.Event.listen('MODELER:shaders:loaded:failure', function(urls){
+      alert('failed to load ', url);
+    });
+    MODELER.Loader.loadFiles([vertexShader_url, fragmentShader_url], 'MODELER:shaders:loaded');
   };
   var compileShader = function(src, type) {
     var shader;
