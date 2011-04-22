@@ -3,9 +3,12 @@ MODELER.Loader = function() {
   numUrls = 0,
   numComplete = 0,
   result = [],
-  event = "";
+  PRIVATE_EVENTS = {
+    PARTIAL_SUCCESS: 'MODELER.LOADER.PRIVATE_EVENTS.PARTIAL_SUCCESS',
+    PARTIAL_FAILURE: 'MODELER.LOADER.PRIVATE_EVENTS.PARTIAL_FAILURE'
+  };
   
-  var loadFile = function(url, data, event) {
+  var loadFile = function(url, data) {
       // Set up an asynchronous request
       var request = new XMLHttpRequest();
       request.open('GET', url, true);
@@ -17,26 +20,22 @@ MODELER.Loader = function() {
               // If we got HTTP status 200 (OK)
               //TODO: Implement eventing here
               if (request.status == 200) {
-                  MODELER.Event.dispatch(event + ':success', { response: request.responseText, data: data });
+                  MODELER.Event.dispatch(PRIVATE_EVENTS.PARTIAL_SUCCESS, { response: request.responseText, data: data });
               } else { // Failed
-                  MODELER.Event.dispatch(event + ':failure', url);
+                  MODELER.Event.dispatch(PRIVATE_EVENTS.PARTIAL_FAILURE, url);
               }
           }
       };
 
       request.send(null);    
   };
-  var loadFiles = function(urls, e) {
-    event = e;
+  var loadFiles = function(urls) {
     numUrls = urls.length;
     numComplete = 0;
-      // listener for success
-      MODELER.Event.listen('MODELER:event:partial:loading:success', onPartialSuccess);
-      // listener for failure
-      MODELER.Event.listen('MODELER:event:partial:loading:failure', onPartialFailure);
-      // do it
+      MODELER.Event.listen(PRIVATE_EVENTS.PARTIAL_SUCCESS, onPartialSuccess);
+      MODELER.Event.listen(PRIVATE_EVENTS.PARTIAL_FAILURE, onPartialFailure);
       for (var i = 0; i < numUrls; i++) {
-          loadFile(urls[i], i, 'MODELER:event:partial:loading');
+          loadFile(urls[i], i);
       }
   }
   var onPartialSuccess = function(d) {
@@ -48,33 +47,15 @@ MODELER.Loader = function() {
       // When all files have downloaded
       if (numComplete == numUrls) {
         //unsub the listeners
-        MODELER.Event.stopListening('MODELER:event:partial:loading:success', onPartialSuccess);
-        MODELER.Event.stopListening('MODELER:event:partial:loading:failure', onPartialFailure);
-          MODELER.Event.dispatch(event + ':success', result);
+        MODELER.Event.stopListening(PRIVATE_EVENTS.PARTIAL_SUCCESS, onPartialSuccess);
+        MODELER.Event.stopListening(PRIVATE_EVENTS.PARTIAL_FAILURE, onPartialFailure);
+        MODELER.Event.dispatch(MODELER.EVENTS.LOADER.LOAD_SUCCESS, result);
       }
   };
   var onPartialFailure = function(url) {
-    MODELER.Event.dispatch(event + ':failure', urls);
+    MODELER.Event.dispatch(MODELER.EVENTS.LOADER.LOAD_FAILURE, urls);
   };
   
-  that.loadFile = loadFile;
   that.loadFiles = loadFiles;
   return that;
 }();
-
-/*
-var gl;
-// ... set up WebGL ...
-
-loadFiles(['vertex.shader', 'fragment.shader'], function (shaderText) {
-    var vertexShader = gl.createShader(gl.VERTEX_SHADER);
-    gl.shaderSource(vertexShader, shaderText[0]);
-    // ... compile shader, etc ...
-    var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-    gl.shaderSource(fragmentShader, shaderText[1]);
-
-    // ... set up shader program and start render loop timer
-}, function (url) {
-    alert('Failed to download "' + url + '"');
-}); 
-*/

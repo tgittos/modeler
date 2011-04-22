@@ -14,6 +14,7 @@ Immediate
   matrix, Face4 = 3x4 matrix. [done]
 - Finish pyramid primitive [done]
 - Create event framework so that code can be asynchronous - TODO: make loader event listeners expire
+  [done]
 - Implement a standard for app events
 - Create a general program structure with proper event handlers
 - See if I can refactor out the global canvas that's attached to the global gl context

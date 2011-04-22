@@ -85,7 +85,7 @@
         });
         shader.getShaderProgram();
         
-        MODELER.Event.listen('MODELER:WebGLShader:programReady', function(d) {
+        MODELER.Event.listen(MODELER.EVENTS.SHADER.PROGRAM_LOADED, function(d) {
           program = d.data;
           renderer.attachShaderProgram(program);
           render();
