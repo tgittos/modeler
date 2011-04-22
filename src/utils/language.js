@@ -47,6 +47,7 @@ window.assert = function(exp, message) {
   if (!exp) throw message || "Assert was false";
 };
 
+/*
 window.include = function(url) {
   var element;
     switch(url.split(".").pop()){
@@ -72,6 +73,7 @@ window.include = function(url) {
     head.appendChild(element);
   }
 };
+*/
 
 /*
 //Douglas Crockford's "Javascript: The Good Parts", pg 24

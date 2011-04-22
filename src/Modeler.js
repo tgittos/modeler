@@ -1,4 +1,6 @@
 var MODELER = MODELER || {};
+MODELER.IO = MODELER.IO || {};
+
 MODELER.webGLContextString = 'experimental-webgl';
 (function(){
   try {

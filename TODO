@@ -15,8 +15,10 @@ Immediate
 - Finish pyramid primitive [done]
 - Create event framework so that code can be asynchronous - TODO: make loader event listeners expire
   [done]
-- Implement a standard for app events
-- Create a general program structure with proper event handlers
+- Implement a standard for app events [partially done]
+- Create a general program structure with proper event handlers [done]
+- Move shader code into material, preload all assets first
+- Implement background asset loader, perhaps with WebWorkers
 - See if I can refactor out the global canvas that's attached to the global gl context
 - Write more unit tests
 - Move the inspect method off of each object and into a util

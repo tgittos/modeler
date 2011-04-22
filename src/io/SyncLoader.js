@@ -1,4 +1,4 @@
-MODELER.Loader = function() {
+MODELER.IO.SyncLoader = function() {
   var that = {},
   numUrls = 0,
   numComplete = 0,
@@ -18,7 +18,6 @@ MODELER.Loader = function() {
           // If the request is "DONE" (completed or failed)
           if (request.readyState == 4) {
               // If we got HTTP status 200 (OK)
-              //TODO: Implement eventing here
               if (request.status == 200) {
                   MODELER.Event.dispatch(PRIVATE_EVENTS.PARTIAL_SUCCESS, { response: request.responseText, data: data });
               } else { // Failed
@@ -49,11 +48,11 @@ MODELER.Loader = function() {
         //unsub the listeners
         MODELER.Event.stopListening(PRIVATE_EVENTS.PARTIAL_SUCCESS, onPartialSuccess);
         MODELER.Event.stopListening(PRIVATE_EVENTS.PARTIAL_FAILURE, onPartialFailure);
-        MODELER.Event.dispatch(MODELER.EVENTS.LOADER.LOAD_SUCCESS, result);
+        MODELER.Event.dispatch(MODELER.EVENTS.SYNCLOADER.LOAD_SUCCESS, result);
       }
   };
   var onPartialFailure = function(url) {
-    MODELER.Event.dispatch(MODELER.EVENTS.LOADER.LOAD_FAILURE, urls);
+    MODELER.Event.dispatch(MODELER.EVENTS.SYNCLOADER.LOAD_FAILURE, urls);
   };
   
   that.loadFiles = loadFiles;
