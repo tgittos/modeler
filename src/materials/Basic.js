@@ -6,9 +6,21 @@ MODELER.Materials.Basic = function(params, my) {
   var that, my = my || {},
   wireframe = false,
   colour = [1, 1, 1, 1]; //Solid white
+  var shaderProgram = null;
   function initialize() {
     if (params.wireframe) { wireframe = params.wireframe; }
     if (params.colour)    { colour = params.colour; }
+
+        var shader = MODELER.WebGLShader({
+          fragmentShader: '../src/shaders/Fragment.shader',
+          vertexShader: '../src/shaders/Vertex.shader'
+        });
+        shader.getShaderProgram();
+        MODELER.Event.listen(MODELER.EVENTS.SHADER.PROGRAM_LOADED, function(d) {
+          shaderProgram = d.data;
+      MODELER.Event.dispatch(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, shaderProgram);
+
+        }, true);
   };
   function applyToMesh(mesh) {
     //Right now, we assume the whole mesh gets the material

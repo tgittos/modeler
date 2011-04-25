@@ -57,40 +57,36 @@
 
       var scene = MODELER.Scene();
       var camera = MODELER.Camera();
-
-      //Send some geometry to the scene
-      var pyramid = MODELER.Pyramid({
-        width: 2, height: 2, depth: 2,
-        x: -1.5, y: 0.0, z: -5.0,
-        rotVector: V3.y,
-        material: MODELER.Materials.Basic({ wireframe: true })
-      });
-      scene.addChild(pyramid);
       
-      var cube = MODELER.Cube({
-        width: 2, height: 2, depth: 2,
-        x: 1.5, y: 0.0, z: -5.0,
-        rotVector: [1, 1, 0],
-        rotDegrees: 45,
-        material: MODELER.Materials.Basic({ wireframe: true })
-      });
-      scene.addChild(cube);
+      var pyramid, cube;
+      
+      MODELER.Event.listen(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, function(d){
+        //Send some geometry to the scene
+        pyramid = MODELER.Pyramid({
+          width: 2, height: 2, depth: 2,
+          x: -1.5, y: 0.0, z: -5.0,
+          rotVector: V3.y,
+          material: MODELER.Materials.Basic({ wireframe: true })
+        });
+        scene.addChild(pyramid);
+
+        cube = MODELER.Cube({
+          width: 2, height: 2, depth: 2,
+          x: 1.5, y: 0.0, z: -5.0,
+          rotVector: [1, 1, 0],
+          rotDegrees: 45,
+          material: MODELER.Materials.Basic({ wireframe: true })
+        });
+        scene.addChild(cube);
+        
+        program = d.data;
+        renderer.attachShaderProgram(program);
+        render();
+      }, true);
+      
+      var material = MODELER.Materials.Basic({ wireframe: true });
       
       var renderer = MODELER.WebGLRenderer( { scene: scene, camera: camera} );
-      
-      //TESTING STUFF
-        var shader = MODELER.WebGLShader({
-          fragmentShader: '../src/shaders/Fragment.shader',
-          vertexShader: '../src/shaders/Vertex.shader'
-        });
-        shader.getShaderProgram();
-        
-        MODELER.Event.listen(MODELER.EVENTS.SHADER.PROGRAM_LOADED, function(d) {
-          program = d.data;
-          renderer.attachShaderProgram(program);
-          render();
-        }, true);
-      //END TESTING
       
       //Render loop
       var lastTime = 0;
