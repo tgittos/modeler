@@ -7,7 +7,6 @@ MODELER.WebGLRenderer = function(params, my) {
   height = 600,
   scene = null,
   camera = null,
-  shaderProgram = null,
   logged = false;
   
   var initialize = function() {
@@ -58,6 +57,7 @@ MODELER.WebGLRenderer = function(params, my) {
     if (!logged) { console.log('perspective matrix: ' + perspectiveMatrix.inspect()); }
     
     //Render out the objects in the buffers
+    // multiple objects in a scene
     var objects = scene.getChildren();
     for (var i = 0; i < objects.length; i++) {
       var obj = objects[i];
@@ -71,14 +71,21 @@ MODELER.WebGLRenderer = function(params, my) {
       if (!logged) { console.log('rotation matrix: ' + rotationMatrix.inspect()); }
       var vertexMatrix = M4x4.mul(translationMatrix, rotationMatrix);
       if (!logged) { console.log('vertex matrix: ' + vertexMatrix.inspect()); }
-      if (!logged) { 
-        console.log('shader program: ');
-        console.log(shaderProgram);
-      }
       logged = true;
 
       //Set current buffer to objects buffer
       //TODO: HERE!
+      
+      //each object may have multiple meshes
+      //each mesh may have multiple materials
+      //each material will have textures and a shader program
+      //rendering seems to rely heavily on the shader program,
+      //so vertices are rendered deep in this loop.
+      
+      //for now, I have only single mesh/material capability,
+      // but this will be fixed in the future
+      var shaderProgram = obj.getMeshes()[0].getMaterial().getShaderProgram();
+      attachShaderProgram(shaderProgram);
       
       //Vertex positions
       gl.bindBuffer(gl.ARRAY_BUFFER, buffers.vertex);
@@ -159,7 +166,9 @@ MODELER.WebGLRenderer = function(params, my) {
   };
   
   var attachShaderProgram = function(program) {
-    shaderProgram = program;
+    // this stuff should probably belong in the material, considering we use
+    // attributes to map textures and colours and positions and things
+    var shaderProgram = program;
     gl.useProgram(shaderProgram);
 
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");

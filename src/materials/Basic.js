@@ -14,8 +14,7 @@ MODELER.Materials.Basic = function(params, my) {
         var shader = MODELER.WebGLShader({
           fragmentShader: '../src/shaders/Fragment.shader',
           vertexShader: '../src/shaders/Vertex.shader'
-        });
-        shader.getShaderProgram();
+        }).getShaderProgram();
         MODELER.Event.listen(MODELER.EVENTS.SHADER.PROGRAM_LOADED, function(d) {
           shaderProgram = d.data;
       MODELER.Event.dispatch(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, shaderProgram);
@@ -33,6 +32,7 @@ MODELER.Materials.Basic = function(params, my) {
     });
     return flattened_colours;
   };
+  function getShaderProgram() { return shaderProgram; }
   function inspect() {
     var string = '{';
     string += 'colour: ' + colour.inspect();
@@ -44,6 +44,7 @@ MODELER.Materials.Basic = function(params, my) {
   that.wireframe = wireframe;
   that.colour = colour;
   that.applyToMesh = applyToMesh;
+  that.getShaderProgram = getShaderProgram;
   that.inspect = inspect;
   return that;
 };

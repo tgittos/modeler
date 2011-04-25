@@ -1,6 +1,7 @@
 //Hierarchy goes as follows:
 //Object3D -> Mesh -> Geometry -> Face3 || Face4 -> Vertex
 //                 -> Material
+//Mesh has multiple materials, with face/texel mappings
 MODELER.Mesh = function(params, my) {
   var that, my = my || {},
   geometry = null,
@@ -9,6 +10,7 @@ MODELER.Mesh = function(params, my) {
     if (params.geometry) { geometry = params.geometry; }
     if (params.material) { material = params.material; }
   };
+  var getMaterial = function() { return material; }
   var getForRender = function() {
     var render_obj = geometry.getForRender();
     render_obj.material = material;
@@ -23,6 +25,7 @@ MODELER.Mesh = function(params, my) {
   that = {};
   initialize();
   that.inspect = inspect;
+  that.getMaterial = getMaterial;
   that.getForRender = getForRender;
   return that;
 }
