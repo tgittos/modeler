@@ -5,10 +5,6 @@ MODELER.WebGLRenderer = function(params, my) {
   var that, my = my || {},
   width = 800,
   height = 600,
-  vertex_buffers = {},
-  face_buffers = {},
-  colour_buffers = {},
-  line_buffers = {},
   scene = null,
   camera = null,
   shaderProgram = null,
@@ -24,10 +20,6 @@ MODELER.WebGLRenderer = function(params, my) {
     
     scene = params.scene;
     camera = params.camera;
-    
-    //Load data into buffers on the GPU from the scene
-    loadSceneIntoBuffers();
-    //initShader();
     
     //Set some defaults for gl
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -69,6 +61,7 @@ MODELER.WebGLRenderer = function(params, my) {
     var objects = scene.getChildren();
     for (var i = 0; i < objects.length; i++) {
       var obj = objects[i];
+      var buffers = sendObjectToBuffer(obj);
       
       //Position of object
       var translationMatrix = M4x4.translate(V3.$(obj.x, obj.y, obj.z), M4x4.I);
@@ -88,16 +81,14 @@ MODELER.WebGLRenderer = function(params, my) {
       //TODO: HERE!
       
       //Vertex positions
-      var vertex_buffer = vertex_buffers[obj.id];
-      gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffers.vertex);
       gl.vertexAttribPointer(
         shaderProgram.vertexPositionAttribute, 
         MODELER.Object3D.VertexSize, 
         gl.FLOAT, false, 0, 0);
         
       //Vertex colours
-      var colour_buffer = colour_buffers[obj.id];
-      gl.bindBuffer(gl.ARRAY_BUFFER, colour_buffer);
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffers.colour);
       gl.vertexAttribPointer(
         shaderProgram.vertexColorAttribute, 
         MODELER.Object3D.ColourSize, 
@@ -120,24 +111,14 @@ MODELER.WebGLRenderer = function(params, my) {
       if (material && material.wireframe) {
         //Render lines
         gl.lineWidth(1); //TODO: Remove hardcoded value
-        var line_buffer = line_buffers[obj.id];
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, line_buffer);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.line);
         gl.drawElements(gl.LINES, obj.getForRender().lines.length, gl.UNSIGNED_SHORT, 0);
       } else {
         //Render faces
-        var face_buffer = face_buffers[obj.id];
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, face_buffer);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.face);
         gl.drawElements(gl.TRIANGLES, obj.getForRender().elementIndices.length, gl.UNSIGNED_SHORT, 0);
       }
     }
-  };
-  var loadSceneIntoBuffers = function() {
-    assert(scene, "scene is not set");
-    assert(typeof scene.getChildren === 'function', "scene does not implement getChildren");
-    objects = scene.getChildren();
-    objects.each(function(){
-      sendObjectToBuffer(this);
-    });
   };
   var sendObjectToBuffer = function(obj) {
     assert(typeof obj.getForRender === 'function', "Not a renderable object");
@@ -166,14 +147,15 @@ MODELER.WebGLRenderer = function(params, my) {
     obj.getMeshes().each(function(){
       colours = colours.concat(renderBuffers.material.applyToMesh(this));
     });
-    console.log('colours: ' + colours.inspect());
+    //console.log('colours: ' + colours.inspect());
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colours), gl.STATIC_DRAW);
-    
-    //Store the buffers for later drawing
-    vertex_buffers[obj.id] = vertexBuffer;
-    face_buffers[obj.id] = faceBuffer;
-    line_buffers[obj.id] = lineBuffer;
-    colour_buffers[obj.id] = colourBuffer;
+
+    return {
+      vertex: vertexBuffer,
+      face: faceBuffer,
+      line: lineBuffer,
+      colour: colourBuffer
+    };
   };
   
   var attachShaderProgram = function(program) {
@@ -188,69 +170,7 @@ MODELER.WebGLRenderer = function(params, my) {
 
     shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
     shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-  }
-  
-  /*
-  var initShader = function() {
-    var fragmentShader = loadShader('shader-fs', MODELER.Shader.Type.Fragment);
-    var vertexShader = loadShader('shader-vs', MODELER.Shader.Type.Vertex);
-
-    shaderProgram = gl.createProgram();
-    gl.attachShader(shaderProgram, vertexShader);
-    gl.attachShader(shaderProgram, fragmentShader);
-    gl.linkProgram(shaderProgram);
-
-    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-      alert("Could not initialise shaders");
-    }
-
-    gl.useProgram(shaderProgram);
-
-    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-    
-    shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
-    gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
-
-    shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-    shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
   };
-  // Adapted from learningwebgl.com
-  var loadShader = function(filename, type) {
-    
-    var shaderScript = document.getElementById(filename);
-    if (!shaderScript) {
-      return null;
-    }
-
-    var str = "";
-    var k = shaderScript.firstChild;
-    while (k) {
-      if (k.nodeType == 3) {
-        str += k.textContent;
-      }
-      k = k.nextSibling;
-    }
-
-    var shader;
-    if (shaderScript.type == MODELER.Shader.Type.Fragment) {
-      shader = gl.createShader(gl.FRAGMENT_SHADER);
-    } else if (shaderScript.type == MODELER.Shader.Type.Vertex) {
-      shader = gl.createShader(gl.VERTEX_SHADER);
-    } else {
-      return null;
-    }
-
-    gl.shaderSource(shader, str);
-    gl.compileShader(shader);
-
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-      alert(gl.getShaderInfoLog(shader));
-      return null;
-    }
-    return shader;
-  };
-  */
     
   that = {};
   initialize();
