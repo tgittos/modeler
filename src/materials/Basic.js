@@ -9,24 +9,25 @@ MODELER.Materials.Basic = function(params, my) {
   colour = [1, 1, 1, 1], //Solid white
   wireframe_colour = [0.5, 0.5, 0.5, 1], //muddy grey
   wireframe_mode = MODELER.Materials.Basic.WIREFRAME_MODE.WIREFRAME_ONLY,
+  wireframe_width = 2,
   shaderProgram = null,
   face_colour_buffer = null,
   edge_colour_buffer = null;
   function initialize() {
     if (params.wireframe) { wireframe = params.wireframe; }
     if (params.wireframe_mode) { wireframe_mode = params.wireframe_mode; }
+    if (params.wireframe_width) { wireframe_width = params.wireframe_width; }
     if (params.colour)    { colour = params.colour; }
 
-        var shader = MODELER.WebGLShader({
-          fragmentShader: '../src/shaders/Fragment.shader',
-          vertexShader: '../src/shaders/Vertex.shader'
-        }).getShaderProgram();
-        MODELER.Event.listen(MODELER.EVENTS.SHADER.PROGRAM_LOADED, function(d) {
-          shaderProgram = d.data;
-          initShaderProgram();
+    MODELER.WebGLShader({
+      fragmentShader: '../src/shaders/Fragment.shader',
+      vertexShader: '../src/shaders/Vertex.shader'
+    }).getShaderProgram();
+    MODELER.Event.listen(MODELER.EVENTS.SHADER.PROGRAM_LOADED, function(d) {
+      shaderProgram = d.data;
+      initShaderProgram();
       MODELER.Event.dispatch(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, shaderProgram);
-
-        }, true);
+    }, true);
   };
   var initShaderProgram = function() {
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
@@ -45,29 +46,29 @@ MODELER.Materials.Basic = function(params, my) {
       face_colours = face_colours.concat(colour);
       edge_colours = edge_colours.concat(wireframe_colour);
     });
-    face_colour_buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, face_colour_buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(face_colours), gl.STATIC_DRAW);
-    edge_colour_buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, edge_colour_buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(edge_colours), gl.STATIC_DRAW);
-    
+    face_colour_buffer = bufferColour(face_colours);
+    edge_colour_buffer = bufferColour(edge_colours);
   };
   var setDrawMode = function(mode) {
     if (mode == MODELER.Materials.Basic.DRAW_MODE.WIREFRAME) { 
-      gl.bindBuffer(gl.ARRAY_BUFFER, edge_colour_buffer);
-      gl.vertexAttribPointer(
-        shaderProgram.vertexColorAttribute, 
-        MODELER.Object3D.ColourSize, 
-        gl.FLOAT, false, 0, 0);
+      pointShaderToArray(shaderProgram.vertexColorAttribute, edge_colour_buffer, MODELER.Object3D.ColourSize);
     } else {
-      gl.bindBuffer(gl.ARRAY_BUFFER, face_colour_buffer);
-      gl.vertexAttribPointer(
-        shaderProgram.vertexColorAttribute, 
-        MODELER.Object3D.ColourSize, 
-        gl.FLOAT, false, 0, 0);
+      pointShaderToArray(shaderProgram.vertexColorAttribute, face_colour_buffer, MODELER.Object3D.ColourSize);
     }
-  }
+  };
+  var bufferColour = function(colour) {
+    var buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colour), gl.STATIC_DRAW);
+    return buffer;
+  };
+  var pointShaderToArray = function(attribute, buffer, element_size) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.vertexAttribPointer(
+      attribute, 
+      element_size, 
+      gl.FLOAT, false, 0, 0);
+  };
   function getShaderProgram() { return shaderProgram; }
   function inspect() {
     var string = '{';
@@ -79,6 +80,7 @@ MODELER.Materials.Basic = function(params, my) {
   initialize();
   that.wireframe = wireframe;
   that.wireframe_mode = wireframe_mode;
+  that.wireframe_width = wireframe_width;
   that.colour = colour;
   that.getShaderProgram = getShaderProgram;
   that.setupShaderProgram = setupShaderProgram;

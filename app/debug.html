@@ -2,33 +2,7 @@
 <html>
   <head>
     <title>Modeller - DEBUG</title>
-    <style>
-      body{ margin: 0; padding: 0; }
-      #debugger { 
-        position: absolute; 
-        right: 0; 
-        width: 350px; 
-        height: 100%; 
-        border-left: solid 1px;
-        font-family: Consolas, monospace;
-        font-size: 10px;
-        overflow: auto;
-      }
-      #debugger p {
-        border-bottom: solid 1px;
-        padding: 3px;
-        margin: 0;
-      }
-      #debugger .debug-log {
-        background: #eeeeff;
-      }
-      #debugger .debug-warn {
-        background: #f5f5dc;
-      }
-      #debugger .debug-error {
-        background: #ffc7c7;
-      }
-    </style>
+    <link href="http://meyerweb.com/eric/tools/css/reset/reset.css" rel="stylesheet" />
     <script type="text/javascript" src="../lib/webgl-mjs/mjs.js"></script>
     <script type="text/javascript" src="../src/utils/mjs.js"></script>
     <script type="text/javascript" src="../src/utils/language.js"></script>
@@ -48,11 +22,10 @@
     <script type="text/javascript" src="../src/core/Object3D.js"></script>
     <script type="text/javascript" src="../src/core/Shader.js"></script>
     <script type="text/javascript" src="../src/renderer/WebGLRenderer.js"></script>
-    <script type="text/javascript" src="../src/debug/Debugger.js"></script>
     <script type="text/javascript" src="../src/materials/WebGLShader.js"></script>
     <!--script type="text/javascript" src="demos/rotating-objects.js" -->
     <script type="text/javascript">
-    
+    var renderer;
     function pageLoaded() {
 
       var scene = MODELER.Scene();
@@ -78,10 +51,6 @@
           material: material
         });
         scene.addChild(cube);
-        
-        
-        //program = d.data;
-        //renderer.attachShaderProgram(program);
         render();
       }, true);
       
@@ -90,7 +59,8 @@
         wireframe_mode: MODELER.Materials.Basic.WIREFRAME_MODE.WIREFRAME_ONLY
       });
       
-      var renderer = MODELER.WebGLRenderer( { scene: scene, camera: camera} );
+      renderer = MODELER.WebGLRenderer( { scene: scene, camera: camera} );
+      resizeViewport();
       
       //Render loop
       var lastTime = 0;
@@ -108,8 +78,12 @@
         renderer.render();
         requestAnimationFrame(render);
       };
-    }
+    };
+    function resizeViewport(e) {
+      renderer.setSize(window.innerWidth - 4, window.innerHeight - 4);
+    };
     window.onload = pageLoaded;
+    window.onresize = resizeViewport;
     </script>
   </head>
   <body>

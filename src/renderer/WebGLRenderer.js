@@ -110,7 +110,7 @@ MODELER.WebGLRenderer = function(params, my) {
       if (this.material.wireframe) {
         this.material.setDrawMode(MODELER.Materials.Basic.DRAW_MODE.WIREFRAME);
         //Render lines
-        gl.lineWidth(1); //TODO: Remove hardcoded value
+        gl.lineWidth(this.material.wireframe_width);
         var lineBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lineBuffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.lines), gl.STATIC_DRAW);
