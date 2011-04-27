@@ -27,8 +27,11 @@ MODELER.Materials.Basic = function(params, my) {
     //different materials in a single mesh.
     var flattened_colours = [];
     var render_obj = mesh.getForRender();
-    render_obj.vertices.each(function(){
-      flattened_colours = flattened_colours.concat(colour)
+    render_obj.each(function(){
+      var mesh = this;
+      mesh.vertices.each(function(){
+        flattened_colours = flattened_colours.concat(colour)
+      });
     });
     return flattened_colours;
   };

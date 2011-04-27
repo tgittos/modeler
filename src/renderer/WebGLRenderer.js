@@ -61,7 +61,6 @@ MODELER.WebGLRenderer = function(params, my) {
     var objects = scene.getChildren();
     for (var i = 0; i < objects.length; i++) {
       var obj = objects[i];
-      var buffers = sendObjectToBuffer(obj);
       
       //Position of object
       var translationMatrix = M4x4.translate(V3.$(obj.x, obj.y, obj.z), M4x4.I);
@@ -73,40 +72,47 @@ MODELER.WebGLRenderer = function(params, my) {
       if (!logged) { console.log('vertex matrix: ' + vertexMatrix.inspect()); }
       logged = true;
 
-      //Set current buffer to objects buffer
-      //TODO: HERE!
-      
-      //each object may have multiple meshes
-      //each mesh may have multiple materials
-      //each material will have textures and a shader program
-      //rendering seems to rely heavily on the shader program,
-      //so vertices are rendered deep in this loop.
-      
-      //for now, I have only single mesh/material capability,
-      // but this will be fixed in the future
-      var shaderProgram = obj.getMeshes()[0].getMaterial().getShaderProgram();
+      drawObject(obj, perspectiveMatrix, vertexMatrix);
+    }
+  };
+  var drawObject = function(obj, perspectiveMatrix, vertexMatrix) {
+    assert(typeof obj.getForRender === 'function', "Not a renderable object");
+    var render_array = obj.getForRender();
+    // go through each material, get it's shader program
+    // get the shader program, and the vertices the program applies to
+    // and draw them to the screen
+    render_array.each(function(){
+      var shaderProgram = this.material.getShaderProgram();
       attachShaderProgram(shaderProgram);
-      
-      //Vertex positions
-      gl.bindBuffer(gl.ARRAY_BUFFER, buffers.vertex);
+      // tells the shader program which buffer to use for vertex data
+      var vertexBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
       gl.vertexAttribPointer(
         shaderProgram.vertexPositionAttribute, 
         MODELER.Object3D.VertexSize, 
         gl.FLOAT, false, 0, 0);
-        
-      //Vertex colours
-      gl.bindBuffer(gl.ARRAY_BUFFER, buffers.colour);
+      // TODO: this whole section needs refactoring
+      // tells the shader program which buffer to use for colour data
+      var colours = [];
+      var that = this;
+      obj.getMeshes().each(function(){
+        colours = colours.concat(that.material.applyToMesh(this));
+      });
+      var colourBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, colourBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colours), gl.STATIC_DRAW);
       gl.vertexAttribPointer(
         shaderProgram.vertexColorAttribute, 
         MODELER.Object3D.ColourSize, 
         gl.FLOAT, false, 0, 0);
-      
-      //Send matricies for translation and perspective to vertex shader
+      // tells the shader program about the perspective matrix
       gl.uniformMatrix4fv(
         shaderProgram.pMatrixUniform, 
         false, 
         new Float32Array(perspectiveMatrix)
       );
+      // tells the shader about the vertex position matrix (move matrix)
       gl.uniformMatrix4fv(
         shaderProgram.mvMatrixUniform, 
         false, 
@@ -114,55 +120,20 @@ MODELER.WebGLRenderer = function(params, my) {
       );
       //TODO: Refactor the obj.getForRender().elementIndices.length function
       //into something a little more sane
-      var material = obj.getForRender().material;
-      if (material && material.wireframe) {
+      if (this.material.wireframe) {
         //Render lines
         gl.lineWidth(1); //TODO: Remove hardcoded value
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.line);
-        gl.drawElements(gl.LINES, obj.getForRender().lines.length, gl.UNSIGNED_SHORT, 0);
-      } else {
-        //Render faces
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.face);
-        gl.drawElements(gl.TRIANGLES, obj.getForRender().elementIndices.length, gl.UNSIGNED_SHORT, 0);
+        var lineBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lineBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.lines), gl.STATIC_DRAW);
+        gl.drawElements(gl.LINES, this.lines.length, gl.UNSIGNED_SHORT, 0);
       }
-    }
-  };
-  var sendObjectToBuffer = function(obj) {
-    assert(typeof obj.getForRender === 'function', "Not a renderable object");
-    var renderBuffers = obj.getForRender();
-    //console.log(renderBuffers);
-    
-    //Vertex position buffer
-    var vertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(renderBuffers.vertices), gl.STATIC_DRAW);
-    
-    //Face buffer
-    var faceBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(renderBuffers.elementIndices), gl.STATIC_DRAW);
-    
-    //Line buffer
-    var lineBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lineBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(renderBuffers.lines), gl.STATIC_DRAW);
-    
-    //Colour buffer
-    var colourBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, colourBuffer);
-    var colours = []
-    obj.getMeshes().each(function(){
-      colours = colours.concat(renderBuffers.material.applyToMesh(this));
+      //Render faces
+      var faceBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.elementIndices), gl.STATIC_DRAW);
+      gl.drawElements(gl.TRIANGLES, this.elementIndices.length, gl.UNSIGNED_SHORT, 0);
     });
-    //console.log('colours: ' + colours.inspect());
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colours), gl.STATIC_DRAW);
-
-    return {
-      vertex: vertexBuffer,
-      face: faceBuffer,
-      line: lineBuffer,
-      colour: colourBuffer
-    };
   };
   
   var attachShaderProgram = function(program) {

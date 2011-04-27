@@ -29,27 +29,20 @@ MODELER.Pyramid = function(params, my) {
     geometry.createFace3(dimensions).rotate({ degrees: 30, axis: V3.x }).translate({ y: adjusted_height, z: depth / -2 * cos60 });
     geometry.createFace3(dimensions).rotate({ degrees: -90, axis: V3.y}).rotate({ degrees: -30, axis: V3.z }).translate({y: adjusted_height, x: depth / -2 * cos60 });
     
-    mesh = MODELER.Mesh({
-      geometry: geometry,
-      material: params.material
-    });
+    mesh = MODELER.Mesh([
+      { name: "pyramid", geometry: geometry, material: params.material }
+    ]);
   };
   function getForRender() {
     return mesh.getForRender();
   };
   
   function getMeshes() { return [mesh]; }
-  function inspect() {
-    var string = '{';
-    string += 'mesh: ' + mesh.inspect();
-    return string + '}';
-  };
   
   that = {}; //No inheriting
   initialize();
   that.getMeshes = getMeshes,
   that.getForRender = getForRender,
-  that.inspect = inspect,
   that.x = x, that.y = y, that.z = z,
   that.rotDegrees = rotDegrees, that.rotVector = rotVector;
   return that;

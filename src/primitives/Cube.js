@@ -26,25 +26,18 @@ MODELER.Cube = function(params, my) {
     geometry.createFace4({ width: width, height: height }).rotate({ degrees: 270, axis: V3.y }).translate({ x: width / 2 });
     geometry.createFace4({ width: width, height: height }).rotate({ degrees: 90, axis: V3.x }).translate({ y: width / 2 });
     geometry.createFace4({ width: width, height: height }).rotate({ degrees: -90, axis: V3.x }).translate({ y: width / -2 });
-    mesh = MODELER.Mesh({
-      geometry: geometry,
-      material: params.material
-    });
+    mesh = MODELER.Mesh([
+      { name: "cube", geometry: geometry, material: params.material }
+    ]);
   };
   function getForRender() {
     return mesh.getForRender();
   };
   function getMeshes() { return [mesh]; }
-  function inspect() {
-    var string = '{';
-    string += 'mesh: ' + mesh.inspect();
-    return string + '}';
-  };
   initialize();
   that = {}; //No inheriting
   that.getMeshes = getMeshes,
   that.getForRender = getForRender,
-  that.inspect = inspect,
   that.x = x, that.y = y, that.z = z,
   that.rotDegrees = rotDegrees, that.rotVector = rotVector;
   return that;
