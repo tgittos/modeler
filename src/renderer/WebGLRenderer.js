@@ -82,8 +82,9 @@ MODELER.WebGLRenderer = function(params, my) {
     // get the shader program, and the vertices the program applies to
     // and draw them to the screen
     render_array.each(function(){
+      this.material.setupShaderProgram(this.vertices);
       var shaderProgram = this.material.getShaderProgram();
-      attachShaderProgram(shaderProgram);
+      gl.useProgram(shaderProgram);
       // tells the shader program which buffer to use for vertex data
       var vertexBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
@@ -92,22 +93,6 @@ MODELER.WebGLRenderer = function(params, my) {
         shaderProgram.vertexPositionAttribute, 
         MODELER.Object3D.VertexSize, 
         gl.FLOAT, false, 0, 0);
-      // TODO: this whole section needs refactoring
-      //create some colour buffers
-      var face_colours = [];
-      var edge_colours = [];
-      var that = this;
-      obj.getMeshes().each(function(){
-        colours = that.material.applyToMesh(this);
-        face_colours = face_colours.concat(colours.face_colours);
-        edge_colours = edge_colours.concat(colours.edge_colours);
-      });
-      var face_colour_buffer = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, face_colour_buffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(face_colours), gl.STATIC_DRAW);
-      var edge_colour_buffer = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, edge_colour_buffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(edge_colours), gl.STATIC_DRAW);
       
       // tells the shader program about the perspective matrix
       gl.uniformMatrix4fv(
@@ -123,12 +108,7 @@ MODELER.WebGLRenderer = function(params, my) {
       );
 
       if (this.material.wireframe) {
-        // tells the shader program which buffer to use for colour data
-        gl.bindBuffer(gl.ARRAY_BUFFER, edge_colour_buffer);
-        gl.vertexAttribPointer(
-          shaderProgram.vertexColorAttribute, 
-          MODELER.Object3D.ColourSize, 
-          gl.FLOAT, false, 0, 0);
+        this.material.setDrawMode(MODELER.Materials.Basic.DRAW_MODE.WIREFRAME);
         //Render lines
         gl.lineWidth(1); //TODO: Remove hardcoded value
         var lineBuffer = gl.createBuffer();
@@ -138,12 +118,8 @@ MODELER.WebGLRenderer = function(params, my) {
       }
       if (!this.material.wireframe || 
           (this.material.wireframe && this.material.wireframe_mode == MODELER.Materials.Basic.WIREFRAME_MODE.BOTH)) {
+        this.material.setDrawMode(MODELER.Materials.Basic.DRAW_MODE.TEXTURE);
         //Render faces
-        gl.bindBuffer(gl.ARRAY_BUFFER, face_colour_buffer);
-        gl.vertexAttribPointer(
-          shaderProgram.vertexColorAttribute, 
-          MODELER.Object3D.ColourSize, 
-          gl.FLOAT, false, 0, 0);
         var faceBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.elementIndices), gl.STATIC_DRAW);
@@ -151,27 +127,10 @@ MODELER.WebGLRenderer = function(params, my) {
       }
     });
   };
-  
-  var attachShaderProgram = function(program) {
-    // this stuff should probably belong in the material, considering we use
-    // attributes to map textures and colours and positions and things
-    var shaderProgram = program;
-    gl.useProgram(shaderProgram);
-
-    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-    
-    shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
-    gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
-
-    shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-    shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-  };
     
   that = {};
   initialize();
   that.setSize = setSize;
-  that.attachShaderProgram = attachShaderProgram;
   that.render = render;
   return that;
 }
