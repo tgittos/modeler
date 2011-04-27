@@ -93,19 +93,22 @@ MODELER.WebGLRenderer = function(params, my) {
         MODELER.Object3D.VertexSize, 
         gl.FLOAT, false, 0, 0);
       // TODO: this whole section needs refactoring
-      // tells the shader program which buffer to use for colour data
-      var colours = [];
+      //create some colour buffers
+      var face_colours = [];
+      var edge_colours = [];
       var that = this;
       obj.getMeshes().each(function(){
-        colours = colours.concat(that.material.applyToMesh(this));
+        colours = that.material.applyToMesh(this);
+        face_colours = face_colours.concat(colours.face_colours);
+        edge_colours = edge_colours.concat(colours.edge_colours);
       });
-      var colourBuffer = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, colourBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colours), gl.STATIC_DRAW);
-      gl.vertexAttribPointer(
-        shaderProgram.vertexColorAttribute, 
-        MODELER.Object3D.ColourSize, 
-        gl.FLOAT, false, 0, 0);
+      var face_colour_buffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, face_colour_buffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(face_colours), gl.STATIC_DRAW);
+      var edge_colour_buffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, edge_colour_buffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(edge_colours), gl.STATIC_DRAW);
+      
       // tells the shader program about the perspective matrix
       gl.uniformMatrix4fv(
         shaderProgram.pMatrixUniform, 
@@ -118,9 +121,14 @@ MODELER.WebGLRenderer = function(params, my) {
         false, 
         new Float32Array(vertexMatrix)
       );
-      //TODO: Refactor the obj.getForRender().elementIndices.length function
-      //into something a little more sane
+
       if (this.material.wireframe) {
+        // tells the shader program which buffer to use for colour data
+        gl.bindBuffer(gl.ARRAY_BUFFER, edge_colour_buffer);
+        gl.vertexAttribPointer(
+          shaderProgram.vertexColorAttribute, 
+          MODELER.Object3D.ColourSize, 
+          gl.FLOAT, false, 0, 0);
         //Render lines
         gl.lineWidth(1); //TODO: Remove hardcoded value
         var lineBuffer = gl.createBuffer();
@@ -128,11 +136,19 @@ MODELER.WebGLRenderer = function(params, my) {
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.lines), gl.STATIC_DRAW);
         gl.drawElements(gl.LINES, this.lines.length, gl.UNSIGNED_SHORT, 0);
       }
-      //Render faces
-      var faceBuffer = gl.createBuffer();
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
-      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.elementIndices), gl.STATIC_DRAW);
-      gl.drawElements(gl.TRIANGLES, this.elementIndices.length, gl.UNSIGNED_SHORT, 0);
+      if (!this.material.wireframe || 
+          (this.material.wireframe && this.material.wireframe_mode == MODELER.Materials.Basic.WIREFRAME_MODE.BOTH)) {
+        //Render faces
+        gl.bindBuffer(gl.ARRAY_BUFFER, face_colour_buffer);
+        gl.vertexAttribPointer(
+          shaderProgram.vertexColorAttribute, 
+          MODELER.Object3D.ColourSize, 
+          gl.FLOAT, false, 0, 0);
+        var faceBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.elementIndices), gl.STATIC_DRAW);
+        gl.drawElements(gl.TRIANGLES, this.elementIndices.length, gl.UNSIGNED_SHORT, 0);
+      }
     });
   };
   

@@ -85,7 +85,10 @@
         render();
       }, true);
       
-      var material = MODELER.Materials.Basic({ wireframe: true });
+      var material = MODELER.Materials.Basic({ 
+        wireframe: true, 
+        wireframe_mode: MODELER.Materials.Basic.WIREFRAME_MODE.WIREFRAME_ONLY
+      });
       
       var renderer = MODELER.WebGLRenderer( { scene: scene, camera: camera} );
       

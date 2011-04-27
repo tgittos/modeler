@@ -3,12 +3,16 @@
 //primitives easily
 MODELER.Materials = MODELER.Materials || {};
 MODELER.Materials.Basic = function(params, my) {
+  
   var that, my = my || {},
   wireframe = false,
-  colour = [1, 1, 1, 1]; //Solid white
-  var shaderProgram = null;
+  colour = [1, 1, 1, 1], //Solid white
+  wireframe_colour = [0.5, 0.5, 0.5, 1], //muddy grey
+  wireframe_mode = MODELER.Materials.Basic.WIREFRAME_MODE.WIREFRAME_ONLY,
+  shaderProgram = null;
   function initialize() {
     if (params.wireframe) { wireframe = params.wireframe; }
+    if (params.wireframe_mode) { wireframe_mode = params.wireframe_mode; }
     if (params.colour)    { colour = params.colour; }
 
         var shader = MODELER.WebGLShader({
@@ -25,15 +29,19 @@ MODELER.Materials.Basic = function(params, my) {
     //Right now, we assume the whole mesh gets the material
     //In the future, we might want different geometry groups to get
     //different materials in a single mesh.
-    var flattened_colours = [];
+    var return_colours = {
+      face_colours: [],
+      edge_colours: []
+    }
     var render_obj = mesh.getForRender();
     render_obj.each(function(){
       var mesh = this;
       mesh.vertices.each(function(){
-        flattened_colours = flattened_colours.concat(colour)
+        return_colours.face_colours = return_colours.face_colours.concat(colour);
+        return_colours.edge_colours = return_colours.edge_colours.concat(wireframe_colour);
       });
     });
-    return flattened_colours;
+    return return_colours;
   };
   function getShaderProgram() { return shaderProgram; }
   function inspect() {
@@ -45,9 +53,14 @@ MODELER.Materials.Basic = function(params, my) {
   that = {};
   initialize();
   that.wireframe = wireframe;
+  that.wireframe_mode = wireframe_mode;
   that.colour = colour;
   that.applyToMesh = applyToMesh;
   that.getShaderProgram = getShaderProgram;
   that.inspect = inspect;
   return that;
+};
+MODELER.Materials.Basic.WIREFRAME_MODE = {
+  WIREFRAME_ONLY: 0,
+  BOTH: 1
 };
