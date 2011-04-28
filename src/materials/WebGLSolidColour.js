@@ -1,14 +1,13 @@
 //Basic material
 //So far, just wireframing to allow building
 //primitives easily
-MODELER.Materials = MODELER.Materials || {};
-MODELER.Materials.Basic = function(params, my) {
+MODELER.Materials.WebGLSolidColour = function(params, my) {
   
   var that, my = my || {},
   wireframe = false,
   colour = [1, 1, 1, 1], //Solid white
   wireframe_colour = [0.5, 0.5, 0.5, 1], //muddy grey
-  wireframe_mode = MODELER.Materials.Basic.WIREFRAME_MODE.WIREFRAME_ONLY,
+  wireframe_mode = MODELER.Materials.WIREFRAME_MODE.WIREFRAME_ONLY,
   wireframe_width = 2,
   shaderProgram = null,
   face_colour_buffer = null,
@@ -50,7 +49,7 @@ MODELER.Materials.Basic = function(params, my) {
     edge_colour_buffer = bufferColour(edge_colours);
   };
   var setDrawMode = function(mode) {
-    if (mode == MODELER.Materials.Basic.DRAW_MODE.WIREFRAME) { 
+    if (mode == MODELER.Materials.DRAW_MODE.WIREFRAME) { 
       pointShaderToArray(shaderProgram.vertexColorAttribute, edge_colour_buffer, MODELER.Object3D.ColourSize);
     } else {
       pointShaderToArray(shaderProgram.vertexColorAttribute, face_colour_buffer, MODELER.Object3D.ColourSize);
@@ -88,11 +87,3 @@ MODELER.Materials.Basic = function(params, my) {
   that.inspect = inspect;
   return that;
 };
-MODELER.Materials.Basic.WIREFRAME_MODE = {
-  WIREFRAME_ONLY: 0,
-  BOTH: 1
-};
-MODELER.Materials.Basic.DRAW_MODE = {
-  WIREFRAME: 0,
-  TEXTURE: 1
-}

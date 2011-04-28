@@ -1,0 +1,9 @@
+MODELER.Materials = MODELER.Materials || {};
+MODELER.Materials.WIREFRAME_MODE = {
+  WIREFRAME_ONLY: 0,
+  BOTH: 1
+};
+MODELER.Materials.DRAW_MODE = {
+  WIREFRAME: 0,
+  TEXTURE: 1
+}

@@ -108,7 +108,7 @@ MODELER.WebGLRenderer = function(params, my) {
       );
 
       if (this.material.wireframe) {
-        this.material.setDrawMode(MODELER.Materials.Basic.DRAW_MODE.WIREFRAME);
+        this.material.setDrawMode(MODELER.Materials.DRAW_MODE.WIREFRAME);
         //Render lines
         gl.lineWidth(this.material.wireframe_width);
         var lineBuffer = gl.createBuffer();
@@ -117,8 +117,8 @@ MODELER.WebGLRenderer = function(params, my) {
         gl.drawElements(gl.LINES, this.lines.length, gl.UNSIGNED_SHORT, 0);
       }
       if (!this.material.wireframe || 
-          (this.material.wireframe && this.material.wireframe_mode == MODELER.Materials.Basic.WIREFRAME_MODE.BOTH)) {
-        this.material.setDrawMode(MODELER.Materials.Basic.DRAW_MODE.TEXTURE);
+          (this.material.wireframe && this.material.wireframe_mode == MODELER.Materials.WIREFRAME_MODE.BOTH)) {
+        this.material.setDrawMode(MODELER.Materials.DRAW_MODE.TEXTURE);
         //Render faces
         var faceBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
