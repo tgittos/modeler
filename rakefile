@@ -1,0 +1,84 @@
+INPUT_FILE = "app/debug.html"
+OUTPUT_FILE = "app/modeler.min.js"
+# Specific compiler independent, so we can just swap out values for different compilers
+COMPILER_JAR = "lib/closure/compiler.jar"
+COMPILER_MAIN_CLASS = "com.google.javascript.jscomp.CommandLineRunner"
+COMPILER_DOWNLOAD_URI = 'http://closure-compiler.googlecode.com/files/compiler-latest.zip'
+
+namespace :modeler do
+
+  namespace :compiler do
+    
+    desc "Download the configured compiler into #{COMPILER_JAR}"
+    task :download do
+      require 'uri'; require 'net/http'; require 'tempfile'
+      uri = URI.parse(COMPILER_DOWNLOAD_URI)
+      response = Net::HTTP.start(uri.host, uri.port) do |http|
+        http.get(uri.path)
+      end
+      case response
+      when Net::HTTPSuccess
+        file_data, content_type = response.body, response.content_type
+        raise "no data returned from #{uri}" if file_data.nil? || file_data.size == 0
+      else
+        raise "download from #{uri} failed with response: #{response}"
+      end
+      filename = uri.path.split('/')[-1]
+      Tempfile.open(filename) do |tmpfile|
+        tmpfile << file_data
+        filename = tmpfile.path
+      end
+      if content_type =~ /application\/(x-)?zip/
+        # compiler-latest.zip with 3 entries :
+        extract_path = File.dirname(COMPILER_JAR)
+        unless File.exist?(extract_path)
+          FileUtils.mkdir_p(extract_path)
+        end
+        # -u  update files, create if necessary :
+        system "unzip -u #{filename} -d #{extract_path}"
+      else
+        raise "unexpected content-type: #{content_type}"
+      end
+    end
+    
+  end
+  
+  desc "Compiles and compresses the source files into a single file"
+  task :build do
+    verify_compiler_exists
+    
+    # collect files
+    files = []
+    new_index = ""
+
+    IO.foreach(INPUT_FILE) do |line|
+      if !(line =~ /<script.*src="https*:/) && line =~ /<script.*src="(.*)"/
+        files << $1.gsub(/\.\.\//, '')
+      else
+        new_index << line
+      end
+    end
+    
+    # set options
+    compiler_options = {}
+    compiler_options['--js_output_file'] = OUTPUT_FILE
+    compiler_options['--compilation_level'] = 'SIMPLE_OPTIMIZATIONS'
+    compiler_options['--accept_const_keyword'] = ''
+    compiler_files = files.collect { |file| "--js #{file}" }.join(' ')
+
+    # building
+
+    puts "compiling #{files.size} javascript file(s) into #{INPUT_FILE}"
+    system "java -jar #{COMPILER_JAR} #{compiler_options.to_a.join(' ')} #{compiler_files}"
+    #puts "java -jar #{COMPILER_JAR} #{compiler_options.to_a.join(' ')} #{compiler_files}"
+    puts "compiled #{OUTPUT_FILE}"
+
+  end
+  
+  def verify_compiler_exists
+    return if File.exist?(COMPILER_JAR)
+    puts "#{COMPILER_JAR} not found !"
+    raise "run `rake modeler:compiler:download` to download the compiler jar"
+  end
+  
+end

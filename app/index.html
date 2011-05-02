@@ -1,53 +1,69 @@
 <!doctype html>
 <html>
   <head>
+    <title>Modeler</title>
+    <link href="http://meyerweb.com/eric/tools/css/reset/reset.css" rel="stylesheet" />
+    <script type="text/javascript" src="modeler.min.js"></script>
     <script type="text/javascript">
-      var B3D = B3D || {};
-      (function (b3d) {
-        var clickListeners = [];
+    var renderer;
+    function pageLoaded() {
 
-        //Public API information
-
-        //Fires given function when the window is loaded
-        b3d.ready = function (callback) {
-          addEventListenerToObj(window, 'load', callback);
-        };
-
-        b3d.click = function (callback) {
-          clickListeners.push(callback);
-        };
-
-        //Private
-
-        //Handle adding listeners to events in a cross browser way
-        function addEventListenerToObj(obj, event, callback) {
-          if (window.addEventListener) {
-            obj.addEventListener(event, callback, false);
-          } else if (window.attachEvent) {
-            obj.attachEvent('on' + event, callback);
-          }
-        };
-
-        //Register a global click listener
-        addEventListenerToObj(document, 'click', function(e) {
-          var e = e || window.event;
-          //Massage some data
-          e.mouseX = e.pageX || e.clientX + document.body.scrollLeft;
-          e.mouseY = e.pageY || e.clientY + document.body.scrollTop;
-          for (var i = 0; i < clickListeners.length; i++) {
-            console.log(e);  
-            clickListeners[i].call(e);
-          }
+      var scene = MODELER.Scene();
+      var camera = MODELER.Camera();
+      
+      var pyramid, cube;
+      
+      MODELER.Event.listen(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, function(d){
+        //Send some geometry to the scene
+        pyramid = MODELER.Pyramid({
+          width: 2, height: 2, depth: 2,
+          x: -1.5, y: 0.0, z: -5.0,
+          rotVector: V3.y,
+          material: material
         });
-      })(B3D);
-    </script>
-    <script type="text/javascript">
-      B3D.ready(function(){
-        B3D.click(function(e){
-          console.log(e);
-          alert('clicked! x:' + e.mouseX + ", y: " + e.mouseY);
+        scene.addChild(pyramid);
+
+        cube = MODELER.Cube({
+          width: 2, height: 2, depth: 2,
+          x: 1.5, y: 0.0, z: -5.0,
+          rotVector: [1, 1, 0],
+          rotDegrees: 45,
+          material: material
         });
+        scene.addChild(cube);
+        render();
+      }, true);
+      
+      var material = MODELER.Materials.WebGLSolidColour({ 
+        wireframe: true, 
+        wireframe_mode: MODELER.Materials.WIREFRAME_MODE.WIREFRAME_ONLY
       });
+      
+      renderer = MODELER.WebGLRenderer( { scene: scene, camera: camera} );
+      resizeViewport();
+      
+      //Render loop
+      var lastTime = 0;
+      function render() {
+        var timeNow = new Date().getTime();
+        if (lastTime != 0) {
+          var elapsed = timeNow - lastTime;
+          
+          //Do rendering magicks
+          cube.rotDegrees += (90 * elapsed) / 1000.0;
+          pyramid.rotDegrees += (90 * elapsed) / 1000.0;
+        }
+        lastTime = timeNow;
+        
+        renderer.render();
+        requestAnimationFrame(render);
+      };
+    };
+    function resizeViewport(e) {
+      renderer.setSize(window.innerWidth - 4, window.innerHeight - 4);
+    };
+    window.onload = pageLoaded;
+    window.onresize = resizeViewport;
     </script>
   </head>
   <body>
