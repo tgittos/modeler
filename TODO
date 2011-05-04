@@ -17,8 +17,9 @@ Immediate
   [done]
 - Implement a standard for app events [partially done]
 - Create a general program structure with proper event handlers [done]
-- Move shader code into material, preload all assets first
+- Move shader code into material, preload all assets first [partially done]
 - Implement background asset loader, perhaps with WebWorkers
+- Implement an asset manager to handle loading all of the files
 - See if I can refactor out the global canvas that's attached to the global gl context
 - Write more unit tests
 - Move the inspect method off of each object and into a util

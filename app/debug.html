@@ -17,7 +17,8 @@
     <script type="text/javascript" src="../src/primitives/Cube.js"></script>
     <script type="text/javascript" src="../src/primitives/Pyramid.js"></script>
     <script type="text/javascript" src="../src/materials/Enums.js"></script>
-    <script type="text/javascript" src="../src/materials/WebGLSolidColour.js"></script>
+    <script type="text/javascript" src="../src/materials/WebGLMaterial.js"></script>
+    <script type="text/javascript" src="../src/materials/WebGLSolidColourMaterial.js"></script>
     <script type="text/javascript" src="../src/core/Scene.js"></script>
     <script type="text/javascript" src="../src/core/Camera.js"></script>
     <script type="text/javascript" src="../src/core/Object3D.js"></script>
@@ -55,7 +56,7 @@
         render();
       }, true);
       
-      var material = MODELER.Materials.WebGLSolidColour({ 
+      var material = MODELER.Materials.WebGLSolidColourMaterial({ 
         wireframe: true, 
         wireframe_mode: MODELER.Materials.WIREFRAME_MODE.WIREFRAME_ONLY
       });

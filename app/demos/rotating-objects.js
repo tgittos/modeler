@@ -8,7 +8,7 @@ function pageLoaded() {
     width: 2, height: 2, depth: 2,
     x: -1.5, y: 0.0, z: -5.0,
     rotVector: V3.y,
-    material: MODELER.Materials.WebGLSolidColour({ wireframe: true })
+    material: MODELER.Materials.WebGLSolidColourMaterial({ wireframe: true })
   });
   scene.addChild(pyramid);
   
@@ -17,7 +17,7 @@ function pageLoaded() {
     x: 1.5, y: 0.0, z: -5.0,
     rotVector: [1, 1, 0],
     rotDegrees: 45,
-    material: MODELER.Materials.WebGLSolidColour({ wireframe: true })
+    material: MODELER.Materials.WebGLSolidColourMaterial({ wireframe: true })
   });
   scene.addChild(cube);
   
