@@ -48,5 +48,12 @@ MODELER.EVENTS = {
   },
   TEXTURE: {
     TEXTURE_LOADED: 'MODELER:EVENTS:TEXTURE:TEXTURE_LOADED'
+  },
+  // these are good for mac only (so far)
+  KEYBOARD: {
+    W: 87,
+    A: 65,
+    S: 83,
+    D: 68
   }
 };

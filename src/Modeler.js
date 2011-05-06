@@ -1,5 +1,6 @@
 var MODELER = MODELER || {};
 MODELER.IO = MODELER.IO || {};
+MODELER.Keyboard = MODELER.Keyboard || {};
 
 MODELER.webGLContextString = 'experimental-webgl';
 (function(){

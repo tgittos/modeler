@@ -3,7 +3,8 @@ MODELER.Camera = function(params, my) {
   fov = null,
   ratio = null,
   nearClip = null,
-  farClip = null;
+  farClip = null,
+  x = 0, y = 0, z = 0;
   
   var initialize = function(){
     //Default params
@@ -17,6 +18,9 @@ MODELER.Camera = function(params, my) {
     if (params.ratio)     { ratio = params.ratio; };
     if (params.nearClip)  { nearClip = params.nearClip; };
     if (params.farClip)   { farClip = params.farClip; };
+    if (params.x)         { x = params.x; };
+    if (params.y)         { y = params.y; };
+    if (params.z)         { z = params.z; };
   };
   var getFov = function() { return fov; };
   var getRatio = function() { return ratio; };
@@ -29,5 +33,6 @@ MODELER.Camera = function(params, my) {
   that.getRatio = getRatio;
   that.getNearClip = getNearClip;
   that.getFarClip = getFarClip;
+  that.x = x; that.y = y; that.z = z;
   return that;
 };

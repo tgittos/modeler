@@ -57,8 +57,8 @@ MODELER.Materials.WebGLSolidColourMaterial = function(params, my) {
   
   // set some params as they go up to the parent object
   params.shaders = {
-    fragmentShader: '../src/shaders/Fragment.shader',
-    vertexShader: '../src/shaders/Vertex.shader'
+    fragmentShader: '../src/shaders/webglcolour.fshader',
+    vertexShader: '../src/shaders/webglcolour.vshader'
   };
   that = MODELER.Materials.WebGLMaterial(params, my);
   my.initShaderProgram = initShaderProgram;

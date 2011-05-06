@@ -24,14 +24,14 @@ Immediate
 - Write more unit tests
 - Move the inspect method off of each object and into a util
 - Fix the dead load method on the shader loader so shaders can be stored as files. Include a simple
-  file server, maybe Java, so you can run it on Chrome and it won't cack itself with AJAX requests.
+  file server, maybe Java, so you can run it on Chrome and it won't cack itself with AJAX requests. [done]
 - Implement weldVertices method to cut down on geometry sent to GPU
-- Add pyramid primitive and get demo file working again
+- Add pyramid primitive and get demo file working again [done]
 - Review tight coupling of graphics object classes and the renderer. Decouple for the ability to
   add different kinds of rendering (canvas, for example). This will involve moving each object's
   getForRender method out and into some sort of switch/map in the WebGLRenderer.
-- Implement per face colouring for materials, maybe as low as per vertex
-- Continue on with learningwebgl.com lessons - current lesson is 5
+- Implement per face colouring for materials, maybe as low as per vertex [done? or not important]
+- Continue on with learningwebgl.com lessons - current lesson is 6
 
 Future
 ------

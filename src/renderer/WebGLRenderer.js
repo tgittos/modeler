@@ -54,6 +54,8 @@ MODELER.WebGLRenderer = function(params, my) {
       camera.getNearClip(),
       camera.getFarClip()
     );
+    var cameraPositionMatrix = M4x4.translate(V3.$(camera.x, camera.y, camera.z), M4x4.I);
+    if (!logged) { console.log('camera pos matrix: ' + cameraPositionMatrix.inspect()); }
     if (!logged) { console.log('perspective matrix: ' + perspectiveMatrix.inspect()); }
     
     //Render out the objects in the buffers
@@ -63,7 +65,8 @@ MODELER.WebGLRenderer = function(params, my) {
       var obj = objects[i];
       
       //Position of object
-      var translationMatrix = M4x4.translate(V3.$(obj.x, obj.y, obj.z), M4x4.I);
+      //var translationMatrix = M4x4.translate(V3.$(obj.x, obj.y, obj.z), M4x4.I);
+      var translationMatrix = M4x4.translate(V3.$(obj.x, obj.y, obj.z), cameraPositionMatrix);
       if (!logged) { console.log('translation matrix: ' + translationMatrix.inspect()); }
       //Rotation of object
       var rotationMatrix = M4x4.rotate(Math.degreesToRadians(obj.rotDegrees), obj.rotVector, translationMatrix);
