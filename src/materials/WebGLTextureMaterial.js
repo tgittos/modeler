@@ -25,11 +25,13 @@ MODELER.Materials.WebGLTextureMaterial = function(params, my) {
     my.shaderProgram.pMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uPMatrix");
     my.shaderProgram.mvMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uMVMatrix");
   };
-  var setupShaderProgram = function(face4_array) {
-    //set up faces
+  var setupShaderProgram = function(vertices) {
+    // recieve a flat array of vertices
+    // assume we get quads and process in 4 vertex chunks
     // 0, 0 bottom left
     // 1, 1 top right
-    face4_array.each(function(){
+    var face4_count = vertices.length / 4;
+    for (var i = 0; i < face4_count; i++) {
       // static mapping of corners, maybe find another way to pass in the mapping?
       texels.push(
         0, 0,
@@ -37,7 +39,7 @@ MODELER.Materials.WebGLTextureMaterial = function(params, my) {
         1, 1,
         1, 0
       );
-    });
+    };
   }; 
   var setDrawMode = function(mode) {
     if (mode == MODELER.Materials.DRAW_MODE.WIREFRAME) { 
@@ -47,7 +49,7 @@ MODELER.Materials.WebGLTextureMaterial = function(params, my) {
       // buffer the texels
       var texelBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, texelBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texelBuffer), gl.STATIC_DRAW);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texels), gl.STATIC_DRAW);
       // tell the shader program about the buffer
       my.pointShaderToArray(my.shaderProgram.textureCoordAttribute, texelBuffer, TEXEL_SIZE);
       // now set up gl to take the texture

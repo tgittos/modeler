@@ -38,14 +38,14 @@
       var pyramid, cube;
       
       // first load texture
-      
+      /*
       var material;
       material = MODELER.Materials.WebGLSolidColourMaterial({ 
         wireframe: true, 
         wireframe_mode: MODELER.Materials.WIREFRAME_MODE.WIREFRAME_ONLY
       });
+      */
       
-      /*
       var texture = MODELER.Materials.WebGLTexture({
         src: '../assets/textures/nehe.gif'
       });
@@ -55,7 +55,7 @@
           texture: d.data
         });
       });      
-      */
+      
       
       MODELER.Event.listen(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, function(d){
         //Send some geometry to the scene
