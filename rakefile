@@ -75,6 +75,18 @@ namespace :modeler do
 
   end
   
+  desc "Prints out stats"
+  task :stats do
+    # starting from this directory, put together a list of all files (exluding this one)
+    count = 0
+    files = []
+    Dir.glob( File.join('**', '*') ) { |file| files << file unless File.directory? file }
+    files.each do |file|
+      count = count + File.foreach(file).inject(0) {|c, line| c + 1}
+    end
+    puts "#{count} LOC including comments and whitespace"
+  end
+  
   def verify_compiler_exists
     return if File.exist?(COMPILER_JAR)
     puts "#{COMPILER_JAR} not found !"
