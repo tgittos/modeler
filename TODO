@@ -31,7 +31,7 @@ Immediate
   add different kinds of rendering (canvas, for example). This will involve moving each object's
   getForRender method out and into some sort of switch/map in the WebGLRenderer.
 - Implement per face colouring for materials, maybe as low as per vertex [done? or not important]
-- Continue on with learningwebgl.com lessons - current lesson is 6
+- Continue on with learningwebgl.com lessons - current lesson is 7
 
 Future
 ------
