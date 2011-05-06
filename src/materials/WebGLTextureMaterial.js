@@ -1,69 +1,72 @@
-// a WebGLMaterial has one shader and one or more textures
-MODELER.Materials.WebGLMaterial = function(params, my) {
+// a WebGLMaterial has one shader and one texture
+// maybe it needs multiple textures, I don't know at this stage
+MODELER.Materials.WebGLTextureMaterial = function(params, my) {
   var that, my = my || {},
-  shader = null,
-  // textures are stored with a name
-  textures = {},
-  ready = {
-    shader: false,
-    texture: false
-  },
-  wireframe = false;
+  texture = null,
+  texels = [];
+  
   var initialize = function() {
-    if (!params) { params = {}; }
-    if (params.vertexShader && params.fragmentShader) {
-      addShader(params.vertexShader, params.fragmentShader);
-    };
     if (params.texture) {
-      addTexture(params.texture.name, params.texture.image_path);
+      texture = params.texture;
     };
-    if (params.wireframe) { wireframe = params.wireframe; }
   };
-  var addShader = function(vertexShader, fragmentShader){
-    MODELER.Event.listen(MODELER.EVENTS.SHADER.PROGRAM_LOADED, function(d){
-      var program = d.data;
-      shader = program;
-      ready.shader = true;
-      loadedCheck();
-    }, true);
-    shader = MODELER.Materials.WebGLShader({
-      vertexShader: vertexShader,
-      fragmentShader: fragmentShader
+  var initShaderProgram = function() {
+    my.shaderProgram.textureCoordAttribute = gl.getAttribLocation(my.shaderProgram, "aTextureCoord");
+    gl.enableVertexAttribArray(my.shaderProgram.textureCoordAttribute);
+    
+    my.shaderProgram.vertexPositionAttribute = gl.getAttribLocation(my.shaderProgram, "aVertexPosition");
+    gl.enableVertexAttribArray(my.shaderProgram.vertexPositionAttribute);
+
+    // wireframe won't work without this, but this isn't in the shader program yet
+    //my.shaderProgram.vertexColorAttribute = gl.getAttribLocation(my.shaderProgram, "aVertexColor");
+    //gl.enableVertexAttribArray(my.shaderProgram.vertexColorAttribute);
+    
+    my.shaderProgram.samplerUniform = gl.getUniformLocation(my.shaderProgram, "uSampler");
+    my.shaderProgram.pMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uPMatrix");
+    my.shaderProgram.mvMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uMVMatrix");
+  };
+  var setupShaderProgram = function(face4_array) {
+    //set up faces
+    // 0, 0 bottom left
+    // 1, 1 top right
+    face4_array.each(function(){
+      // static mapping of corners, maybe find another way to pass in the mapping?
+      texels.push(
+        0, 0,
+        0, 1,
+        1, 1,
+        1, 0
+      );
     });
-    shader.getShaderProgram();
-  };
-  var addTexture = function(name, image_path) {
-    MODELER.Event.listen(MODELER.EVENTS.TEXTURE.LOAD_SUCCESS, function(d){
-      var texture = d.data;
-      textures[name] = texture;
-      ready.texture = true;
-      loadedCheck();
-    }, true);
-    MODELER.Materials.WebGLTexture({
-      src: image_path
-    });
-  };
-  var getShader = function() { return shader; };
-  var loadedCheck = function() {
-    if (ready.shader && ready.texture) {
-      MODELER.Event.dispatch(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, getForRender());
+  }; 
+  var setDrawMode = function(mode) {
+    if (mode == MODELER.Materials.DRAW_MODE.WIREFRAME) { 
+      //pointShaderToArray(shaderProgram.vertexColorAttribute, my.edge_colour_buffer, MODELER.Object3D.ColourSize);
+    } else {
+      var TEXEL_SIZE = 2; // TODO: Move this to a constant somewhere
+      // buffer the texels
+      var texelBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, texelBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texelBuffer), gl.STATIC_DRAW);
+      // tell the shader program about the buffer
+      my.pointShaderToArray(my.shaderProgram.textureCoordAttribute, texelBuffer, TEXEL_SIZE);
+      // now set up gl to take the texture
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.uniform1i(my.shaderProgram.samplerUniform, 0);
     }
   };
-  var getForRender = function() {
-    // serialize the material down to an array of text/face pairs and a single shader program
-    return {
-      shaderProgram: shader,
-      textures: textures
-    };
-  };
   
+  params.shaders = {
+    fragmentShader: '../src/shaders/webgltexture.fshader',
+    vertexShader: '../src/shaders/webgltexture.vshader'
+  };
   that = MODELER.Materials.WebGLMaterial(params, my);
+  my.initShaderProgram = initShaderProgram;
   initialize();
   
-  // public stuff
-  that.addShader = addShader;
-  that.addTexture = addTexture;
-  that.getShader = getShader;
-  that.getForRender = getForRender;
+  // overrides
+  that.setupShaderProgram = setupShaderProgram;
+  that.setDrawMode = setDrawMode;
   return that;
 }

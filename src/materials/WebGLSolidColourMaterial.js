@@ -8,6 +8,16 @@ MODELER.Materials.WebGLSolidColourMaterial = function(params, my) {
   function initialize() {
     if (params.colour)    { colour = params.colour; }
   };
+  var initShaderProgram = function() {
+    my.shaderProgram.vertexPositionAttribute = gl.getAttribLocation(my.shaderProgram, "aVertexPosition");
+    gl.enableVertexAttribArray(my.shaderProgram.vertexPositionAttribute);
+
+    my.shaderProgram.vertexColorAttribute = gl.getAttribLocation(my.shaderProgram, "aVertexColor");
+    gl.enableVertexAttribArray(my.shaderProgram.vertexColorAttribute);
+
+    my.shaderProgram.pMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uPMatrix");
+    my.shaderProgram.mvMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uMVMatrix");
+  };
   var setupShaderProgram = function(vertices) {
     var face_colours = [];
     var edge_colours = [];
@@ -51,6 +61,7 @@ MODELER.Materials.WebGLSolidColourMaterial = function(params, my) {
     vertexShader: '../src/shaders/Vertex.shader'
   };
   that = MODELER.Materials.WebGLMaterial(params, my);
+  my.initShaderProgram = initShaderProgram;
   initialize();
   
   // public stuff

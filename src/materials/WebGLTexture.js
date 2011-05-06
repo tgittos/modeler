@@ -1,6 +1,9 @@
 // texture for a WebGL based material. 
 // handles loading and storage only
 // material is responsible for applying the texture.
+
+// this isn't so much a texture, as it is a texture loader
+// we never use this once it loads the texture
 MODELER.Materials.WebGLTexture = function(params, my) {
   var that, my = my || {},
   src = null,
@@ -23,7 +26,7 @@ MODELER.Materials.WebGLTexture = function(params, my) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAX_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.bindTexture(gl.TEXTURE_2D, null);
-    MODELER.Event.dispatch(MODELER.EVENTS.TEXTURE.LOAD_SUCCESS, texture);
+    MODELER.Event.dispatch(MODELER.EVENTS.TEXTURE.TEXTURE_LOADED, texture);
   };
   var getTexture = function() { return texture; }
   that = {};

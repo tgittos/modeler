@@ -17,14 +17,16 @@
     <script type="text/javascript" src="../src/primitives/Cube.js"></script>
     <script type="text/javascript" src="../src/primitives/Pyramid.js"></script>
     <script type="text/javascript" src="../src/materials/Enums.js"></script>
-    <script type="text/javascript" src="../src/materials/WebGLMaterial.js"></script>
-    <script type="text/javascript" src="../src/materials/WebGLSolidColourMaterial.js"></script>
     <script type="text/javascript" src="../src/core/Scene.js"></script>
     <script type="text/javascript" src="../src/core/Camera.js"></script>
     <script type="text/javascript" src="../src/core/Object3D.js"></script>
     <script type="text/javascript" src="../src/core/Shader.js"></script>
     <script type="text/javascript" src="../src/renderer/WebGLRenderer.js"></script>
     <script type="text/javascript" src="../src/materials/WebGLShader.js"></script>
+    <script type="text/javascript" src="../src/materials/WebGLTexture.js"></script>
+    <script type="text/javascript" src="../src/materials/WebGLMaterial.js"></script>
+    <script type="text/javascript" src="../src/materials/WebGLSolidColourMaterial.js"></script>
+    <script type="text/javascript" src="../src/materials/WebGLTextureMaterial.js"></script>
     <!--script type="text/javascript" src="demos/rotating-objects.js" -->
     <script type="text/javascript">
     var renderer;
@@ -34,6 +36,26 @@
       var camera = MODELER.Camera();
       
       var pyramid, cube;
+      
+      // first load texture
+      
+      var material;
+      material = MODELER.Materials.WebGLSolidColourMaterial({ 
+        wireframe: true, 
+        wireframe_mode: MODELER.Materials.WIREFRAME_MODE.WIREFRAME_ONLY
+      });
+      
+      /*
+      var texture = MODELER.Materials.WebGLTexture({
+        src: '../assets/textures/nehe.gif'
+      });
+      
+      MODELER.Event.listen(MODELER.EVENTS.TEXTURE.TEXTURE_LOADED, function(d){
+        material = MODELER.Materials.WebGLTextureMaterial({
+          texture: d.data
+        });
+      });      
+      */
       
       MODELER.Event.listen(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, function(d){
         //Send some geometry to the scene
@@ -55,11 +77,6 @@
         scene.addChild(cube);
         render();
       }, true);
-      
-      var material = MODELER.Materials.WebGLSolidColourMaterial({ 
-        wireframe: true, 
-        wireframe_mode: MODELER.Materials.WIREFRAME_MODE.WIREFRAME_ONLY
-      });
       
       renderer = MODELER.WebGLRenderer( { scene: scene, camera: camera} );
       resizeViewport();

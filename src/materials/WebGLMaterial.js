@@ -20,22 +20,10 @@ MODELER.Materials.WebGLMaterial = function(params, my) {
       }).getShaderProgram();
       MODELER.Event.listen(MODELER.EVENTS.SHADER.PROGRAM_LOADED, function(d) {
         my.shaderProgram = d.data;
-        initShaderProgram();
-        console.log('here');
-        MODELER.Event.dispatch(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, shaderProgram);
+        my.initShaderProgram();
+        MODELER.Event.dispatch(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, my.shaderProgram);
       }, true);
     }
-  };
-  var initShaderProgram = function() {
-    // this stuff should probably be migrated down into inherited materials
-    my.shaderProgram.vertexPositionAttribute = gl.getAttribLocation(my.shaderProgram, "aVertexPosition");
-    gl.enableVertexAttribArray(my.shaderProgram.vertexPositionAttribute);
-    
-    my.shaderProgram.vertexColorAttribute = gl.getAttribLocation(my.shaderProgram, "aVertexColor");
-    gl.enableVertexAttribArray(my.shaderProgram.vertexColorAttribute);
-
-    my.shaderProgram.pMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uPMatrix");
-    my.shaderProgram.mvMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uMVMatrix");
   };
   var setupShaderProgram = function(vertices) {
     // override this method in child materials, and call super
@@ -67,8 +55,8 @@ MODELER.Materials.WebGLMaterial = function(params, my) {
     string += ', wireframe: ' + wireframe;
     return string + '}';
   };
+  
   that = {};
-  initialize();
   
   // 'protected' methods (shared down inheritence chain)
   my.wireframe = wireframe;
@@ -77,9 +65,11 @@ MODELER.Materials.WebGLMaterial = function(params, my) {
   my.wireframe_width = wireframe_width;
   my.shaderProgram = shaderProgram;
   my.edge_colour_buffer = edge_colour_buffer;
-  my.initShaderProgram = initShaderProgram;
   my.setupShaderProgram = setupShaderProgram;
   my.setDrawMode = setDrawMode;
+  my.pointShaderToArray = pointShaderToArray;
+  
+  initialize();
   
   // public methods
   that.wireframe = wireframe;
