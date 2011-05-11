@@ -2,13 +2,13 @@
 // maybe it needs multiple textures, I don't know at this stage
 MODELER.Materials.WebGLTextureMaterial = function(params, my) {
   var that, my = my || {},
+  alpha = 1.0,
   texture = null,
   texels = [];
   
   var initialize = function() {
-    if (params.texture) {
-      texture = params.texture;
-    };
+    if (params.texture) { texture = params.texture; }
+    if (params.alpha) { alpha = params.alpha; }
   };
   var initShaderProgram = function() {
     my.shaderProgram.textureCoordAttribute = gl.getAttribLocation(my.shaderProgram, "aTextureCoord");
@@ -22,6 +22,7 @@ MODELER.Materials.WebGLTextureMaterial = function(params, my) {
     //gl.enableVertexAttribArray(my.shaderProgram.vertexColorAttribute);
     
     my.shaderProgram.samplerUniform = gl.getUniformLocation(my.shaderProgram, "uSampler");
+    my.shaderProgram.alphaUniform = gl.getUniformLocation(my.shaderProgram, "uAlpha");
     my.shaderProgram.pMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uPMatrix");
     my.shaderProgram.mvMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uMVMatrix");
   };
@@ -55,7 +56,8 @@ MODELER.Materials.WebGLTextureMaterial = function(params, my) {
       // now set up gl to take the texture
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.uniform1i(my.shaderProgram.samplerUniform, 0);
+      gl.uniform1i(my.shaderProgram.samplerUniform, 0); //Magic number 0? What is this?
+      gl.uniform1f(my.shaderProgram.alphaUniform, alpha);
     }
   };
   
@@ -70,5 +72,6 @@ MODELER.Materials.WebGLTextureMaterial = function(params, my) {
   // overrides
   that.setupShaderProgram = setupShaderProgram;
   that.setDrawMode = setDrawMode;
+  that.alpha = alpha;
   return that;
 }

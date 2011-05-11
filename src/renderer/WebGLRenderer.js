@@ -23,8 +23,6 @@ MODELER.WebGLRenderer = function(params, my) {
     //Set some defaults for gl
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clearDepth(1.0);
-    gl.enable(gl.DEPTH_TEST);
-    gl.depthFunc(gl.LEQUAL);
   };
   
   var setSize = function (pWidth, pHeight) {
@@ -109,6 +107,16 @@ MODELER.WebGLRenderer = function(params, my) {
         false, 
         new Float32Array(vertexMatrix)
       );
+      
+      // set blending/depth testing based on material transparency
+      if (this.material.alpha < 1) {
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+        gl.enable(gl.BLEND);
+        gl.disable(gl.DEPTH_TEST);
+      } else {
+        gl.enable(gl.DEPTH_TEST);
+        gl.depthFunc(gl.LEQUAL); 
+      }
 
       if (this.material.wireframe) {
         this.material.setDrawMode(MODELER.Materials.DRAW_MODE.WIREFRAME);

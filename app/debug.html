@@ -68,12 +68,14 @@
       */
       
       var texture = MODELER.Materials.WebGLTexture({
-        src: '../assets/textures/nehe.gif'
+        //src: '../assets/textures/nehe.gif'
+        src: '../assets/textures/glass.gif'
       });
       
       MODELER.Event.listen(MODELER.EVENTS.TEXTURE.TEXTURE_LOADED, function(d){
         material = MODELER.Materials.WebGLTextureMaterial({
           texture: d.data
+          , alpha: 0.8
         });
       });      
       
