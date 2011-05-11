@@ -21,6 +21,7 @@ Immediate
 - Implement lighting (big task)
 - Create sphere primitive (procedural)
 - Write a small utility for building primitives to files (manually, or using node.js)
+- Consider switching to glmatrix (big task)
 - Implement background asset loader, perhaps with WebWorkers
 - Implement an asset manager to handle loading all of the files
 - See if I can refactor out the global canvas that's attached to the global gl context
