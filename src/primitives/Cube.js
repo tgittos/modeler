@@ -7,7 +7,7 @@ MODELER.Cube = function(params, my) {
   var that, my = my || {},
   mesh = null,
   x = 0, y = 0, z = 0,
-  width = 0, height = 0, depth = 0;
+  width = 0, height = 0, depth = 0,
   rotVector = null, rotDegrees = 0;
   
   function initialize(){

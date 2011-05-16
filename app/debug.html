@@ -17,6 +17,7 @@
     <script type="text/javascript" src="../src/core/Mesh.js"></script>
     <script type="text/javascript" src="../src/primitives/Cube.js"></script>
     <script type="text/javascript" src="../src/primitives/Pyramid.js"></script>
+    <script type="text/javascript" src="../src/primitives/Plane.js"></script>
     <script type="text/javascript" src="../src/materials/Enums.js"></script>
     <script type="text/javascript" src="../src/core/Scene.js"></script>
     <script type="text/javascript" src="../src/core/Camera.js"></script>
@@ -56,21 +57,21 @@
       }
       MODELER.Keyboard.Listener.start(cameraMove);
       
-      var pyramid, cube;
+      var plane, cube;
       
       // first load texture
-      /*
       var material;
       material = MODELER.Materials.WebGLSolidColourMaterial({ 
         wireframe: true, 
         wireframe_mode: MODELER.Materials.WIREFRAME_MODE.WIREFRAME_ONLY
       });
-      */
       
+      /*
       var texture = MODELER.Materials.WebGLTexture({
         //src: '../assets/textures/nehe.gif'
         src: '../assets/textures/glass.gif'
       });
+      */
       
       MODELER.Event.listen(MODELER.EVENTS.TEXTURE.TEXTURE_LOADED, function(d){
         material = MODELER.Materials.WebGLTextureMaterial({
@@ -82,13 +83,13 @@
       
       MODELER.Event.listen(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, function(d){
         //Send some geometry to the scene
-        pyramid = MODELER.Pyramid({
-          width: 2, height: 2, depth: 2,
+        plane = MODELER.Plane({
+          width: 2, height: 2,
           x: -1.5, y: 0.0, z: -5.0,
           rotVector: V3.y,
           material: material
         });
-        scene.addChild(pyramid);
+        scene.addChild(plane);
 
         cube = MODELER.Cube({
           width: 2, height: 2, depth: 2,
@@ -107,16 +108,17 @@
       //Render loop
       var lastTime = 0;
       function render() {
+        /*
         var timeNow = new Date().getTime();
         if (lastTime != 0) {
           var elapsed = timeNow - lastTime;
           
           //Do rendering magicks
           cube.rotDegrees += (90 * elapsed) / 1000.0;
-          pyramid.rotDegrees += (90 * elapsed) / 1000.0;
+          plane.rotDegrees += (90 * elapsed) / 1000.0;
         }
         lastTime = timeNow;
-        
+        */
         renderer.render();
         requestAnimationFrame(render);
       };
