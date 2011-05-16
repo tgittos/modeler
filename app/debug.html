@@ -15,9 +15,11 @@
     <script type="text/javascript" src="../src/core/Face4.js"></script>
     <script type="text/javascript" src="../src/core/Geometry.js"></script>
     <script type="text/javascript" src="../src/core/Mesh.js"></script>
+    <script type="text/javascript" src="../src/primitives/Primitive.js"></script>
     <script type="text/javascript" src="../src/primitives/Cube.js"></script>
     <script type="text/javascript" src="../src/primitives/Pyramid.js"></script>
     <script type="text/javascript" src="../src/primitives/Plane.js"></script>
+    <script type="text/javascript" src="../src/primitives/Sphere.js"></script>
     <script type="text/javascript" src="../src/materials/Enums.js"></script>
     <script type="text/javascript" src="../src/core/Scene.js"></script>
     <script type="text/javascript" src="../src/core/Camera.js"></script>
@@ -57,7 +59,7 @@
       }
       MODELER.Keyboard.Listener.start(cameraMove);
       
-      var plane, cube;
+      var sphere, cube;
       
       // first load texture
       var material;
@@ -71,25 +73,25 @@
         //src: '../assets/textures/nehe.gif'
         src: '../assets/textures/glass.gif'
       });
-      */
       
       MODELER.Event.listen(MODELER.EVENTS.TEXTURE.TEXTURE_LOADED, function(d){
         material = MODELER.Materials.WebGLTextureMaterial({
           texture: d.data
           , alpha: 0.8
         });
-      });      
-      
+      });  
+      */
       
       MODELER.Event.listen(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, function(d){
         //Send some geometry to the scene
-        plane = MODELER.Plane({
-          width: 2, height: 2,
+        sphere = MODELER.Sphere({
+          radius: 2, longitudes: 8, latitudes: 8,
           x: -1.5, y: 0.0, z: -5.0,
           rotVector: V3.y,
           material: material
         });
-        scene.addChild(plane);
+        scene.addChild(sphere);
+        console.log(sphere.getForRender());
 
         cube = MODELER.Cube({
           width: 2, height: 2, depth: 2,

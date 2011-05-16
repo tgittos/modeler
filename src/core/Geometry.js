@@ -25,6 +25,16 @@ MODELER.Geometry = function(params, my) {
     faces.push(face);
     return face;
   };
+  // maybe think about getting rid of this
+  var setFace3s = function(vertices, indices) {
+    // given an array of vertices and indexes, construct face3s and add them to the face buffer
+    for (var i = 0; i < indices.length; i+=3) {
+      var face = MODELER.Face3({
+        vertices: [vertices[indices[i]], vertices[indices[i + 1]], vertices[indices[i + 2]]]
+      });
+      faces.push(face);
+    }
+  };
   var createFace4 = function(dimensions) {
     assert(dimensions.width && dimensions.height, "dimensions are required for a face4");
     //TODO: Consider passing in a position attribute that modifies the start position of each vertex
@@ -84,6 +94,7 @@ MODELER.Geometry = function(params, my) {
   initialize();
   that = {};
   that.createFace3 = createFace3;
+  that.setFace3s = setFace3s;
   that.createFace4 = createFace4;
   that.inspect = inspect;
   that.getForRender = getForRender;
