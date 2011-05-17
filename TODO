@@ -18,17 +18,19 @@ Immediate
 - Implement a standard for app events [partially done]
 - Create a general program structure with proper event handlers [done]
 - Move shader code into material, preload all assets first [partially done]
-- Optimize with array interleaving method
+- Shift rendering code into separate namespace, remove dependency of renderer to abstraction
+  for speed! ********
+- Optimize with array interleaving method *******
+- Write a lightweight version of library that has no complex abstractions - its just arrays and the
+  render context. Related to utilities.
+- Create animations sync system where a procedurally animated scene can be compiled down to a 
+  delcarative scene for super fast lightning running files
+- Consider switching to glmatrix (big task) ********
 - Implement lighting (big task)
 - Create sphere primitive (procedural)
 - Write a small utility for building primitives to files (manually, or using node.js)
 - Expand utility to write entire scenes to files and then run through closure to create small, fast
   demos for use on sites, etc.
-- Write a lightweight version of library that has no complex abstractions - its just arrays and the
-  render context. Related to utilities.
-- Create animations sync system where a procedurally animated scene can be compiled down to a 
-  delcarative scene for super fast lightning running files
-- Consider switching to glmatrix (big task)
 - Implement background asset loader, perhaps with WebWorkers
 - Implement an asset manager to handle loading all of the files
 - See if I can refactor out the global canvas that's attached to the global gl context
