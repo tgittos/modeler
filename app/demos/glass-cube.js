@@ -21,12 +21,13 @@ function pageLoaded() {
   var cube;
   
   var texture = REDBACK.Textures.WebGLTexture({
-    src: '../assets/textures/nehe.gif'
+    src: '../assets/textures/glass.gif'
   });
   
   MODELER.Event.listen(MODELER.EVENTS.TEXTURE.TEXTURE_LOADED, function(d){
     material = REDBACK.Materials.WebGLTextureMaterial({
-      texture: d.data
+      texture: d.data,
+      alpha: 0.8
     });
   });      
   

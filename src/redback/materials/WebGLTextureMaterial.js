@@ -1,6 +1,6 @@
 // a WebGLMaterial has one shader and one texture
 // maybe it needs multiple textures, I don't know at this stage
-MODELER.Materials.WebGLTextureMaterial = function(params, my) {
+REDBACK.Materials.WebGLTextureMaterial = function(params, my) {
   var that, my = my || {},
   alpha = 1.0,
   texture = null,
@@ -43,7 +43,7 @@ MODELER.Materials.WebGLTextureMaterial = function(params, my) {
     };
   }; 
   var setDrawMode = function(mode) {
-    if (mode == MODELER.Materials.DRAW_MODE.WIREFRAME) { 
+    if (mode == REDBACK.Enum.DRAW_MODE.WIREFRAME) { 
       //pointShaderToArray(shaderProgram.vertexColorAttribute, my.edge_colour_buffer, MODELER.Object3D.ColourSize);
     } else {
       var TEXEL_SIZE = 2; // TODO: Move this to a constant somewhere
@@ -65,7 +65,7 @@ MODELER.Materials.WebGLTextureMaterial = function(params, my) {
     fragmentShader: '../src/shaders/webgltexture.fshader',
     vertexShader: '../src/shaders/webgltexture.vshader'
   };
-  that = MODELER.Materials.WebGLMaterial(params, my);
+  that = REDBACK.Materials.WebGLMaterial(params, my);
   my.initShaderProgram = initShaderProgram;
   initialize();
   

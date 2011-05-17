@@ -1,9 +1,9 @@
 // base material for all WebGL materials
-MODELER.Materials.WebGLMaterial = function(params, my) {
+REDBACK.Materials.WebGLMaterial = function(params, my) {
   var that, my = my || {},
   wireframe = false,
   wireframe_colour = [0.5, 0.5, 0.5, 1], //muddy grey
-  wireframe_mode = MODELER.Materials.WIREFRAME_MODE.WIREFRAME_ONLY,
+  wireframe_mode = REDBACK.Enum.WIREFRAME_MODE.WIREFRAME_ONLY,
   wireframe_width = 2,
   shaderProgram = null,
   edge_colour_buffer = null;
@@ -14,7 +14,7 @@ MODELER.Materials.WebGLMaterial = function(params, my) {
     if (params.wireframe_width) { wireframe_width = params.wireframe_width; }
     if (!params.shaders) { params.shaders = {}; }
     if (params.shaders.fragmentShader && params.shaders.vertexShader) {
-      MODELER.WebGLShader({
+      REDBACK.Shaders.WebGLShader({
         fragmentShader: params.shaders.fragmentShader,
         vertexShader: params.shaders.vertexShader
       }).getShaderProgram();
@@ -37,7 +37,7 @@ MODELER.Materials.WebGLMaterial = function(params, my) {
   };
   var setDrawMode = function(mode) {
     // override this method in child materials, and call super
-    if (mode == MODELER.Materials.DRAW_MODE.WIREFRAME) { 
+    if (mode == REDBACK.Enum.DRAW_MODE.WIREFRAME) { 
       pointShaderToArray(my.shaderProgram.vertexColorAttribute, edge_colour_buffer, MODELER.Object3D.ColourSize);
     }
   };

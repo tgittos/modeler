@@ -2,7 +2,7 @@
 // this material is the root of all webgl materials
 // it allows you to specify vertex and fragment shaders for a material
 // and any texture files required
-MODELER.WebGLShader = function(params, my) {
+REDBACK.Shaders.WebGLShader = function(params, my) {
   var that, my = my || {},
   vertexShader = null,
   fragmentShader = null,

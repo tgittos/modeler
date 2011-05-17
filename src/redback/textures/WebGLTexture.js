@@ -4,7 +4,7 @@
 
 // this isn't so much a texture, as it is a texture loader
 // we never use this once it loads the texture
-MODELER.Materials.WebGLTexture = function(params, my) {
+REDBACK.Textures.WebGLTexture = function(params, my) {
   var that, my = my || {},
   src = null,
   texture = null;

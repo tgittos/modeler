@@ -1,7 +1,7 @@
 //Basic material
 //So far, just wireframing to allow building
 //primitives easily
-MODELER.Materials.WebGLSolidColourMaterial = function(params, my) { 
+REDBACK.Materials.WebGLSolidColourMaterial = function(params, my) { 
   var that, my = my || {},
   colour = [1, 1, 1, 1], //Solid white
   face_colour_buffer = null;
@@ -29,7 +29,7 @@ MODELER.Materials.WebGLSolidColourMaterial = function(params, my) {
     my.edge_colour_buffer = bufferColour(edge_colours);
   };
   var setDrawMode = function(mode) {
-    if (mode == MODELER.Materials.DRAW_MODE.WIREFRAME) { 
+    if (mode == REDBACK.Enum.DRAW_MODE.WIREFRAME) { 
       pointShaderToArray(shaderProgram.vertexColorAttribute, my.edge_colour_buffer, MODELER.Object3D.ColourSize);
     } else {
       pointShaderToArray(shaderProgram.vertexColorAttribute, face_colour_buffer, MODELER.Object3D.ColourSize);
@@ -60,7 +60,7 @@ MODELER.Materials.WebGLSolidColourMaterial = function(params, my) {
     fragmentShader: '../src/shaders/webglcolour.fshader',
     vertexShader: '../src/shaders/webglcolour.vshader'
   };
-  that = MODELER.Materials.WebGLMaterial(params, my);
+  that = REDBACK.Materials.WebGLMaterial(params, my);
   my.initShaderProgram = initShaderProgram;
   initialize();
   

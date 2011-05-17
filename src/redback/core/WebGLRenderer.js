@@ -1,7 +1,4 @@
-//This should be able to render anything that can pump
-//vertices into a buffer, but right now type checks for
-//Object3D
-MODELER.WebGLRenderer = function(params, my) {
+REDBACK.Core.WebGLRenderer = function(params, my) {
   var that, my = my || {},
   width = 800,
   height = 600,
@@ -119,7 +116,7 @@ MODELER.WebGLRenderer = function(params, my) {
       }
 
       if (this.material.wireframe) {
-        this.material.setDrawMode(MODELER.Materials.DRAW_MODE.WIREFRAME);
+        this.material.setDrawMode(REDBACK.Enum.DRAW_MODE.WIREFRAME);
         //Render lines
         gl.lineWidth(this.material.wireframe_width);
         var lineBuffer = gl.createBuffer();
@@ -128,8 +125,8 @@ MODELER.WebGLRenderer = function(params, my) {
         gl.drawElements(gl.LINES, this.lines.length, gl.UNSIGNED_SHORT, 0);
       }
       if (!this.material.wireframe || 
-          (this.material.wireframe && this.material.wireframe_mode == MODELER.Materials.WIREFRAME_MODE.BOTH)) {
-        this.material.setDrawMode(MODELER.Materials.DRAW_MODE.TEXTURE);
+          (this.material.wireframe && this.material.wireframe_mode == REDBACK.Enum.WIREFRAME_MODE.BOTH)) {
+        this.material.setDrawMode(REDBACK.Enum.DRAW_MODE.TEXTURE);
         //Render faces
         var faceBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);

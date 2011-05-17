@@ -7,9 +7,9 @@ function pageLoaded() {
   var pyramid, cube;
 
   var material;
-  material = MODELER.Materials.WebGLSolidColourMaterial({ 
+  material = REDBACK.Materials.WebGLSolidColourMaterial({ 
     wireframe: true, 
-    wireframe_mode: MODELER.Materials.WIREFRAME_MODE.WIREFRAME_ONLY
+    wireframe_mode: REDBACK.Enum.WIREFRAME_MODE.WIREFRAME_ONLY
   });
   
   MODELER.Event.listen(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, function(d){
@@ -33,7 +33,7 @@ function pageLoaded() {
     render();
   }, true);
   
-  renderer = MODELER.WebGLRenderer( { scene: scene, camera: camera} );
+  renderer = REDBACK.Core.WebGLRenderer( { scene: scene, camera: camera} );
   resizeViewport();
   
   //Render loop
