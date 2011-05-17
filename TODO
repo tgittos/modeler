@@ -18,6 +18,7 @@ Immediate
 - Implement a standard for app events [partially done]
 - Create a general program structure with proper event handlers [done]
 - Move shader code into material, preload all assets first [partially done]
+- Optimize with array interleaving method
 - Implement lighting (big task)
 - Create sphere primitive (procedural)
 - Write a small utility for building primitives to files (manually, or using node.js)
