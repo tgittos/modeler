@@ -79,7 +79,25 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
     // go through each material, get it's shader program
     // get the shader program, and the vertices the program applies to
     // and draw them to the screen
+    var vertex_buffer = [];
     render_array.each(function(){
+      
+      // TODO: CHANGES
+      
+      // 1. we dont need separate buffers for each object - this is slowing down the rendering
+      // at the very least, we can stuff each object into the same buffer
+      // and have at most 2 buffers - vertex and indices
+      // ? but then how does this work with multiple shader programs per scene?
+      
+      // 2. line drawing can be implemented in the shader level, meaning we don't need to construct
+      // a line buffer and send it in
+      
+      // 3. normals (when we have them) and texture coords (u, v) can be stuffed into the same
+      // buffer as the vertices, and then point the shader to them
+      // see: http://blog.tojicode.com/2011/05/interleaved-array-basics.html
+      
+      // 4. remove dependency on slow abstractions, operate only on buffers and WebGL objects
+      
       this.material.setupShaderProgram(this.vertices);
       var shaderProgram = this.material.getShaderProgram();
       gl.useProgram(shaderProgram);
