@@ -87,7 +87,10 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
       // 1. we dont need separate buffers for each object - this is slowing down the rendering
       // at the very least, we can stuff each object into the same buffer
       // and have at most 2 buffers - vertex and indices
-      // ? but then how does this work with multiple shader programs per scene?
+      // Different objects with different shaders can be managed by specifying a buffer offset
+      // in the drawElements call
+      // gl.drawElements(gl.TRIANGLES, surface.elementCount, gl.UNSIGNED_SHORT, surface.indexOffset)
+      // So bind the buffers once, then loop over the shaders and draw the appropriate elements
       
       // 2. line drawing can be implemented in the shader level, meaning we don't need to construct
       // a line buffer and send it in
