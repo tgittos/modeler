@@ -23,7 +23,8 @@ Immediate
 - Add translation layer for writing abstraction out to arrays for the renderer *******
 - Optimize with array interleaving method *******
 - Consider switching to glmatrix (big task) ********
-- Implement lighting (big task)
+- Implement lighting (big task) ********
+- http://imaging.robarts.ca/~dcantor/?p=200 - Point cloud rendering
 - Create sphere primitive (procedural)
 - Write a small utility for building primitives to files (manually, or using node.js)
 - Expand utility to write entire scenes to files and then run through closure to create small, fast
