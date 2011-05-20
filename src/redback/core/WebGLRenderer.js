@@ -2,9 +2,20 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
   var that, my = my || {},
   width = 800,
   height = 600,
-  scene = null,
-  camera = null,
+  vertex_buffer = [],
+  index_buffer = [],
+  surface_buffer = [],
+  scene = null, // delete this?
+  camera = null, // delete this?
   logged = false;
+  
+  // its not the responsibility of the renderer to prepare scenes for rendering
+  // in terms of rotations, adding objects to other objects, etc.
+  // the renderer just cares about getting vertices and faces (and maybe lines, if I keep them)
+  // and sending them to the GPU
+  // It does rely on some vertex/face conventions, such as vertices and faces and lines having offsets
+  // and strides
+  // so we need a render object template
   
   var initialize = function() {
     // reassign gl to be our 
@@ -21,7 +32,6 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clearDepth(1.0);
   };
-  
   var setSize = function (pWidth, pHeight) {
     width = pWidth || width;
     height = pHeight || height;
@@ -30,6 +40,22 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
     gl.viewportWidth = canvas.width;
     gl.viewportHeight = canvas.height;  
   };
+  var clearBuffers = function() {
+    vertex_buffer = [];
+    index_buffer = [];
+    surface_buffer = [];
+  };
+  var buffer_vertices = function(vertices) { 
+    vertex_buffer = vertex_buffer.concat(vertices);
+  };
+  var buffer_indices = function(indices) {
+    index_buffer = index_buffer.concat(indices);
+  };
+  var buffer_surfaces = function(surfaces) {
+    surface_buffer = surface_buffer.concat(surfaces);
+  };
+  var vertex_buffer_length = function() { return vertex_buffer.length; }
+  var index_buffer_length = function() { return index_buffer.length; }
   var render = function () {
     // multiple viewport nonsense
     //glViewport(width/2,height/2,width/2,height/2);
@@ -79,7 +105,6 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
     // go through each material, get it's shader program
     // get the shader program, and the vertices the program applies to
     // and draw them to the screen
-    var vertex_buffer = [];
     render_array.each(function(){
       
       // TODO: CHANGES
