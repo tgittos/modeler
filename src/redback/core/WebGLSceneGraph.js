@@ -1,3 +1,7 @@
+/*
+  WebGLSceneGraph optimises the way data is sent to the renderer. It's the main interface for the client
+  application and the renderer
+*/
 REDBACK.Core.WebGLScene = function(params, my) {
   
   /*

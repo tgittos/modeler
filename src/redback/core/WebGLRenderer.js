@@ -86,17 +86,25 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
       var obj = objects[i];
       
       //Position of object
+      
+      /*
+        It is not the renderer's job to apply object transformations.
+        The renderer is just responsible for displaying the vertices of objects as is.
+        Object rotation and what not needs to be performed in the application that is
+        sending data to the renderer
+      */
+      
       //var translationMatrix = M4x4.translate(V3.$(obj.x, obj.y, obj.z), M4x4.I);
       var translationMatrix = M4x4.translate(V3.$(obj.x, obj.y, obj.z), cameraPositionMatrix);
       if (!logged) { console.log('translation matrix: ' + translationMatrix.inspect()); }
       //Rotation of object
-      var rotationMatrix = M4x4.rotate(Math.degreesToRadians(obj.rotDegrees), obj.rotVector, translationMatrix);
-      if (!logged) { console.log('rotation matrix: ' + rotationMatrix.inspect()); }
-      var vertexMatrix = M4x4.mul(translationMatrix, rotationMatrix);
-      if (!logged) { console.log('vertex matrix: ' + vertexMatrix.inspect()); }
+      //var rotationMatrix = M4x4.rotate(Math.degreesToRadians(obj.rotDegrees), obj.rotVector, translationMatrix);
+      //if (!logged) { console.log('rotation matrix: ' + rotationMatrix.inspect()); }
+      //var vertexMatrix = M4x4.mul(translationMatrix, rotationMatrix);
+      //if (!logged) { console.log('vertex matrix: ' + vertexMatrix.inspect()); }
       logged = true;
 
-      drawObject(obj, perspectiveMatrix, vertexMatrix);
+      drawObject(obj, perspectiveMatrix, translationMatrix);
     }
   };
   var drawObject = function(obj, perspectiveMatrix, vertexMatrix) {
