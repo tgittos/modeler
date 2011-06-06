@@ -22,6 +22,7 @@ Immediate
   for speed! ********
 - Add translation layer for writing abstraction out to arrays for the renderer *******
 - Optimize with array interleaving method *******
+- Move events stuff into separate library, add dependency for redback to events *******
 - Consider switching to glmatrix (big task) ********
 - Implement lighting (big task) ********
 - http://imaging.robarts.ca/~dcantor/?p=200 - Point cloud rendering

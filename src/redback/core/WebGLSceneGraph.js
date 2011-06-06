@@ -1,8 +1,14 @@
 /*
   WebGLSceneGraph optimises the way data is sent to the renderer. It's the main interface for the client
   application and the renderer
+  
+  Objects are stored in a tree outlining their heirarchy and composition.
+  When a render frame is requested, the renderer will ask the SceneGraph for data.
+  This data is computed with a tree traversal, each object having parent's rotations applied.
+  The data is also cached, and a variable is defined to let the SceneGraph know whether or not it 
+  needs to recompute the render data
 */
-REDBACK.Core.WebGLScene = function(params, my) {
+REDBACK.Core.WebGLSceneGraph = function(params, my) {
   
   /*
    BASICS OF ARRAY INTERLEAVING AND PACKING
