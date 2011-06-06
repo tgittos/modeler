@@ -2,9 +2,6 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
   var that, my = my || {},
   width = 800,
   height = 600,
-  vertex_buffer = [],
-  index_buffer = [],
-  surface_buffer = [],
   scene = null, // delete this?
   camera = null, // delete this?
   logged = false;
@@ -40,22 +37,6 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
     gl.viewportWidth = canvas.width;
     gl.viewportHeight = canvas.height;  
   };
-  var clearBuffers = function() {
-    vertex_buffer = [];
-    index_buffer = [];
-    surface_buffer = [];
-  };
-  var buffer_vertices = function(vertices) { 
-    vertex_buffer = vertex_buffer.concat(vertices);
-  };
-  var buffer_indices = function(indices) {
-    index_buffer = index_buffer.concat(indices);
-  };
-  var buffer_surfaces = function(surfaces) {
-    surface_buffer = surface_buffer.concat(surfaces);
-  };
-  var vertex_buffer_length = function() { return vertex_buffer.length; }
-  var index_buffer_length = function() { return index_buffer.length; }
   var render = function () {
     // multiple viewport nonsense
     //glViewport(width/2,height/2,width/2,height/2);
