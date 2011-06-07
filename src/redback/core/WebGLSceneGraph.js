@@ -50,20 +50,45 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
   */
   
   var that, my = my || {},
-  vertices = [],
-  indices = [],
-  lines = [],
-  materials = [],
-  object_offsets = {},
+  root_obj = null,
+  buffer = null,
+  dirty = false,
   object_counter = 0,
-  vertex_stride = 12; // vertex stride is how many elements in a vertex
+  VERTEX_STRIDE = 12; // vertex stride is how many elements in a vertex - x, y, z * 4 bytes = 12
   
   var initialize = function() {
     
   };
-  var add_object = function(obj) {
+  var addObject = function(obj) {
     
+  };
+  var removeObject = function(obj) {
+    
+  };
+  var getRenderBuffers = function() {    
+    // hit the buffer first
+    if (!dirty && buffer) { return buffer; }
+    if (!buffer) { 
+      buffer = {
+        vertices: [],
+        indices: [],
+        lines: [],
+        materials: []
+      }; 
+    }
+    
+    // walk the tree, applying transformations 
+    var node_stack = [root_obj];
+    while (node_stack.length > 0) {
+      var current_object = node_stack.pop();
+      processObject(current_object.getTransformedObject()); //modifies the buffer - is this a good idea?
+      node_stack = node_stack.concat(current_object.children);
+    }
+    return buffer;
+  };
+  var processObject = function(obj) {
     /*
+      Get the object's vertex, index, line and material buffers.
       Loop through passed in materials
       If the material is already in the material buffer:
         - Find the materials offset & length for vertices, indices and lines
@@ -76,32 +101,19 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
         - Update object buffer
     */
     
-    /*
-      obj format:
-      {
-        vertices: array of vertices,
-        indices: aray of indices,
-        materials: { 
-          material: WebGLMaterial, 
-          offsets: {
-            vertex: vertex offset,
-            index: index offset
-          },
-          lengths: {
-            vertex: number of verts it applies to,
-            index: number of indices
-          }
-        }
-      }
-    */
-
-    obj.materials.each(function(){
+    var vertex_buffer = obj.getVertices();
+    var index_buffer = obj.getIndices();
+    var line_buffer = obj.getLines();
+    var material_buffer = obj.getMaterials();
+    
+    // this line and below need attention
+    
+    material_buffer.each(function(){
       var mat = get_material(this);
       if (mat) {
         vertices = vertices.splice(mat.offsets.vertex + mat.lengths.vertex, 0, obj.vertices);
         indices = indices.splice(mat.offsets.index + mat.lengths.index, 0, obj.indices);
       } else {
-        var obj_lines = calculate_lines(obj.vertices);
         this.offsets.vertex += vertices.length;
         this.offsets.index += indices.length;
         this.offsets.lines += lines.length;
@@ -120,15 +132,7 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
       index_offset: indices.length,
       lines_offset: lines
     }
-    
   };
-  var remove_object = function(obj) {
-    
-  };
-  var get_vertex_buffer = function() { return vertices; };
-  var get_index_buffer = function() { return indices; };
-  var get_line_buffer = function() { return lines; };
-  var get_material_buffer = function() { return materials; };
   var calculate_lines = function(vertices) {
     line_buffer = [];
     for (var i = 0; i < vertices.length; i+= 3) {
@@ -152,11 +156,9 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
   
   that = {};
   initialize();
-  that.add_object = add_object;
-  that.remove_object = remove_object;
-  that.get_vertex_buffer = get_vertex_buffer;
-  that.get_index_buffer = get_index_buffer;
-  that.get_line_buffer = get_line_buffer;
-  that.get_material_buffer = get_material_buffer;
+  that.initialize = initialize;
+  that.addObject = addObject;
+  that.removeObject = removeObject;
+  that.getRenderBuffers = getRenderBuffers;
   return that;
 };
