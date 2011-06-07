@@ -60,10 +60,10 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
     
   };
   var addObject = function(obj) {
-    
+    dirty = true;
   };
   var removeObject = function(obj) {
-    
+    dirty = true;
   };
   var getRenderBuffers = function() {    
     // hit the buffer first
@@ -84,6 +84,7 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
       processObject(current_object.getTransformedObject()); //modifies the buffer - is this a good idea?
       node_stack = node_stack.concat(current_object.children);
     }
+    dirty = false;
     return buffer;
   };
   var processObject = function(obj) {
@@ -106,53 +107,27 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
     var line_buffer = obj.getLines();
     var material_buffer = obj.getMaterials();
     
-    // this line and below need attention
-    
+    // so far, this just packs materials and vertices, not indices or lines
     material_buffer.each(function(){
-      var mat = get_material(this);
-      if (mat) {
-        vertices = vertices.splice(mat.offsets.vertex + mat.lengths.vertex, 0, obj.vertices);
-        indices = indices.splice(mat.offsets.index + mat.lengths.index, 0, obj.indices);
-      } else {
-        this.offsets.vertex += vertices.length;
-        this.offsets.index += indices.length;
-        this.offsets.lines += lines.length;
-        this.lengths.vertex = obj.vertices.length;
-        this.lengths.index = obj.indices.length;
-        this.lengths.lines = obj_lines.length;
-        vertices = vertices.concat(obj.vertices);
-        indices = indices.concat(obj.indices);
-        lines = lines.concat(obj_lines);
-        materials = materials.concat(this);
+      var material = this;
+      var found = false;
+      buffer.materials.each(function(){
+        if this.material.equals(material) {
+          // material was found in our material buffer already
+          buffer.vertex.splice(mat.vertex_offset, 0, vertex_buffer);
+          mat.num_vertices += vertex_buffer.length;
+          found = true;
+          return;
+        }
+      });
+      if (!found) {
+        material = material.clone();
+        material.vertex_offset = buffer.vertex.length;
+        buffer.vertex = buffer.vertex.concat(vertex_buffer);
+        materials.push(material);
       }
     });
-    
-    object_offsets[object_counter++] = {
-      vertex_offset: vertices.length,
-      index_offset: indices.length,
-      lines_offset: lines
-    }
   };
-  var calculate_lines = function(vertices) {
-    line_buffer = [];
-    for (var i = 0; i < vertices.length; i+= 3) {
-      line_buffer = line_buffer.concat([
-        vertices[i], vertices[i + 1],
-        vertices[i + 1], vertices[i + 2],
-        vertices[i + 2], vertices[i]
-      ]);
-    }
-  };
-  var get_material = function(material) {
-    var mat = null;
-    materials.each(function(){
-      if this.material.equals(material.material) {
-        mat = this;
-        return;
-      }
-    });
-    return mat;
-  }
   
   that = {};
   initialize();
