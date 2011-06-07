@@ -4,6 +4,7 @@
 */
 REDBACK.Core.WebGLObject = function(params, my) {
   var that, my = my || {},
+  id = "",
   vertices = [],
   indices = [],
   lines = [],
@@ -42,6 +43,7 @@ REDBACK.Core.WebGLObject = function(params, my) {
   initialize();
   
   // public functions
+  that.id = id;
   that.setVertices = setVertices;
   that.setIndices = setIndices;
   that.setMaterials = setMaterials;

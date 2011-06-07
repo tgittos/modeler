@@ -57,23 +57,33 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
   VERTEX_STRIDE = 12; // vertex stride is how many elements in a vertex - x, y, z * 4 bytes = 12
   
   var initialize = function() {
-    
+    root_obj = REDBACK.Core.WebGLSceneGraphNode();
   };
-  var addObject = function(obj) {
+  var addObject = function(obj, parent) {
     dirty = true;
+    if (!obj.id.length > 0) { obj.id = "Object" + object_counter++ };
+    if (!parent) { parent = root_obj; }
+    parent.addChild(obj);
+    return obj.id;
   };
   var removeObject = function(obj) {
     dirty = true;
+    var parent_obj = obj.parent;
+    parent_obj.removeChild(obj);
   };
+  var moveObject = function(obj, new_parent) {
+    removeObject(obj);
+    addObject(obj, new_parent);
+  }
   var getRenderBuffers = function() {    
     // hit the buffer first
     if (!dirty && buffer) { return buffer; }
     if (!buffer) { 
       buffer = {
-        vertices: [],
-        indices: [],
-        lines: [],
-        materials: []
+        vertex: [],
+        index: [],
+        line: [],
+        material: []
       }; 
     }
     
@@ -114,16 +124,24 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
       buffer.materials.each(function(){
         if this.material.equals(material) {
           // material was found in our material buffer already
-          buffer.vertex.splice(mat.vertex_offset, 0, vertex_buffer);
-          mat.num_vertices += vertex_buffer.length;
+          buffer.vertex.splice(mat.offsets.vertex, 0, vertex_buffer);
+          buffer.index.splice(mat.offsets.index, 0, index_buffer);
+          buffer.line.splice(mat.offsets.line, 0, line_buffer);
+          mat.counts.vertex += vertex_buffer.length;
+          mat.counts.index += index_buffer.length;
+          mat.counts.line += line_buffer.length;
           found = true;
           return;
         }
       });
       if (!found) {
         material = material.clone();
-        material.vertex_offset = buffer.vertex.length;
+        material.offsets.vertex = buffer.vertex.length;
+        material.offsets.index = buffer.index.length;
+        material.offsets.line = buffer.line.length;
         buffer.vertex = buffer.vertex.concat(vertex_buffer);
+        buffer.index = buffer.index.concat(index_buffer);
+        buffer.line = buffer.line.concat(line_buffer);
         materials.push(material);
       }
     });

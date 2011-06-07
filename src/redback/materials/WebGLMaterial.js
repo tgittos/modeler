@@ -5,8 +5,12 @@ REDBACK.Materials.WebGLMaterial = function(params, my) {
   wireframe_colour = [0.5, 0.5, 0.5, 1], //muddy grey
   wireframe_mode = REDBACK.Enum.WIREFRAME_MODE.WIREFRAME_ONLY,
   wireframe_width = 2,
-  vertex_offset = 0,
-  num_vertices = 0,
+  offsets = {
+    vertex: 0, index: 0, line: 0
+  },
+  counts = {
+    vertex: 0, index: 0, line: 0
+  },
   shaderProgram = null,
   edge_colour_buffer = null;
   
