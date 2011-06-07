@@ -13,15 +13,27 @@ REDBACK.Core.WebGLSceneGraphNode = function(params, my) {
   var getTransformedObject = function() {
     var transformedObject = obj.clone().applyTransform(getGlobalTransform());
     return transformedObject;
-  }
+  };
   var getGlobalTransform = function() {
     var parent_transform = M4x4.I;
     if (parent) { parent_transform = parent.getGlobalTransform(); }
     return M4x4.mul(local_transform, parent_transform);
-  }
+  };
   var setLocalTransform = function(transform) {
     local_transform = transform;
-  }
+  };
+  var addObject = function(obj) {
+    children.push(obj);
+    obj.parent = this;
+  };
+  var removeObject = function(obj) {
+    var that = this;
+    children.push(obj.children);
+    obj.children.each(function(){
+      this.parent = that;
+    });
+    obj.parent = null;
+  };
   
   that = {};
   initialize();
