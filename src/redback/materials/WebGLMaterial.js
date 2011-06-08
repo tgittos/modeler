@@ -78,8 +78,8 @@ REDBACK.Materials.WebGLMaterial = function(params, my) {
   initialize();
   
   // public methods
-  that.vertex_start = vertex_start;
-  that.vertex_offset = vertex_offset;
+  that.offsets = offsets;
+  that.counts = counts;
   that.wireframe = wireframe;
   that.wireframe_mode = wireframe_mode;
   that.wireframe_width = wireframe_width;

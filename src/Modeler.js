@@ -3,6 +3,8 @@ MODELER.IO = MODELER.IO || {};
 MODELER.Keyboard = MODELER.Keyboard || {};
 
 MODELER.webGLContextString = 'experimental-webgl';
+MODELER.BASE = '/src/';
+
 (function(){
   try {
     window.canvas = document.createElement('canvas');
