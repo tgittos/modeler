@@ -63,7 +63,7 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
     dirty = true;
     if (!obj.id.length > 0) { obj.id = "Object" + object_counter++ };
     if (!parent) { parent = root_obj; }
-    parent.addChild(obj);
+    parent.addObject(REDBACK.Core.WebGLSceneGraphNode({obj: obj}));
     return obj.id;
   };
   var removeObject = function(obj) {
@@ -88,7 +88,7 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
     }
     
     // walk the tree, applying transformations 
-    var node_stack = [root_obj];
+    var node_stack = root_obj.children;
     while (node_stack.length > 0) {
       var current_object = node_stack.pop();
       processObject(current_object.getTransformedObject()); //modifies the buffer - is this a good idea?
@@ -121,8 +121,8 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
     material_buffer.each(function(){
       var material = this;
       var found = false;
-      buffer.materials.each(function(){
-        if this.material.equals(material) {
+      buffer.material.each(function(){
+        if (this.equals(material)) {
           // material was found in our material buffer already
           buffer.vertex.splice(mat.offsets.vertex, 0, vertex_buffer);
           buffer.index.splice(mat.offsets.index, 0, index_buffer);

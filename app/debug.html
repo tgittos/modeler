@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Modeler - DEBUG</title>
-    <link href="http://meyerweb.com/eric/tools/css/reset/reset.css" rel="stylesheet" />
+    <link href="css/reset.css" rel="stylesheet" />
     <script type="text/javascript" src="../lib/webgl-mjs/mjs.js"></script>
     <script type="text/javascript" src="../src/utils/mjs.js"></script>
     <script type="text/javascript" src="../src/utils/language.js"></script>
@@ -26,6 +26,9 @@
     <script type="text/javascript" src="../src/core/Shader.js"></script>
     <script type="text/javascript" src="../src/redback/Redback.js"></script>
     <script type="text/javascript" src="../src/redback/core/WebGLRenderer.js"></script>
+    <script type="text/javascript" src="../src/redback/core/WebGLObject.js"></script>
+    <script type="text/javascript" src="../src/redback/core/WebGLSceneGraph.js"></script>
+    <script type="text/javascript" src="../src/redback/core/WebGLSceneGraphNode.js"></script>
     <script type="text/javascript" src="../src/redback/materials/Enums.js"></script>
     <script type="text/javascript" src="../src/redback/materials/WebGLMaterial.js"></script>
     <script type="text/javascript" src="../src/redback/materials/WebGLSolidColourMaterial.js"></script>
@@ -37,30 +40,10 @@
     var renderer;
     function pageLoaded() {
       
-      //set up keyboard event testing
-      function debugKeyboard(e) {
-        console.log(e.which);
-      }
-      //MODELER.Keyboard.Listener.start(debugKeyboard);
-
-      var scene = MODELER.Scene();
+      var scene = REDBACK.Core.WebGLSceneGraph();
       var camera = MODELER.Camera();
-      
-      function cameraMove(e) {
-        var key = e.which; //GOOD FOR MAC ONLY SO FAR
-        switch (key) {
-          // todo: move this to a camera.moveForward and camera.lookAt model
-          // todo: make the rendering of the movement interpolate much better, for less
-          // jerky movement
-          case MODELER.EVENTS.KEYBOARD.W: camera.z += 0.5; break;
-          case MODELER.EVENTS.KEYBOARD.A: camera.x += 0.5; break;
-          case MODELER.EVENTS.KEYBOARD.S: camera.z -= 0.5; break;
-          case MODELER.EVENTS.KEYBOARD.D: camera.x -= 0.5; break;
-        }
-      }
-      MODELER.Keyboard.Listener.start(cameraMove);
-      
-      var sphere, cube;
+
+      var cube;
       
       // first load texture
       var material;
@@ -68,40 +51,11 @@
         wireframe: true, 
         wireframe_mode: REDBACK.Enum.WIREFRAME_MODE.WIREFRAME_ONLY
       });
-      
-      /*
-      var texture = REDBACK.Textures.WebGLTexture({
-        //src: '../assets/textures/nehe.gif'
-        src: '../assets/textures/glass.gif'
-      });
-      
-      MODELER.Event.listen(MODELER.EVENTS.TEXTURE.TEXTURE_LOADED, function(d){
-        material = REDBACK.Materials.WebGLTextureMaterial({
-          texture: d.data
-          , alpha: 0.8
-        });
-      });  
-      */
-      
       MODELER.Event.listen(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, function(d){
-        //Send some geometry to the scene
-        sphere = MODELER.Sphere({
-          radius: 2, longitudes: 8, latitudes: 8,
-          x: -1.5, y: 0.0, z: -5.0,
-          rotVector: V3.y,
-          material: material
-        });
-        scene.addChild(sphere);
-        console.log(sphere.getForRender());
-
         cube = MODELER.Cube({
-          width: 2, height: 2, depth: 2,
-          x: 1.5, y: 0.0, z: -5.0,
-          rotVector: [1, 1, 0],
-          rotDegrees: 45,
           material: material
         });
-        scene.addChild(cube);
+        scene.addObject(cube);
         render();
       }, true);
       

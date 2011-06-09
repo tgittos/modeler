@@ -60,88 +60,64 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
     if (!logged) { console.log('camera pos matrix: ' + cameraPositionMatrix.inspect()); }
     if (!logged) { console.log('perspective matrix: ' + perspectiveMatrix.inspect()); }
     
-    //Render out the objects in the buffers
-    // multiple objects in a scene
-    var objects = scene.getChildren();
-    for (var i = 0; i < objects.length; i++) {
-      var obj = objects[i];
-      
-      //Position of object
-      
-      /*
-        It is not the renderer's job to apply object transformations.
-        The renderer is just responsible for displaying the vertices of objects as is.
-        Object rotation and what not needs to be performed in the application that is
-        sending data to the renderer
-      */
-      
-      //var translationMatrix = M4x4.translate(V3.$(obj.x, obj.y, obj.z), M4x4.I);
-      var translationMatrix = M4x4.translate(V3.$(obj.x, obj.y, obj.z), cameraPositionMatrix);
-      if (!logged) { console.log('translation matrix: ' + translationMatrix.inspect()); }
-      //Rotation of object
-      //var rotationMatrix = M4x4.rotate(Math.degreesToRadians(obj.rotDegrees), obj.rotVector, translationMatrix);
-      //if (!logged) { console.log('rotation matrix: ' + rotationMatrix.inspect()); }
-      //var vertexMatrix = M4x4.mul(translationMatrix, rotationMatrix);
-      //if (!logged) { console.log('vertex matrix: ' + vertexMatrix.inspect()); }
-      logged = true;
+    // TODO: CHANGES
 
-      drawObject(obj, perspectiveMatrix, translationMatrix);
-    }
-  };
-  var drawObject = function(obj, perspectiveMatrix, vertexMatrix) {
-    assert(typeof obj.getForRender === 'function', "Not a renderable object");
-    var render_array = obj.getForRender();
-    // go through each material, get it's shader program
-    // get the shader program, and the vertices the program applies to
-    // and draw them to the screen
-    render_array.each(function(){
+    // 1. we dont need separate buffers for each object - this is slowing down the rendering
+    // at the very least, we can stuff each object into the same buffer
+    // and have at most 2 buffers - vertex and indices
+    // Different objects with different shaders can be managed by specifying a buffer offset
+    // in the drawElements call
+    // gl.drawElements(gl.TRIANGLES, surface.elementCount, gl.UNSIGNED_SHORT, surface.indexOffset)
+    // So bind the buffers once, then loop over the shaders and draw the appropriate elements
+    // [DONE]
+
+    // 2. line drawing can be implemented in the shader level, meaning we don't need to construct
+    // a line buffer and send it in
+
+    // 3. normals (when we have them) and texture coords (u, v) can be stuffed into the same
+    // buffer as the vertices, and then point the shader to them
+    // see: http://blog.tojicode.com/2011/05/interleaved-array-basics.html
+
+    // 4. remove dependency on slow abstractions, operate only on buffers and WebGL objects
+    // [DONE?]
+    var buffers = scene.getRenderBuffers();
+    
+    // send vertices to a single buffer, once only
+    var vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(buffers.vertex), gl.STATIC_DRAW);
+    
+    // send indices to a single buffer, once only
+    var faceBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(buffers.index), gl.STATIC_DRAW);
+    
+    // send lines to a single buffer, once only
+    var lineBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lineBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(buffers.line), gl.STATIC_DRAW);
+    
+    buffers.materials.each(function(){
+      var my_vertices = buffers.vertex.slice(this.offsets.vertex, this.counts.vertex);
+      var my_indices = buffers.index.slice(this.offsets.index, this.counts.index); // may not need
+      var my_lines = buffers.line.slice(this.offsets.line, this.counts.line); // may not need
       
-      // TODO: CHANGES
-      
-      // 1. we dont need separate buffers for each object - this is slowing down the rendering
-      // at the very least, we can stuff each object into the same buffer
-      // and have at most 2 buffers - vertex and indices
-      // Different objects with different shaders can be managed by specifying a buffer offset
-      // in the drawElements call
-      // gl.drawElements(gl.TRIANGLES, surface.elementCount, gl.UNSIGNED_SHORT, surface.indexOffset)
-      // So bind the buffers once, then loop over the shaders and draw the appropriate elements
-      
-      // 2. line drawing can be implemented in the shader level, meaning we don't need to construct
-      // a line buffer and send it in
-      
-      // 3. normals (when we have them) and texture coords (u, v) can be stuffed into the same
-      // buffer as the vertices, and then point the shader to them
-      // see: http://blog.tojicode.com/2011/05/interleaved-array-basics.html
-      
-      // 4. remove dependency on slow abstractions, operate only on buffers and WebGL objects
-      
-      this.material.setupShaderProgram(this.vertices);
-      var shaderProgram = this.material.getShaderProgram();
+      this.setupShaderProgram(my_vertices);
+      var shaderProgram = this.getShaderProgram();
       gl.useProgram(shaderProgram);
-      // tells the shader program which buffer to use for vertex data
-      var vertexBuffer = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
-      gl.vertexAttribPointer(
-        shaderProgram.vertexPositionAttribute, 
-        MODELER.Object3D.VertexSize, 
-        gl.FLOAT, false, 0, 0);
       
-      // tells the shader program about the perspective matrix
-      gl.uniformMatrix4fv(
-        shaderProgram.pMatrixUniform, 
-        false, 
-        new Float32Array(perspectiveMatrix)
-      );
-      // tells the shader about the vertex position matrix (move matrix)
-      gl.uniformMatrix4fv(
-        shaderProgram.mvMatrixUniform, 
-        false, 
-        new Float32Array(vertexMatrix)
-      );
+      // tell shader program which vertices to render
+      // 12 stride because 3 floats per vertex at 4bytes each, starting at 0 index for each stride
+      gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, REDBACK.VERTEX_SIZE, gl.FLOAT, false, REDBACK.VERTEX_STRIDE, 0);
+      // tell shader program about the perspective matrix
+      gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, new Float32Array(perspectiveMatrix));
+      // tells the shader about the vertex position matrix (move matrix) (CONSIDER REMOVING FROM SHADER AND HERE)
+      // THIS IS THE JOB OF THE SCENE GRAPH
+      //gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, new Float32Array(vertexMatrix));
+      gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, new Float32Array(M4x4.I));
       
       // set blending/depth testing based on material transparency
-      if (this.material.alpha < 1) {
+      if (this.alpha < 1) {
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
         gl.enable(gl.BLEND);
         gl.disable(gl.DEPTH_TEST);
@@ -150,23 +126,17 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
         gl.depthFunc(gl.LEQUAL); 
       }
 
-      if (this.material.wireframe) {
-        this.material.setDrawMode(REDBACK.Enum.DRAW_MODE.WIREFRAME);
-        //Render lines
+      // render lines
+      if (this.wireframe) {
+        this.setDrawMode(REDBACK.Enum.DRAW_MODE.WIREFRAME);
         gl.lineWidth(this.material.wireframe_width);
-        var lineBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lineBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.lines), gl.STATIC_DRAW);
-        gl.drawElements(gl.LINES, this.lines.length, gl.UNSIGNED_SHORT, 0);
+        gl.drawElements(gl.LINES, this.counts.line, gl.UNSIGNED_SHORT, this.offsets.line);
       }
+      // render faces
       if (!this.material.wireframe || 
           (this.material.wireframe && this.material.wireframe_mode == REDBACK.Enum.WIREFRAME_MODE.BOTH)) {
         this.material.setDrawMode(REDBACK.Enum.DRAW_MODE.TEXTURE);
-        //Render faces
-        var faceBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.elementIndices), gl.STATIC_DRAW);
-        gl.drawElements(gl.TRIANGLES, this.elementIndices.length, gl.UNSIGNED_SHORT, 0);
+        gl.drawElements(gl.TRIANGLES, this.counts.index, gl.UNSIGNED_SHORT, this.offsets.index);
       }
     });
   };

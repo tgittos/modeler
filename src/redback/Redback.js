@@ -7,7 +7,6 @@ REDBACK.Materials = {};
 REDBACK.Shaders = {};
 REDBACK.Textures = {};
 
-//DEBUG
-// keep the old modeler namespace alive until transition is complete
-MODELER.Materials = MODELER.Materials || {};
-//END DEBUG
+// constants
+REDBACK.VERTEX_SIZE = 3;
+REDBACK.VERTEX_STRIDE = REDBACK.VERTEX_SIZE * 4; // 4 for 4 bytes for a gl.FLOAT

@@ -1,44 +1,45 @@
-//This is going to be an with a geometry with 6 Face4
-//It's going to bootstrap itself up compositionally, rather than
-//with an inheritence chain
-//Perhaps make it with an .new method, like Ruby
-//m.Cube.new = function() { make a cube }
 MODELER.Cube = function(params, my) {
-  var that, my = my || {},
-  mesh = null,
-  x = 0, y = 0, z = 0,
-  width = 0, height = 0, depth = 0,
-  rotVector = null, rotDegrees = 0;
+  var that, my = my || {};
   
-  function initialize(){
-    if (params.width)       { width = params.width; };
-    if (params.height)      { height = params.height; };
-    if (params.depth)       { depth = params.depth; };
-    if (params.x)           { x = params.x; };
-    if (params.y)           { y = params.y; };
-    if (params.z)           { z = params.z; };
-    if (params.rotVector)   { rotVector = params.rotVector; };
-    if (params.rotDegrees)  { rotDegrees = params.rotDegrees; };
-    var geometry = MODELER.Geometry();
-    geometry.createFace4({ width: width, height: height }).translate({ z: depth / 2 });
-    geometry.createFace4({ width: width, height: height }).rotate({ degrees: 90, axis: V3.y }).translate({ x: width / -2 });
-    geometry.createFace4({ width: width, height: height }).rotate({ degrees: 180, axis: V3.y }).translate({ z: width / -2 });
-    geometry.createFace4({ width: width, height: height }).rotate({ degrees: 270, axis: V3.y }).translate({ x: width / 2 });
-    geometry.createFace4({ width: width, height: height }).rotate({ degrees: 90, axis: V3.x }).translate({ y: width / 2 });
-    geometry.createFace4({ width: width, height: height }).rotate({ degrees: -90, axis: V3.x }).translate({ y: width / -2 });
-    mesh = MODELER.Mesh([
-      { name: "cube", geometry: geometry, material: params.material }
-    ]);
+  var initialize = function(){
+    // build the cube from scratch!
+    // this is just to check if the renderer works
+    // later, I will build an editor and drop this in, and export as a JSON object
+    // then all primitives will just be JSON files
+    my.vertices = [
+      -1.0, -1.0, -1.0, // front bottom left  [0]
+      -1.0, 1.0, -1.0, // front top left      [1]
+      1.0, 1.0, -1.0, // front top right      [2]
+      1.0, -1.0, -1.0, // front bottom right  [3]
+      -1.0, -1.0, 1.0, // back bottom left    [4]
+      -1.0, 1.0, 1.0, // back top left        [5]
+      1.0, 1.0, 1.0, // back top right        [6]
+      1.0, -1.0, 1.0 // back bottom right     [7]
+    ];
+    my.indices = [
+      0, 1, 2, 0, 2, 3, // front face
+      4, 5, 6, 4, 6, 7, // back face
+      0, 4, 5, 0, 5, 1, // left face
+      3, 7, 6, 3, 6, 2, // right face
+      1, 5, 6, 1, 6, 2, // top face
+      0, 4, 7, 0, 7, 3 // bottom face
+    ];
+    my.lines = [
+      0, 1, 1, 2, 2, 3, 3, 0, // front face
+      4, 5, 5, 6, 6, 7, 7, 4, // back face
+      0, 4, 1, 5, 3, 7, 2, 6 // join the front and back faces to make the cube
+    ];
+    if (params.material) {
+      material = params.material;
+      material.offsets.vertex = 0; material.offsets.index = 0; material.offsets.line = 0;
+      material.counts.vertex = my.vertices.length;
+      material.counts.index = my.indices.length;
+      material.counts.lines = my.lines.length;
+      my.materials = [material];
+    };
   };
-  function getForRender() {
-    return mesh.getForRender();
-  };
-  function getMeshes() { return [mesh]; }
+  
+  that = REDBACK.Core.WebGLObject(params, my);
   initialize();
-  that = {}; //No inheriting
-  that.getMeshes = getMeshes,
-  that.getForRender = getForRender,
-  that.x = x, that.y = y, that.z = z,
-  that.rotDegrees = rotDegrees, that.rotVector = rotVector;
   return that;
 };
