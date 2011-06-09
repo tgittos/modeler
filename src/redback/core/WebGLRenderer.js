@@ -82,6 +82,15 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
     // [DONE?]
     var buffers = scene.getRenderBuffers();
     
+    //DEBUG
+    if (!logged) {
+      console.log(buffers.vertex);
+      console.log(buffers.index);
+      console.log(buffers.line);
+      console.log(buffers.material);
+    }
+    // END DEBUG
+    
     // send vertices to a single buffer, once only
     var vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
@@ -97,13 +106,14 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lineBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(buffers.line), gl.STATIC_DRAW);
     
-    buffers.materials.each(function(){
+    buffers.material.each(function(){
       var my_vertices = buffers.vertex.slice(this.offsets.vertex, this.counts.vertex);
       var my_indices = buffers.index.slice(this.offsets.index, this.counts.index); // may not need
       var my_lines = buffers.line.slice(this.offsets.line, this.counts.line); // may not need
       
-      this.setupShaderProgram(my_vertices);
-      var shaderProgram = this.getShaderProgram();
+      this.material.setupShaderProgram(my_vertices);
+      if(!logged) { console.log(this.material); }
+      var shaderProgram = this.material.getShaderProgram();
       gl.useProgram(shaderProgram);
       
       // tell shader program which vertices to render
@@ -130,15 +140,18 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
       if (this.wireframe) {
         this.setDrawMode(REDBACK.Enum.DRAW_MODE.WIREFRAME);
         gl.lineWidth(this.material.wireframe_width);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lineBuffer);
         gl.drawElements(gl.LINES, this.counts.line, gl.UNSIGNED_SHORT, this.offsets.line);
       }
       // render faces
       if (!this.material.wireframe || 
           (this.material.wireframe && this.material.wireframe_mode == REDBACK.Enum.WIREFRAME_MODE.BOTH)) {
         this.material.setDrawMode(REDBACK.Enum.DRAW_MODE.TEXTURE);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
         gl.drawElements(gl.TRIANGLES, this.counts.index, gl.UNSIGNED_SHORT, this.offsets.index);
       }
     });
+    logged = true;
   };
     
   that = {};

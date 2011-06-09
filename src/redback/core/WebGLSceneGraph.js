@@ -112,18 +112,19 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
         - Update object buffer
     */
     
-    var vertex_buffer = obj.getVertices();
-    var index_buffer = obj.getIndices();
-    var line_buffer = obj.getLines();
-    var material_buffer = obj.getMaterials();
+    var vertex_buffer = obj.vertices;
+    var index_buffer = obj.indices;
+    var line_buffer = obj.lines;
+    var material_buffer = obj.materials;
     
     // so far, this just packs materials and vertices, not indices or lines
     material_buffer.each(function(){
       var material = this;
       var found = false;
       buffer.material.each(function(){
-        if (this.equals(material)) {
+        if (this.material.equals(material)) {
           // material was found in our material buffer already
+          var mat = this;
           buffer.vertex.splice(mat.offsets.vertex, 0, vertex_buffer);
           buffer.index.splice(mat.offsets.index, 0, index_buffer);
           buffer.line.splice(mat.offsets.line, 0, line_buffer);
@@ -135,14 +136,13 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
         }
       });
       if (!found) {
-        material = material.clone();
         material.offsets.vertex = buffer.vertex.length;
         material.offsets.index = buffer.index.length;
         material.offsets.line = buffer.line.length;
         buffer.vertex = buffer.vertex.concat(vertex_buffer);
         buffer.index = buffer.index.concat(index_buffer);
         buffer.line = buffer.line.concat(line_buffer);
-        materials.push(material);
+        buffer.material.push(material);
       }
     });
   };

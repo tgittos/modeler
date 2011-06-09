@@ -11,9 +11,7 @@ REDBACK.Core.WebGLSceneGraphNode = function(params, my) {
     }
   };
   var getTransformedObject = function() {
-    var transformedObject = obj.clone();
-    transformedObject.applyTransform(getGlobalTransform());
-    return transformedObject;
+    return applyTransform(getGlobalTransform());
   };
   var getGlobalTransform = function() {
     var parent_transform = M4x4.I;
@@ -36,22 +34,27 @@ REDBACK.Core.WebGLSceneGraphNode = function(params, my) {
     obj.parent = null;
   };
   var applyTransform = function(matrix) {
-    var vertices = my.vertices;
+    var vertices = obj.getVertices();
+    
     var transformed_buffer = [];
     // restriction: faces are sent as tris only.
     // 9 = x, y, z of 3 vertices
-    for (var offset = 0; offset < vertices.length; offset += 9) {
-      face_matrix = [
-        vertices[0 + offset], vertices[1 + offset], vertices[2 + offset], 0,
-        vertices[3 + offset], vertices[4 + offset], vertices[5 + offset], 0,
-        vertices[6 + offset], vertices[7 + offset], vertices[8 + offset], 0,
-        0, 0, 0, 0
-      ];
+    console.log(vertices);
+    console.log(vertices.length);
+    for (var offset = 0; offset < vertices.length; offset += 3) {
+      face_matrix = [vertices[0 + offset], vertices[1 + offset], vertices[2 + offset], 0];
+      console.log(face_matrix);
+      var multiplied_matrix = M4x4.mul(matrix, face_matrix);
       transformed_buffer = transformed_buffer.concat(
-        M4x4.mul(face_matrix, matrix)
+        [multiplied_matrix[0], multiplied_matrix[1], multiplied_matrix[2]]
       );
     };
-    return transformed_buffer;
+    return {
+      vertices: transformed_buffer,
+      indices: obj.getIndices(),
+      lines: obj.getLines(),
+      materials: obj.getMaterials()
+    };
   }
   
   that = {};

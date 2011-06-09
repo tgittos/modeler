@@ -30,12 +30,20 @@ MODELER.Cube = function(params, my) {
       0, 4, 1, 5, 3, 7, 2, 6 // join the front and back faces to make the cube
     ];
     if (params.material) {
-      material = params.material;
-      material.offsets.vertex = 0; material.offsets.index = 0; material.offsets.line = 0;
-      material.counts.vertex = my.vertices.length;
-      material.counts.index = my.indices.length;
-      material.counts.lines = my.lines.length;
-      my.materials = [material];
+      var material_obj = {
+        material: params.material,
+        offsets: {
+          vertex: 0, 
+          index: 0, 
+          line: 0
+        },
+        counts: {
+          vertex: my.vertices.length, 
+          index: my.indices.length, 
+          line: my.lines.length
+        },
+      }
+      my.materials = [material_obj];
     };
   };
   
