@@ -118,6 +118,7 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
       
       // tell shader program which vertices to render
       // 12 stride because 3 floats per vertex at 4bytes each, starting at 0 index for each stride
+      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
       gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, REDBACK.VERTEX_SIZE, gl.FLOAT, false, REDBACK.VERTEX_STRIDE, 0);
       // tell shader program about the perspective matrix
       gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, new Float32Array(perspectiveMatrix));
