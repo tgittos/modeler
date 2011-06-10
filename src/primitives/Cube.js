@@ -7,14 +7,14 @@ MODELER.Cube = function(params, my) {
     // later, I will build an editor and drop this in, and export as a JSON object
     // then all primitives will just be JSON files
     my.vertices = [
-      -1.0, -1.0, -7.0, // front bottom left  [0]
-      -1.0, 1.0, -7.0, // front top left      [1]
-      1.0, 1.0, -7.0, // front top right      [2]
-      1.0, -1.0, -7.0, // front bottom right  [3]
-      -1.0, -1.0, -8.0, // back bottom left    [4]
-      -1.0, 1.0, -8.0, // back top left        [5]
-      1.0, 1.0, -8.0, // back top right        [6]
-      1.0, -1.0, -8.0 // back bottom right     [7]
+      -1.0, -1.0, 1.0, // front bottom left  [0]
+      -1.0, 1.0, 1.0, // front top left      [1]
+      1.0, 1.0, 1.0, // front top right      [2]
+      1.0, -1.0, 1.0, // front bottom right  [3]
+      -1.0, -1.0, -1.0, // back bottom left    [4]
+      -1.0, 1.0, -1.0, // back top left        [5]
+      1.0, 1.0, -1.0, // back top right        [6]
+      1.0, -1.0, -1.0 // back bottom right     [7]
     ];
     my.indices = [
       0, 1, 2, 0, 2, 3, // front face

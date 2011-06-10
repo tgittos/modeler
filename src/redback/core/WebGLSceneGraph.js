@@ -88,13 +88,16 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
     }
     
     // walk the tree, applying transformations 
+    // TODO: Uncomment this and fix the buffering
+    //var node_stack = [];
+    //node_stack = node_stack.concat(root_obj.children);
     var node_stack = root_obj.children;
     while (node_stack.length > 0) {
       var current_object = node_stack.pop();
       processObject(current_object.getTransformedObject()); //modifies the buffer - is this a good idea?
       node_stack = node_stack.concat(current_object.children);
     }
-    dirty = false;
+    //dirty = false;
     return buffer;
   };
   var processObject = function(obj) {
@@ -123,6 +126,7 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
       var found = false;
       buffer.material.each(function(){
         if (this.material.equals(material)) {
+        //if (equals(this.material, material)) {
           // material was found in our material buffer already
           var mat = this;
           buffer.vertex.splice(mat.offsets.vertex, 0, vertex_buffer);
