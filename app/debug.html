@@ -53,7 +53,10 @@
       });
       MODELER.Event.listen(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, function(d){
         cube = MODELER.Cube({
-          material: material
+          material: material,
+					y: 10
+					//rotVector: [0, 1, 0],
+					//rotDegrees: 45
         });
         scene.addObject(cube);
         render();

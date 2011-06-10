@@ -8,14 +8,22 @@ REDBACK.Core.WebGLObject = function(params, my) {
   vertices = [],
   indices = [],
   lines = [],
-  materials = [];
+  materials = [],
+  x = 0, y = 0, z = 0,
+  rotVector = [0, 1, 0],
+  rotDegrees = 0;
   
   var initialize = function() {
     if (params) {
       if (params.vertices) { setVertices(params.vertices); }
       if (params.indices) { setIndices(params.indices); }
       if (params.materials) { setMaterials(params.materials); }
-      if (params.lines) { my.lines = params.lines; }
+      if (params.lines) { lines = params.lines; }
+      if (params.x) { x = params.x; }
+      if (params.y) { y = params.y; }
+      if (params.z) { z = params.z; }
+      if (params.rotVector) { rotVector = params.rotVector; }
+      if (params.rotDegrees) { rotDegrees = params.rotDegrees; }
     }
   };
   
@@ -51,9 +59,15 @@ REDBACK.Core.WebGLObject = function(params, my) {
   my.indices = indices;
   my.lines = lines;
   my.materials = materials;
+  my.x = x; my.y = y; my.z = z;
+  my.rotVector = rotVector;
+  my.rotDegrees = rotDegrees;
   
   // public
   that.id = id;
+  that.x = x; that.y = y; that.z = z;
+  that.rotVector = rotVector;
+  that.rotDegrees = rotDegrees;
   that.setVertices = setVertices;
   that.setIndices = setIndices;
   that.setMaterials = setMaterials;

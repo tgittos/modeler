@@ -2,8 +2,7 @@ REDBACK.Core.WebGLSceneGraphNode = function(params, my) {
   var that, my = my || {},
   obj = null,
   parent = null,
-  children = [],
-  local_transform = M4x4.I;
+  children = [];
   
   var initialize = function() {
     if (params) {
@@ -16,10 +15,12 @@ REDBACK.Core.WebGLSceneGraphNode = function(params, my) {
   var getGlobalTransform = function() {
     var parent_transform = M4x4.I;
     if (parent) { parent_transform = parent.getGlobalTransform(); }
+    // build local transform from rotation/translation of the object
+    var rotation_matrix = M4x4.makeRotate(Math.degreesToRadians(obj.rotDegrees), obj.rotVector);
+    console.log('y: ' + obj.y);
+    var translation_matrix = M4x4.makeTranslate([obj.x, obj.y, obj.z]);
+    var local_transform = M4x4.mul(rotation_matrix, translation_matrix);
     return M4x4.mul(local_transform, parent_transform);
-  };
-  var setLocalTransform = function(transform) {
-    local_transform = transform;
   };
   var addObject = function(obj) {
     children.push(obj);
@@ -58,7 +59,6 @@ REDBACK.Core.WebGLSceneGraphNode = function(params, my) {
   that.parent = parent;
   that.children = children;
   that.getTransformedObject = getTransformedObject;
-  that.setLocalTransform = setLocalTransform;
   that.addObject = addObject;
   that.removeObject = removeObject;
   return that;
