@@ -78,20 +78,17 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
   var getRenderBuffers = function() {    
     // hit the buffer first
     if (!dirty && buffer) { return buffer; }
-    if (!buffer) { 
-      buffer = {
-        vertex: [],
-        index: [],
-        line: [],
-        material: []
-      }; 
-    }
+    buffer = {
+      vertex: [],
+      index: [],
+      line: [],
+      material: []
+    };
     
     // walk the tree, applying transformations 
     // TODO: Uncomment this and fix the buffering
-    //var node_stack = [];
-    //node_stack = node_stack.concat(root_obj.children);
-    var node_stack = root_obj.children;
+    var node_stack = [];
+    node_stack = node_stack.concat(root_obj.children);
     while (node_stack.length > 0) {
       var current_object = node_stack.pop();
       processObject(current_object.getTransformedObject()); //modifies the buffer - is this a good idea?
@@ -125,8 +122,7 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
       var material = this;
       var found = false;
       buffer.material.each(function(){
-        if (this.material.equals(material)) {
-        //if (equals(this.material, material)) {
+        if (equals(this.material, material)) {
           // material was found in our material buffer already
           var mat = this;
           buffer.vertex.splice(mat.offsets.vertex, 0, vertex_buffer);

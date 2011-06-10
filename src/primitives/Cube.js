@@ -41,7 +41,7 @@ MODELER.Cube = function(params, my) {
           vertex: my.vertices.length, 
           index: my.indices.length, 
           line: my.lines.length
-        },
+        }
       }
       my.materials = [material_obj];
     };

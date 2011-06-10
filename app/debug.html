@@ -48,7 +48,7 @@
       // first load texture
       var material;
       material = REDBACK.Materials.WebGLSolidColourMaterial({ 
-        wireframe: false, 
+        wireframe: true, 
         wireframe_mode: REDBACK.Enum.WIREFRAME_MODE.WIREFRAME_ONLY
       });
       MODELER.Event.listen(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, function(d){
@@ -68,17 +68,17 @@
       //Render loop
       var lastTime = 0;
       function render() {
-	/*
+	
         var timeNow = new Date().getTime();
         if (lastTime != 0) {
           var elapsed = timeNow - lastTime;
           
           //Do rendering magicks
-          //cube.rotDegrees += (90 * elapsed) / 1000.0;
+          cube.rotDegrees += (90 * elapsed) / 1000.0;
           //plane.rotDegrees += (90 * elapsed) / 1000.0;
         }
         lastTime = timeNow;
-*/
+
         renderer.render();
         requestAnimationFrame(render);
       };

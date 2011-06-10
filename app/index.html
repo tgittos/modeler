@@ -6,7 +6,60 @@
     <script type="text/javascript" src="modeler.min.js"></script>
     <!--script type="text/javascript" src="demos/rotating-objects.js"></script-->
     <!--script type="text/javascript" src="demos/nehe-cube.js"></script>-->
-    <script type="text/javascript" src="demos/glass-cube.js"></script>
+    <!--script type="text/javascript" src="demos/glass-cube.js"></script-->
+		<script type="text/javascript">
+    var renderer;
+    function pageLoaded() {
+      
+      var scene = REDBACK.Core.WebGLSceneGraph();
+      var camera = MODELER.Camera();
+
+      var cube;
+      
+      // first load texture
+      var material;
+      material = REDBACK.Materials.WebGLSolidColourMaterial({ 
+        wireframe: true, 
+        wireframe_mode: REDBACK.Enum.WIREFRAME_MODE.WIREFRAME_ONLY
+      });
+      MODELER.Event.listen(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, function(d){
+        cube = MODELER.Cube({
+          material: material
+					,z: -10 
+					,rotVector: [0, 1, 0]
+					,rotDegrees: 45
+        });
+        scene.addObject(cube);
+        render();
+      }, true);
+      
+      renderer = REDBACK.Core.WebGLRenderer( { scene: scene, camera: camera} );
+      resizeViewport();
+      
+      //Render loop
+      var lastTime = 0;
+      function render() {
+	
+        var timeNow = new Date().getTime();
+        if (lastTime != 0) {
+          var elapsed = timeNow - lastTime;
+          
+          //Do rendering magicks
+          cube.rotDegrees += (90 * elapsed) / 1000.0;
+          //plane.rotDegrees += (90 * elapsed) / 1000.0;
+        }
+        lastTime = timeNow;
+
+        renderer.render();
+        requestAnimationFrame(render);
+      };
+    };
+    function resizeViewport(e) {
+      renderer.setSize(window.innerWidth - 4, window.innerHeight - 4);
+    };
+    window.onload = pageLoaded;
+    window.onresize = resizeViewport;
+    </script>
   </head>
   <body>
   </body>

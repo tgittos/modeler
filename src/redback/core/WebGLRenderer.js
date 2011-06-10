@@ -138,8 +138,8 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
       }
 
       // render lines
-      if (this.wireframe) {
-        this.setDrawMode(REDBACK.Enum.DRAW_MODE.WIREFRAME);
+      if (this.material.wireframe) {
+        this.material.setDrawMode(REDBACK.Enum.DRAW_MODE.WIREFRAME);
         gl.lineWidth(this.material.wireframe_width);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lineBuffer);
         gl.drawElements(gl.LINES, this.counts.line, gl.UNSIGNED_SHORT, this.offsets.line);
