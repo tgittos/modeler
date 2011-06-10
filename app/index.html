@@ -23,7 +23,7 @@
         wireframe_mode: REDBACK.Enum.WIREFRAME_MODE.WIREFRAME_ONLY
       });
       MODELER.Event.listen(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, function(d){
-        cube = MODELER.Cube({
+        cube = MODELER.Primitive.Cube({
           material: material
 					,z: -10 
 					,rotVector: [0, 1, 0]

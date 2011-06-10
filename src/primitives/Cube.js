@@ -1,4 +1,4 @@
-MODELER.Cube = function(params, my) {
+MODELER.Primitive.Cube = function(params, my) {
   var that, my = my || {};
   
   var initialize = function(){

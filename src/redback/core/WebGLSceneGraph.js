@@ -118,6 +118,8 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
     var material_buffer = obj.materials;
     
     // so far, this just packs materials and vertices, not indices or lines
+    // TODO: There is an issue with the offset calculation that's borking up a scene with
+    // more than one object.
     material_buffer.each(function(){
       var material = this;
       var found = false;

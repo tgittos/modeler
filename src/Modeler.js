@@ -1,6 +1,7 @@
 var MODELER = MODELER || {};
 MODELER.IO = MODELER.IO || {};
 MODELER.Keyboard = MODELER.Keyboard || {};
+MODELER.Primitive = MODELER.Primitive || {};
 
 MODELER.webGLContextString = 'experimental-webgl';
 MODELER.BASE = '/src/';

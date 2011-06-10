@@ -1,49 +1,48 @@
-MODELER.Pyramid = function(params, my) {
-  var that, my = my || {},
-  mesh = null,
-  x = 0, y = 0, z = 0,
-  width = 0, height = 0, depth = 0;
-  rotVector = V3.x, rotDegrees = 0;
+MODELER.Primitive.Pyramid = function(params, my) {
+  var that, my = my || {};
   
-  function initialize(){
-    if (params.width)       { width = params.width; };
-    if (params.height)      { height = params.height; };
-    if (params.depth)       { depth = params.depth; };
-    if (params.x)           { x = params.x; };
-    if (params.y)           { y = params.y; };
-    if (params.z)           { z = params.z; };
-    if (params.rotVector)   { rotVector = params.rotVector; };
-    if (params.rotDegrees)  { rotDegrees = params.rotDegrees; };
-    var dimensions = {
-      width: 2, height: 2, depth: 2
+  var initialize = function(){
+    // build the cube from scratch!
+    // this is just to check if the renderer works
+    // later, I will build an editor and drop this in, and export as a JSON object
+    // then all primitives will just be JSON files
+    my.vertices = [
+      0.0, 2.0, 0.0, // top [0]
+      -1.0, 0.0, 1.0, // front bottom left [1]
+      -1.0, 0.0, -1.0, // back bottom left [2]
+      1.0, 0.0, -1.0, // back bottom right [3]
+      1.0, 0.0, 1.0 // front bottom right [4]
+    ];
+    my.indices = [
+      0, 4, 1, // front
+      0, 1, 2, // left
+      0, 2, 3, // back
+      0, 3, 4, // right
+      1, 2, 3, 1, 3, 4 // bottom
+    ];
+    my.lines = [
+      1, 2, 2, 3, 3, 4, 4, 1, // base
+      0, 1, 0, 2, 0, 3, 0, 4 // 4 triangular faces
+    ];
+    if (params.material) {
+      var material_obj = {
+        material: params.material,
+        offsets: {
+          vertex: 0, 
+          index: 0, 
+          line: 0
+        },
+        counts: {
+          vertex: my.vertices.length, 
+          index: my.indices.length, 
+          line: my.lines.length
+        }
+      }
+      my.materials = [material_obj];
     };
-    var sin60 = 0.866025404;
-    var cos60 = 0.5;
-    var adjusted_height = (height / -2) - ((height / -2) * sin60);
-    //var hyp = height / 2;
-    //var new_height = hyp * sin60;
-    var geometry = MODELER.Geometry();
-    geometry.createFace4(dimensions).rotate({degrees: 90, axis: V3.x}).translate({ y: height / -2 });
-    geometry.createFace3(dimensions).rotate({ degrees: -30, axis: V3.x }).translate({ y: adjusted_height, z: depth / 2 * cos60 });
-    geometry.createFace3(dimensions).rotate({ degrees: 90, axis: V3.y }).rotate({ degrees: 30, axis: V3.z }).translate({y: adjusted_height, x: depth / 2 * cos60 });
-    geometry.createFace3(dimensions).rotate({ degrees: 30, axis: V3.x }).translate({ y: adjusted_height, z: depth / -2 * cos60 });
-    geometry.createFace3(dimensions).rotate({ degrees: -90, axis: V3.y}).rotate({ degrees: -30, axis: V3.z }).translate({y: adjusted_height, x: depth / -2 * cos60 });
-    
-    mesh = MODELER.Mesh([
-      { name: "pyramid", geometry: geometry, material: params.material }
-    ]);
-  };
-  function getForRender() {
-    return mesh.getForRender();
   };
   
-  function getMeshes() { return [mesh]; }
-  
-  that = {}; //No inheriting
+  that = REDBACK.Core.WebGLObject(params, my);
   initialize();
-  that.getMeshes = getMeshes,
-  that.getForRender = getForRender,
-  that.x = x, that.y = y, that.z = z,
-  that.rotDegrees = rotDegrees, that.rotVector = rotVector;
   return that;
 };
