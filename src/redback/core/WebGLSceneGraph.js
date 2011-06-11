@@ -120,6 +120,7 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
     // so far, this just packs materials and vertices, not indices or lines
     // TODO: There is an issue with the offset calculation that's borking up a scene with
     // more than one object.
+    // Index and line indices need to be manually adjusted
     material_buffer.each(function(){
       var material = this;
       var found = false;
@@ -130,6 +131,12 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
           buffer.vertex.splice(mat.offsets.vertex, 0, vertex_buffer);
           buffer.index.splice(mat.offsets.index, 0, index_buffer);
           buffer.line.splice(mat.offsets.line, 0, line_buffer);
+          for (var i = 0; i < index_buffer.length; i++) {
+            index_buffer[i] += mat.offsets.vertex / REDBACK.VERTEX_SIZE;
+          };
+          for (var i = 0; i < line_buffer.length; i++) {
+            line_buffer[i] += mat.offsets.vertex / REDBACK.VERTEX_SIZE;
+          };
           mat.counts.vertex += vertex_buffer.length;
           mat.counts.index += index_buffer.length;
           mat.counts.line += line_buffer.length;
@@ -141,6 +148,12 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
         material.offsets.vertex = buffer.vertex.length;
         material.offsets.index = buffer.index.length;
         material.offsets.line = buffer.line.length;
+        for (var i = 0; i < index_buffer.length; i++) {
+          index_buffer[i] += material.offsets.vertex / REDBACK.VERTEX_SIZE;
+        };
+        for (var i = 0; i < line_buffer.length; i++) {
+          line_buffer[i] += material.offsets.vertex / REDBACK.VERTEX_SIZE;
+        };
         buffer.vertex = buffer.vertex.concat(vertex_buffer);
         buffer.index = buffer.index.concat(index_buffer);
         buffer.line = buffer.line.concat(line_buffer);

@@ -85,8 +85,11 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
     //DEBUG
     if (!logged) {
       console.log(buffers.vertex);
+      console.log(buffers.vertex.length);
       console.log(buffers.index);
+      console.log(buffers.index.length);
       console.log(buffers.line);
+      console.log(buffers.line.length);
       console.log(buffers.material);
     }
     // END DEBUG
@@ -108,8 +111,6 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
     
     buffers.material.each(function(){
       var my_vertices = buffers.vertex.slice(this.offsets.vertex, this.counts.vertex);
-      var my_indices = buffers.index.slice(this.offsets.index, this.counts.index); // may not need
-      var my_lines = buffers.line.slice(this.offsets.line, this.counts.line); // may not need
       
       this.material.setupShaderProgram(my_vertices);
       if(!logged) { console.log(this.material); }
