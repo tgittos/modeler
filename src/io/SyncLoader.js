@@ -1,14 +1,22 @@
 MODELER.IO.SyncLoader = function() {
   var that = {},
-  numUrls = 0,
+  urlsToLoad = {},
   numComplete = 0,
-  result = [],
   PRIVATE_EVENTS = {
     PARTIAL_SUCCESS: 'MODELER.LOADER.PRIVATE_EVENTS.PARTIAL_SUCCESS',
     PARTIAL_FAILURE: 'MODELER.LOADER.PRIVATE_EVENTS.PARTIAL_FAILURE'
   };
   
-  var loadFile = function(url, data) {
+  var loadFiles = function(urls) {
+    urlsToLoad = {};
+    MODELER.Event.listen(PRIVATE_EVENTS.PARTIAL_SUCCESS, onPartialSuccess);
+    MODELER.Event.listen(PRIVATE_EVENTS.PARTIAL_FAILURE, onPartialFailure);
+    urls.each(function) {
+      urlsToLoad[this] = null;
+      loadFile(this);
+    }
+  };
+  var loadFile = function(url) {
       // Set up an asynchronous request
       var request = new XMLHttpRequest();
       request.open('GET', url, true);
@@ -19,7 +27,7 @@ MODELER.IO.SyncLoader = function() {
           if (request.readyState == 4) {
               // If we got HTTP status 200 (OK)
               if (request.status == 200) {
-                  MODELER.Event.dispatch(PRIVATE_EVENTS.PARTIAL_SUCCESS, { response: request.responseText, data: data });
+                  MODELER.Event.dispatch(PRIVATE_EVENTS.PARTIAL_SUCCESS, { url: url, content: request.responseText });
               } else { // Failed
                   MODELER.Event.dispatch(PRIVATE_EVENTS.PARTIAL_FAILURE, url);
               }
@@ -28,31 +36,22 @@ MODELER.IO.SyncLoader = function() {
 
       request.send(null);    
   };
-  var loadFiles = function(urls) {
-    numUrls = urls.length;
-    numComplete = 0;
-      MODELER.Event.listen(PRIVATE_EVENTS.PARTIAL_SUCCESS, onPartialSuccess);
-      MODELER.Event.listen(PRIVATE_EVENTS.PARTIAL_FAILURE, onPartialFailure);
-      for (var i = 0; i < numUrls; i++) {
-          loadFile(urls[i], i);
-      }
-  }
   var onPartialSuccess = function(d) {
-      var text = d.data.response;
-      var urlIndex = d.data.data;
-      result[urlIndex] = text;
-      numComplete++;
+    var url = d.data.url;
+    var content = d.data.content;
+    urlsToLoad[url] = content;
+    numComplete++;
 
-      // When all files have downloaded
-      if (numComplete == numUrls) {
-        //unsub the listeners
-        MODELER.Event.stopListening(PRIVATE_EVENTS.PARTIAL_SUCCESS, onPartialSuccess);
-        MODELER.Event.stopListening(PRIVATE_EVENTS.PARTIAL_FAILURE, onPartialFailure);
-        MODELER.Event.dispatch(MODELER.EVENTS.SYNCLOADER.LOAD_SUCCESS, result);
-      }
+    // When all files have downloaded
+    if (numComplete == urlsToLoad.length) {
+      //unsub the listeners
+      MODELER.Event.stopListening(PRIVATE_EVENTS.PARTIAL_SUCCESS, onPartialSuccess);
+      MODELER.Event.stopListening(PRIVATE_EVENTS.PARTIAL_FAILURE, onPartialFailure);
+      MODELER.Event.dispatch(MODELER.EVENTS.SYNCLOADER.LOAD_SUCCESS, urlsToLoad);
+    }
   };
   var onPartialFailure = function(url) {
-    MODELER.Event.dispatch(MODELER.EVENTS.SYNCLOADER.LOAD_FAILURE, urls);
+    MODELER.Event.dispatch(MODELER.EVENTS.SYNCLOADER.LOAD_FAILURE, url);
   };
   
   that.loadFiles = loadFiles;
