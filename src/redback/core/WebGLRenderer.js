@@ -85,11 +85,11 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
     //DEBUG
     if (!logged) {
       console.log(buffers.vertex);
-      console.log(buffers.vertex.length);
+      console.log('vertex: ' + buffers.vertex.length);
       console.log(buffers.index);
-      console.log(buffers.index.length);
+      console.log('index: ' + buffers.index.length);
       console.log(buffers.line);
-      console.log(buffers.line.length);
+      console.log('line: ' + buffers.line.length);
       console.log(buffers.material);
     }
     // END DEBUG
@@ -110,7 +110,13 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(buffers.line), gl.STATIC_DRAW);
     
     buffers.material.each(function(){
-      var my_vertices = buffers.vertex.slice(this.offsets.vertex, this.counts.vertex);
+      var my_vertices = buffers.vertex.slice(this.offsets.vertex, this.offsets.vertex + this.counts.vertex);
+      if (!logged) {
+        console.log('line offset: ' + this.offsets.line);
+        console.log('line counts: ' + this.counts.line);
+        console.log('line buffer: ' + buffers.line);
+        console.log('Now rendering: ' + buffers.line.slice(this.offsets.line, this.offsets.line + this.counts.line)); 
+      }
       
       this.material.setupShaderProgram(my_vertices);
       if(!logged) { console.log(this.material); }
@@ -125,7 +131,6 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
       gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, new Float32Array(perspectiveMatrix));
       // tells the shader about the vertex position matrix (move matrix) (CONSIDER REMOVING FROM SHADER AND HERE)
       // THIS IS THE JOB OF THE SCENE GRAPH
-      //gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, new Float32Array(vertexMatrix));
       gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, new Float32Array(M4x4.I));
       
       // set blending/depth testing based on material transparency
