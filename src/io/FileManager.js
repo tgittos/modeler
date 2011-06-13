@@ -5,7 +5,7 @@ MODELER.IO.FileManager = function(params, my) {
   var that, my = my || {},
   files = {};
   
-  var initialize() {
+  var initialize = function() {
     // set up event listeners
     MODELER.Event.listen(MODELER.EVENTS.SYNCLOADER.LOAD_SUCCESS, fileLoadSuccess, true);
     MODELER.Event.listen(MODELER.EVENTS.SYNCLOADER.LOAD_FAILURE, fileLoadFailure, true);
@@ -19,11 +19,14 @@ MODELER.IO.FileManager = function(params, my) {
   var get = function(url) {
     if (files[url]) { return files[url]; }
     else {
-      MODELER.IO.AsyncLoader.load([url]);
+      // disable async loading because I don't know how to handle it later
+      //MODELER.IO.AsyncLoader.load([url]);
     }
   };
   var fileLoadSuccess = function(d) {
-    files[d.data.url] = d.data.data;
+    for (var url in d.data) {
+      files[url] = d.data[url];
+    }
     MODELER.Event.dispatch(MODELER.EVENTS.FILEMANAGER.LOAD_SUCCESS);
   };
   var fileLoadFailure = function(d) {

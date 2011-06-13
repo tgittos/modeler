@@ -14,15 +14,11 @@ REDBACK.Materials.WebGLMaterial = function(params, my) {
     if (params.wireframe_width) { wireframe_width = params.wireframe_width; }
     if (!params.shaders) { params.shaders = {}; }
     if (params.shaders.fragmentShader && params.shaders.vertexShader) {
-      REDBACK.Shaders.WebGLShader({
+      my.shaderProgram = REDBACK.Shaders.WebGLShader({
         fragmentShader: params.shaders.fragmentShader,
         vertexShader: params.shaders.vertexShader
       }).getShaderProgram();
-      MODELER.Event.listen(MODELER.EVENTS.SHADER.PROGRAM_LOADED, function(d) {
-        my.shaderProgram = d.data;
-        my.initShaderProgram();
-        MODELER.Event.dispatch(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, my.shaderProgram);
-      }, true);
+      my.initShaderProgram();
     }
   };
   var setupShaderProgram = function(vertices) {

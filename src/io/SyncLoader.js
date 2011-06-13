@@ -2,6 +2,7 @@ MODELER.IO.SyncLoader = function() {
   var that = {},
   urlsToLoad = {},
   numComplete = 0,
+  numTotal = 0,
   PRIVATE_EVENTS = {
     PARTIAL_SUCCESS: 'MODELER.LOADER.PRIVATE_EVENTS.PARTIAL_SUCCESS',
     PARTIAL_FAILURE: 'MODELER.LOADER.PRIVATE_EVENTS.PARTIAL_FAILURE'
@@ -9,12 +10,13 @@ MODELER.IO.SyncLoader = function() {
   
   var loadFiles = function(urls) {
     urlsToLoad = {};
+    numTotal = urls.length;
     MODELER.Event.listen(PRIVATE_EVENTS.PARTIAL_SUCCESS, onPartialSuccess);
     MODELER.Event.listen(PRIVATE_EVENTS.PARTIAL_FAILURE, onPartialFailure);
-    urls.each(function) {
+    urls.each(function() {
       urlsToLoad[this] = null;
       loadFile(this);
-    }
+    });
   };
   var loadFile = function(url) {
       // Set up an asynchronous request
@@ -43,7 +45,7 @@ MODELER.IO.SyncLoader = function() {
     numComplete++;
 
     // When all files have downloaded
-    if (numComplete == urlsToLoad.length) {
+    if (numComplete == numTotal) {
       //unsub the listeners
       MODELER.Event.stopListening(PRIVATE_EVENTS.PARTIAL_SUCCESS, onPartialSuccess);
       MODELER.Event.stopListening(PRIVATE_EVENTS.PARTIAL_FAILURE, onPartialFailure);

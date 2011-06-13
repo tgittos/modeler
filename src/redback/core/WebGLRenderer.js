@@ -111,12 +111,6 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
     
     buffers.material.each(function(){
       var my_vertices = buffers.vertex.slice(this.offsets.vertex, this.offsets.vertex + this.counts.vertex);
-      if (!logged) {
-        console.log('line offset: ' + this.offsets.line);
-        console.log('line counts: ' + this.counts.line);
-        console.log('line buffer: ' + buffers.line);
-        console.log('Now rendering: ' + buffers.line.slice(this.offsets.line, this.offsets.line + this.counts.line)); 
-      }
       
       this.material.setupShaderProgram(my_vertices);
       if(!logged) { console.log(this.material); }
@@ -145,6 +139,12 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
 
       // render lines
       if (this.material.wireframe) {
+        if (!logged) {
+          console.log('line offset: ' + this.offsets.line);
+          console.log('line counts: ' + this.counts.line);
+          console.log('line buffer: ' + buffers.line);
+          console.log('Now rendering: ' + buffers.line.slice(this.offsets.line, this.offsets.line + this.counts.line)); 
+        }
         this.material.setDrawMode(REDBACK.Enum.DRAW_MODE.WIREFRAME);
         gl.lineWidth(this.material.wireframe_width);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lineBuffer);
@@ -153,6 +153,12 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
       // render faces
       if (!this.material.wireframe || 
           (this.material.wireframe && this.material.wireframe_mode == REDBACK.Enum.WIREFRAME_MODE.BOTH)) {
+        if (!logged) {
+          console.log('face offset: ' + this.offsets.index);
+          console.log('face counts: ' + this.counts.index);
+          console.log('face buffer: ' + buffers.index);
+          console.log('Now rendering: ' + buffers.index.slice(this.offsets.index, this.offsets.index + this.counts.index)); 
+        }
         this.material.setDrawMode(REDBACK.Enum.DRAW_MODE.TEXTURE);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
         gl.drawElements(gl.TRIANGLES, this.counts.index, gl.UNSIGNED_SHORT, this.offsets.index);

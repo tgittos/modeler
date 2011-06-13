@@ -16,16 +16,9 @@ REDBACK.Shaders.WebGLShader = function(params, my) {
     if (params.fragmentShader) { fragmentShader_url = params.fragmentShader; }
   };
   var getShaderProgram = function() {
-    MODELER.Event.listen(MODELER.EVENTS.SYNCLOADER.LOAD_SUCCESS, shaderLoadSuccess, true);
-    MODELER.Event.listen(MODELER.EVENTS.SYNCLOADER.LOAD_FAILURE, shaderLoadFailure, true);
-    MODELER.IO.SyncLoader.loadFiles([vertexShader_url, fragmentShader_url]);
-  };
-  var shaderLoadSuccess = function(d){
-    //unsub the failure listener
-    MODELER.Event.stopListening(MODELER.EVENTS.SYNCLOADER.LOAD_FAILURE, shaderLoadFailure);
-    
-    vertexShader_src = d.data[0];
-    fragmentShader_src = d.data[1];
+    console.log(vertexShader_url);
+    vertexShader_src = MODELER.IO.FileManager.get(vertexShader_url);
+    fragmentShader_src = MODELER.IO.FileManager.get(fragmentShader_url);
     vertexShader = compileShader(vertexShader_src, MODELER.Shader.Type.Vertex);
     fragmentShader = compileShader(fragmentShader_src, MODELER.Shader.Type.Fragment);
     
@@ -37,11 +30,7 @@ REDBACK.Shaders.WebGLShader = function(params, my) {
     if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
       alert("Could not initialise shaders: ", gl.getProgramInfoLog(shaderProgram));
     }
-    MODELER.Event.dispatch(MODELER.EVENTS.SHADER.PROGRAM_LOADED, shaderProgram);
-  };
-  var shaderLoadFailure = function(urls){
-    MODELER.Event.stopListening(MODELER.EVENTS.SYNCLOADER.LOAD_SUCCESS, shaderLoadSuccess);
-    alert('failed to load ', url);
+    return shaderProgram;
   };
   var compileShader = function(src, type) {
     var shader;

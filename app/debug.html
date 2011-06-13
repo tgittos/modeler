@@ -10,6 +10,7 @@
     <script type="text/javascript" src="../src/utils/Event.js"></script>
     <script type="text/javascript" src="../src/keyboard/Listener.js"></script>
     <script type="text/javascript" src="../src/io/SyncLoader.js"></script>
+		<script type="text/javascript" src="../src/io/FileManager.js"></script>
     <script type="text/javascript" src="../src/core/Vertex.js"></script>
     <script type="text/javascript" src="../src/core/Face3.js"></script>
     <script type="text/javascript" src="../src/core/Face4.js"></script>
@@ -38,57 +39,66 @@
     <!--script type="text/javascript" src="demos/rotating-objects.js" -->
     <script type="text/javascript">
     var renderer;
+    var cube, pyramid;
+    var lastTime = 0;
     function pageLoaded() {
       
       var scene = REDBACK.Core.WebGLSceneGraph();
       var camera = MODELER.Camera();
-
-      var cube;
+      renderer = REDBACK.Core.WebGLRenderer( { scene: scene, camera: camera} );
       
-      // first load texture
-      var material;
-      material = REDBACK.Materials.WebGLSolidColourMaterial({ 
-        wireframe: true, 
-        wireframe_mode: REDBACK.Enum.WIREFRAME_MODE.WIREFRAME_ONLY
-      });
-      MODELER.Event.listen(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, function(d){
+      // first load shaders
+			MODELER.Event.listen(MODELER.EVENTS.FILEMANAGER.LOAD_SUCCESS, fileManagerPreloaded);
+			MODELER.IO.FileManager.preload([
+				'/src/shaders/webglcolour.vshader',
+				'/src/shaders/webglcolour.fshader'
+			]);
+			
+			function fileManagerPreloaded(){
+				
+				var cube_mat, pyramid_mat;
+	      cube_mat = REDBACK.Materials.WebGLSolidColourMaterial({ 
+	        wireframe: true, 
+	        wireframe_mode: REDBACK.Enum.WIREFRAME_MODE.WIREFRAME_ONLY
+	      });
+				pyramid_mat = REDBACK.Materials.WebGLSolidColourMaterial({
+					wireframe: false,
+					wireframe_mode: REDBACK.Enum.WIREFRAME_MODE.WIREFRAME_ONLY
+				});
+				
         cube = MODELER.Primitive.Cube({
-          material: material
+          material: cube_mat
 					,z: -10, x: 3
 					,rotVector: [0, 1, 0]
 					,rotDegrees: 45
         });
         pyramid = MODELER.Primitive.Pyramid({
-          material: material
+          material: pyramid_mat
           ,z: -10, x: -3
           ,rotVector: [1, 1, 0]
           ,rotDegrees: 45
         });
+
 	      scene.addObject(pyramid);
         scene.addObject(cube);
-        render();
-      }, true);
-      
-      renderer = REDBACK.Core.WebGLRenderer( { scene: scene, camera: camera} );
-      resizeViewport();
-      
-      //Render loop
-      var lastTime = 0;
-      function render() {
-	
-        var timeNow = new Date().getTime();
-        if (lastTime != 0) {
-          var elapsed = timeNow - lastTime;
-          
-          //Do rendering magicks
-          cube.rotDegrees += (90 * elapsed) / 1000.0;
-          pyramid.rotDegrees += (90 * elapsed) / 1000.0;
-        }
-        lastTime = timeNow;
 
-        renderer.render();
-        requestAnimationFrame(render);
-      };
+        render();
+	      resizeViewport();
+			}  
+    };
+		function render() {
+      var timeNow = new Date().getTime();
+      if (lastTime != 0) {
+        var elapsed = timeNow - lastTime;
+        
+        //Do rendering magicks
+        cube.rotDegrees += (90 * elapsed) / 1000.0;
+        pyramid.rotDegrees += (90 * elapsed) / 1000.0;
+      }
+      lastTime = timeNow;
+
+      renderer.render();
+      requestAnimationFrame(render);
     };
     function resizeViewport(e) {
       renderer.setSize(window.innerWidth - 4, window.innerHeight - 4);
