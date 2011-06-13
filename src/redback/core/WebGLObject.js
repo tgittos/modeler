@@ -48,7 +48,9 @@ REDBACK.Core.WebGLObject = function(params, my) {
   var getVertices = function()  { return my.vertices; };
   var getIndices = function()   { return my.indices; };
   var getLines = function()     { return my.lines; };
-  var getMaterials = function() { return my.materials; };
+  var getMaterials = function() { 
+    return my.materials; 
+  };
   
   that = {};
   initialize();

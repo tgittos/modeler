@@ -35,7 +35,7 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
     canvas.width = width;
     canvas.height = height;
     gl.viewportWidth = canvas.width;
-    gl.viewportHeight = canvas.height;  
+    gl.viewportHeight = canvas.height;
   };
   var render = function () {
     // multiple viewport nonsense
@@ -111,6 +111,10 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
     
     buffers.material.each(function(){
       var my_vertices = buffers.vertex.slice(this.offsets.vertex, this.offsets.vertex + this.counts.vertex);
+      if(!logged) { 
+        console.log('vertices sent to material: ' + my_vertices); 
+        console.log('num vertices: ' + my_vertices.length);
+      }
       
       this.material.setupShaderProgram(my_vertices);
       if(!logged) { console.log(this.material); }
@@ -148,7 +152,8 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
         this.material.setDrawMode(REDBACK.Enum.DRAW_MODE.WIREFRAME);
         gl.lineWidth(this.material.wireframe_width);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lineBuffer);
-        gl.drawElements(gl.LINES, this.counts.line, gl.UNSIGNED_SHORT, this.offsets.line);
+        gl.drawElements(gl.LINES, this.counts.line, gl.UNSIGNED_SHORT, this.offsets.line * 2); //2 for unsigned_short
+        if (!logged) { console.log('error status: ' + gl.getError()); }
       }
       // render faces
       if (!this.material.wireframe || 
@@ -161,10 +166,11 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
         }
         this.material.setDrawMode(REDBACK.Enum.DRAW_MODE.TEXTURE);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
-        gl.drawElements(gl.TRIANGLES, this.counts.index, gl.UNSIGNED_SHORT, this.offsets.index);
+        gl.drawElements(gl.TRIANGLES, this.counts.index, gl.UNSIGNED_SHORT, this.offsets.index * 2); //2 for unsigned_short
+        if (!logged) { console.log('error status: ' + gl.getError()); }
       }
     });
-    logged = true;
+    //logged = true;
   };
     
   that = {};

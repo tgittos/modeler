@@ -112,10 +112,11 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
         - Update object buffer
     */
     
-    var vertex_buffer = obj.vertices;
-    var index_buffer = obj.indices;
-    var line_buffer = obj.lines;
-    var material_buffer = obj.materials;
+    // copy the arrays, don't ref them
+    var vertex_buffer = obj.vertices.slice(0);
+    var index_buffer = obj.indices.slice(0);
+    var line_buffer = obj.lines.slice(0);
+    var material_buffer = obj.materials.slice(0);
     
     // so far, this just packs materials and vertices, not indices or lines
     // TODO: There is an issue with the offset calculation that's borking up a scene with
@@ -125,6 +126,7 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
       var material = this;
       var found = false;
       buffer.material.each(function(){
+        /*
         if (equals(this.material, material)) {
           // material was found in our material buffer already
           var mat = this;
@@ -143,11 +145,14 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
           found = true;
           return;
         }
+        */
       });
       if (!found) {
         material.offsets.vertex = buffer.vertex.length;
         material.offsets.index = buffer.index.length;
         material.offsets.line = buffer.line.length;
+        // the index entries reference vertices by index
+        // hence adding the vertex offset to the indices
         for (var i = 0; i < index_buffer.length; i++) {
           index_buffer[i] += material.offsets.vertex / REDBACK.VERTEX_SIZE;
         };

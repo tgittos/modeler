@@ -62,7 +62,7 @@
 	        wireframe_mode: REDBACK.Enum.WIREFRAME_MODE.WIREFRAME_ONLY
 	      });
 				pyramid_mat = REDBACK.Materials.WebGLSolidColourMaterial({
-					wireframe: false,
+					wireframe: true,
 					wireframe_mode: REDBACK.Enum.WIREFRAME_MODE.WIREFRAME_ONLY
 				});
 				
@@ -79,11 +79,11 @@
           ,rotDegrees: 45
         });
 
-	      scene.addObject(pyramid);
+        scene.addObject(pyramid);
         scene.addObject(cube);
 
-        render();
 	      resizeViewport();
+        render();
 			}  
     };
 		function render() {

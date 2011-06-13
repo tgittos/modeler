@@ -7,11 +7,11 @@ MODELER.Primitive.Pyramid = function(params, my) {
     // later, I will build an editor and drop this in, and export as a JSON object
     // then all primitives will just be JSON files
     my.vertices = [
-      0.0, 2.0, 0.0, // top [0]
-      -1.0, 0.0, 1.0, // front bottom left [1]
-      -1.0, 0.0, -1.0, // back bottom left [2]
-      1.0, 0.0, -1.0, // back bottom right [3]
-      1.0, 0.0, 1.0 // front bottom right [4]
+      0.0, 1.0, 0.0, // top [0]
+      -1.0, -1.0, 1.0, // front bottom left [1]
+      -1.0, -1.0, -1.0, // back bottom left [2]
+      1.0, -1.0, -1.0, // back bottom right [3]
+      1.0, -1.0, 1.0 // front bottom right [4]
     ];
     my.indices = [
       0, 4, 1, // front
