@@ -61,12 +61,12 @@ REDBACK.Materials.WebGLTextureMaterial = function(params, my) {
     }
   };
   
+  my.initShaderProgram = initShaderProgram;
   params.shaders = {
-    fragmentShader: MODELER.BASE + '/shaders/webgltexture.fshader',
-    vertexShader: MODELER.BASE + '/shaders/webgltexture.vshader'
+    fragmentShader: MODELER.BASE + 'shaders/webgltexture.fshader',
+    vertexShader: MODELER.BASE + 'shaders/webgltexture.vshader'
   };
   that = REDBACK.Materials.WebGLMaterial(params, my);
-  my.initShaderProgram = initShaderProgram;
   initialize();
   
   // overrides

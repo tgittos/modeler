@@ -170,7 +170,7 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
         if (!logged) { console.log('error status: ' + gl.getError()); }
       }
     });
-    //logged = true;
+    logged = true;
   };
     
   that = {};
