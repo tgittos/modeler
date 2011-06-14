@@ -39,13 +39,6 @@ REDBACK.Materials.WebGLMaterial = function(params, my) {
       pointShaderToArray(my.shaderProgram.vertexColorAttribute, edge_colour_buffer, MODELER.Object3D.ColourSize);
     }
   };
-  var pointShaderToArray = function(attribute, buffer, element_size) {
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.vertexAttribPointer(
-      attribute, 
-      element_size, 
-      gl.FLOAT, false, 0, 0);
-  };
   function getShaderProgram() { return my.shaderProgram; }
   function inspect() {
     var string = '{';
@@ -65,7 +58,6 @@ REDBACK.Materials.WebGLMaterial = function(params, my) {
   my.edge_colour_buffer = edge_colour_buffer;
   my.setupShaderProgram = setupShaderProgram;
   my.setDrawMode = setDrawMode;
-  my.pointShaderToArray = pointShaderToArray;
   
   initialize();
   

@@ -110,13 +110,12 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(buffers.line), gl.STATIC_DRAW);
 
     buffers.material.each(function(){
-      var my_vertices = buffers.vertex.slice(this.offsets.vertex / REDBACK.VERTEX_BYTES, this.offsets.vertex / REDBACK.VERTEX_BYTES + this.counts.vertex);
       if(!logged) { 
-        console.log('vertices sent to material: ' + my_vertices); 
-        console.log('num vertices: ' + my_vertices.length);
+        console.log('vertices sent to material: ' + buffers.vertex); 
+        console.log('num vertices: ' + buffers.vertex.length);
       }
       
-      this.material.setupShaderProgram(my_vertices, vertexBuffer);
+      this.material.setupShaderProgram(buffers.vertex, vertexBuffer);
       if(!logged) { console.log(this.material); }
       var shaderProgram = this.material.getShaderProgram();
       gl.useProgram(shaderProgram);

@@ -3,8 +3,8 @@
 //primitives easily
 REDBACK.Materials.WebGLSolidColourMaterial = function(params, my) { 
   var that, my = my || {},
-  colour = [1, 1, 1, 1], //Solid white
-  face_colour_buffer = null;
+  colour = [1.0, 1.0, 1.0, 1.0], //Solid white
+  colour_buffer = null;
   function initialize() {
     if (params.colour)    { colour = params.colour; }
   };
@@ -18,39 +18,28 @@ REDBACK.Materials.WebGLSolidColourMaterial = function(params, my) {
     my.shaderProgram.pMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uPMatrix");
     my.shaderProgram.mvMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uMVMatrix");
   };
+  var logged = false;
+  // TODO: I need to create one big colour map for all vertices
+  // and buffer it once. Pool colours from all sorts of materials into one buffer, ordered by vertex index
   var setupShaderProgram = function(vertices) {
-    var face_colours = [];
-    var edge_colours = [];
-    for (var i = 0; i < vertices.length; i+= REDBACK.ELEMENT_SIZE) {
-      for (var j = 0; j < 3; j++) { 
-        face_colours = face_colours.concat(colour);
-        edge_colours = edge_colours.concat(my.wireframe_colour);
-      }
+    var colours = [];
+    for (var i = 0; i < vertices.length; i += REDBACK.ELEMENT_SIZE) {
+      colours = colours.concat(colour).concat(my.wireframe_colour);
     };
-    // these can be compacted into one array too
-    // TODO: Optimize colours for solid colour material
-    face_colour_buffer = bufferColour(face_colours);
-    my.edge_colour_buffer = bufferColour(edge_colours);
+    logged = true;
+    colour_buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, colour_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colours), gl.STATIC_DRAW);
   };
   var setDrawMode = function(mode) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, colour_buffer);
+    // stride = 8 elements at 4 bytes each = 32
+    // wireframe offset = 4 elements at 4 bytes each = 16
     if (mode == REDBACK.Enum.DRAW_MODE.WIREFRAME) { 
-      pointShaderToArray(shaderProgram.vertexColorAttribute, my.edge_colour_buffer, MODELER.Object3D.ColourSize);
+      gl.vertexAttribPointer(my.shaderProgram.vertexColorAttribute, 4, gl.FLOAT, false, 32, 16);
     } else {
-      pointShaderToArray(shaderProgram.vertexColorAttribute, face_colour_buffer, MODELER.Object3D.ColourSize);
+      gl.vertexAttribPointer(my.shaderProgram.vertexColorAttribute, 4, gl.FLOAT, false, 32, 0);
     }
-  };
-  var bufferColour = function(colour) {
-    var buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colour), gl.STATIC_DRAW);
-    return buffer;
-  };
-  var pointShaderToArray = function(attribute, buffer, element_size) {
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.vertexAttribPointer(
-      attribute, 
-      element_size, 
-      gl.FLOAT, false, 0, 0);
   };
   function inspect() {
     var string = '{';

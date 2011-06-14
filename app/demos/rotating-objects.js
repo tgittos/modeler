@@ -30,29 +30,19 @@ function pageLoaded() {
       id: 'cube',
       material: cube_mat
 			,z: -10, x: 3
-			//,rotVector: [1, 1, 0]
-			//,rotDegrees: 45
+			,rotVector: [1, 1, 0]
+			,rotDegrees: 45
     });
-    /*
     pyramid = MODELER.Primitive.Pyramid({
       id: 'pyramid',
       material: pyramid_mat
       ,z: -10, x: -3
-      //,rotVector: [0, 1, 0]
-      //,rotDegrees: 45
-    });
-    */
-    pyramid = MODELER.Primitive.Cube({
-      id: 'pyramid',
-      material: pyramid_mat
-			,z: -10, x: -3
-			//,rotVector: [1, 1, 0]
-			//,rotDegrees: 45
+      ,rotVector: [0, 1, 0]
+      ,rotDegrees: 45
     });
 
     scene.addObject(pyramid);
     scene.addObject(cube);
-    //scene.addObject(pyramid);
 
     resizeViewport();
     render();
@@ -64,8 +54,8 @@ function render() {
     var elapsed = timeNow - lastTime;
     
     //Do rendering magicks
-    //cube.rotDegrees += (90 * elapsed) / 1000.0;
-    //pyramid.rotDegrees += (90 * elapsed) / 1000.0;
+    cube.rotDegrees += (90 * elapsed) / 1000.0;
+    pyramid.rotDegrees += (90 * elapsed) / 1000.0;
   }
   lastTime = timeNow;
 
