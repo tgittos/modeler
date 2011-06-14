@@ -24,7 +24,7 @@ MODELER.Primitive.Cube = function(params, my) {
       1.0, 1.0, -1.0,   1.0, 1.0, // back top right       [14]  (right)
       1.0, -1.0, -1.0,  1.0, 0.0, // back bottom right    [15]  (right)
       -1.0, 1.0, 1.0,   0.0, 0.0, // front top left       [16]  (top)
-      -1.0, 1.0, -1.0, 0.0, 1.0, // back top left        [17]  (top)
+      -1.0, 1.0, -1.0,  0.0, 1.0, // back top left        [17]  (top)
       1.0, 1.0, -1.0,   1.0, 1.0, // back top right       [18]  (top)
       1.0, 1.0, 1.0,    1.0, 0.0, // front top right      [19]  (top)
       -1.0, -1.0, 1.0,  1.0, 0.0, // front bottom left    [20]  (bottom)

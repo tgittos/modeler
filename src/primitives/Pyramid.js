@@ -7,22 +7,23 @@ MODELER.Primitive.Pyramid = function(params, my) {
     // later, I will build an editor and drop this in, and export as a JSON object
     // then all primitives will just be JSON files
     my.vertices = [
-      0.0, 1.0, 0.0, // top [0]
-      -1.0, -1.0, 1.0, // front bottom left [1]
-      -1.0, -1.0, -1.0, // back bottom left [2]
-      1.0, -1.0, -1.0, // back bottom right [3]
-      1.0, -1.0, 1.0 // front bottom right [4]
+      // vertex         // texel
+      0.0, 1.0, 0.0,    0.0, 0.0, // top                [0]
+      -1.0, -1.0, 1.0,  0.0, 0.0, // front bottom left  [1]
+      -1.0, -1.0, -1.0, 0.0, 0.0, // back bottom left   [2]
+      1.0, -1.0, -1.0,  0.0, 0.0, // back bottom right  [3]
+      1.0, -1.0, 1.0,   0.0, 0.0  // front bottom right [4]
     ];
     my.indices = [
-      0, 4, 1, // front
-      0, 1, 2, // left
-      0, 2, 3, // back
-      0, 3, 4, // right
-      1, 2, 3, 1, 3, 4 // bottom
+      1, 0, 4,          // front
+      2, 0, 1,          // left
+      3, 0, 2,          // back
+      4, 0, 3,          // right
+      1, 2, 3, 1, 3, 4  // bottom
     ];
     my.lines = [
-      1, 2, 2, 3, 3, 4, 4, 1, // base
-      0, 1, 0, 2, 0, 3, 0, 4 // 4 triangular faces
+      1, 2, 2, 3, 3, 4, 4, 1,  // bottom
+      1, 0, 2, 0, 3, 0, 4, 0   // 4 sides
     ];
     if (params.material) {
       var material_obj = {

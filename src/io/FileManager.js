@@ -37,7 +37,7 @@ MODELER.IO.FileManager = function(params, my) {
       loadTexture(unloaded_textures.pop());
     } else {
       MODELER.Event.dispatch(MODELER.EVENTS.FILEMANAGER.LOAD_PROGRESS, "Loading the kitchen sink");
-      MODELER.IO.SyncLoader.loadFiles(text);
+      MODELER.IO.SyncLoader.loadFiles(unloaded_text);
     }
   };
   var loadTexture = function(src) {

@@ -24,9 +24,11 @@ REDBACK.Materials.WebGLMaterial = function(params, my) {
   var setupShaderProgram = function(vertices) {
     // override this method in child materials, and call super
     var edge_colours = [];
-    vertices.each(function(){
-      edge_colours = edge_colours.concat(wireframe_colour);
-    });
+    for (var i = 0; i < vertices.length; i+= REDBACK.ELEMENT_SIZE) {
+      for (var j = 0; j < 3; j++) { 
+        edge_colours = edge_colours.concat(wireframe_colour);
+      }
+    };
     edge_colour_buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, edge_colour_buffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(edge_colours), gl.STATIC_DRAW);

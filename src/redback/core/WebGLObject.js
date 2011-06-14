@@ -15,6 +15,7 @@ REDBACK.Core.WebGLObject = function(params, my) {
   
   var initialize = function() {
     if (params) {
+      if (params.id) { id = params.id; }
       if (params.vertices) { setVertices(params.vertices); }
       if (params.indices) { setIndices(params.indices); }
       if (params.materials) { setMaterials(params.materials); }

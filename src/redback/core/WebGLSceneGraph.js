@@ -61,7 +61,7 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
   };
   var addObject = function(obj, parent) {
     dirty = true;
-    if (!obj.id.length > 0) { obj.id = "Object" + object_counter++ };
+    if (obj.id.length <= 0) { obj.id = "Object" + object_counter++ };
     if (!parent) { parent = root_obj; }
     parent.addObject(REDBACK.Core.WebGLSceneGraphNode({obj: obj}));
     return obj.id;
@@ -98,6 +98,7 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
     return buffer;
   };
   var processObject = function(obj) {
+    //console.log('processing ' + obj.id);
     /*
       Get the object's vertex, index, line and material buffers.
       Loop through passed in materials
@@ -126,18 +127,17 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
       var material = this;
       var found = false;
       buffer.material.each(function(){
-        /*
         if (equals(this.material, material)) {
           // material was found in our material buffer already
           var mat = this;
-          buffer.vertex.splice(mat.offsets.vertex, 0, vertex_buffer);
-          buffer.index.splice(mat.offsets.index, 0, index_buffer);
-          buffer.line.splice(mat.offsets.line, 0, line_buffer);
+          buffer.vertex.splice(mat.offsets.vertex / REBACK.VERTEX_BYTES, 0, vertex_buffer);
+          buffer.index.splice(mat.offsets.index / 2, 0, index_buffer);
+          buffer.line.splice(mat.offsets.line / 2, 0, line_buffer);
           for (var i = 0; i < index_buffer.length; i++) {
-            index_buffer[i] += mat.offsets.vertex / REDBACK.VERTEX_SIZE;
+            index_buffer[i] += mat.offsets.vertex / REDBACK.ELEMENT_SIZE;
           };
           for (var i = 0; i < line_buffer.length; i++) {
-            line_buffer[i] += mat.offsets.vertex / REDBACK.VERTEX_SIZE;
+            line_buffer[i] += mat.offsets.vertex / REDBACK.ELEMENT_SIZE;
           };
           mat.counts.vertex += vertex_buffer.length;
           mat.counts.index += index_buffer.length;
@@ -145,19 +145,19 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
           found = true;
           return;
         }
-        */
       });
       if (!found) {
-        material.offsets.vertex = buffer.vertex.length;
-        material.offsets.index = buffer.index.length;
-        material.offsets.line = buffer.line.length;
+        // offsets are in bytes
+        material.offsets.vertex = buffer.vertex.length * REDBACK.VERTEX_BYTES;
+        material.offsets.index = buffer.index.length * 2; // 2 for gl.UNSIGNED_SHORT
+        material.offsets.line = buffer.line.length * 2; // 2 for gl.UNSIGNED_SHORT
         // the index entries reference vertices by index
         // hence adding the vertex offset to the indices
         for (var i = 0; i < index_buffer.length; i++) {
-          index_buffer[i] += material.offsets.vertex / REDBACK.ELEMENT_SIZE;
+          index_buffer[i] += buffer.vertex.length / REDBACK.ELEMENT_SIZE;
         };
         for (var i = 0; i < line_buffer.length; i++) {
-          line_buffer[i] += material.offsets.vertex / REDBACK.ELEMENT_SIZE;
+          line_buffer[i] += buffer.vertex.length / REDBACK.ELEMENT_SIZE;
         };
         buffer.vertex = buffer.vertex.concat(vertex_buffer);
         buffer.index = buffer.index.concat(index_buffer);

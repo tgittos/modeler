@@ -16,7 +16,6 @@ REDBACK.Shaders.WebGLShader = function(params, my) {
     if (params.fragmentShader) { fragmentShader_url = params.fragmentShader; }
   };
   var getShaderProgram = function() {
-    console.log(vertexShader_url);
     vertexShader_src = MODELER.IO.FileManager.get(vertexShader_url);
     fragmentShader_src = MODELER.IO.FileManager.get(fragmentShader_url);
     vertexShader = compileShader(vertexShader_src, MODELER.Shader.Type.Vertex);

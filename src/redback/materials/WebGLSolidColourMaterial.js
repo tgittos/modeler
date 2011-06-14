@@ -21,10 +21,14 @@ REDBACK.Materials.WebGLSolidColourMaterial = function(params, my) {
   var setupShaderProgram = function(vertices) {
     var face_colours = [];
     var edge_colours = [];
-    vertices.each(function(){
-      face_colours = face_colours.concat(colour);
-      edge_colours = edge_colours.concat(my.wireframe_colour);
-    });
+    for (var i = 0; i < vertices.length; i+= REDBACK.ELEMENT_SIZE) {
+      for (var j = 0; j < 3; j++) { 
+        face_colours = face_colours.concat(colour);
+        edge_colours = edge_colours.concat(my.wireframe_colour);
+      }
+    };
+    // these can be compacted into one array too
+    // TODO: Optimize colours for solid colour material
     face_colour_buffer = bufferColour(face_colours);
     my.edge_colour_buffer = bufferColour(edge_colours);
   };

@@ -43,6 +43,7 @@ REDBACK.Core.WebGLSceneGraphNode = function(params, my) {
       transformed_buffer = transformed_buffer.concat(multiplied_matrix).concat(vertices.slice(offset + 3, offset + REDBACK.ELEMENT_SIZE));
     };
     return {
+      id: obj.id,
       vertices: transformed_buffer,
       indices: obj.getIndices(),
       lines: obj.getLines(),

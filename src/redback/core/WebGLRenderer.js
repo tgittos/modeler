@@ -108,9 +108,9 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
     var lineBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lineBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(buffers.line), gl.STATIC_DRAW);
-    
+
     buffers.material.each(function(){
-      var my_vertices = buffers.vertex.slice(this.offsets.vertex, this.offsets.vertex + this.counts.vertex);
+      var my_vertices = buffers.vertex.slice(this.offsets.vertex / REDBACK.VERTEX_BYTES, this.offsets.vertex / REDBACK.VERTEX_BYTES + this.counts.vertex);
       if(!logged) { 
         console.log('vertices sent to material: ' + my_vertices); 
         console.log('num vertices: ' + my_vertices.length);
@@ -124,7 +124,7 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
       // tell shader program which vertices to render
       // 12 stride because 3 floats per vertex at 4bytes each, starting at 0 index for each stride
       gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-      gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, REDBACK.VERTEX_SIZE, gl.FLOAT, false, REDBACK.VERTEX_STRIDE, REDBACK.VERTEX_OFFSET * REDBACK.VERTEX_SIZE);
+      gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, REDBACK.VERTEX_SIZE, gl.FLOAT, false, REDBACK.VERTEX_STRIDE, REDBACK.VERTEX_OFFSET * REDBACK.VERTEX_BYTES);
       // tell shader program about the perspective matrix
       gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, new Float32Array(perspectiveMatrix));
       // tells the shader about the vertex position matrix (move matrix) (CONSIDER REMOVING FROM SHADER AND HERE)
@@ -147,13 +147,13 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
           console.log('line offset: ' + this.offsets.line);
           console.log('line counts: ' + this.counts.line);
           console.log('line buffer: ' + buffers.line);
-          console.log('Now rendering: ' + buffers.line.slice(this.offsets.line, this.offsets.line + this.counts.line)); 
+          console.log('Now rendering: ' + buffers.line.slice(this.offsets.line / 2, this.offsets.line / 2 + this.counts.line)); 
         }
         this.material.setDrawMode(REDBACK.Enum.DRAW_MODE.WIREFRAME);
         gl.lineWidth(this.material.wireframe_width);
+        if (!logged) { console.log('binding buffer ' + lineBuffer); }
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lineBuffer);
-        gl.drawElements(gl.LINES, this.counts.line, gl.UNSIGNED_SHORT, this.offsets.line * 2); //2 for unsigned_short
-        if (!logged) { console.log('error status: ' + gl.getError()); }
+        gl.drawElements(gl.LINES, this.counts.line, gl.UNSIGNED_SHORT, this.offsets.line);
       }
       // render faces
       if (!this.material.wireframe || 
@@ -162,14 +162,12 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
           console.log('face offset: ' + this.offsets.index);
           console.log('face counts: ' + this.counts.index);
           console.log('face buffer: ' + buffers.index);
-          console.log('Now rendering: ' + buffers.index.slice(this.offsets.index, this.offsets.index + this.counts.index)); 
+          console.log('Now rendering: ' + buffers.index.slice(this.offsets.index / 2, this.offsets.index / 2 + this.counts.index)); 
         }
         this.material.setDrawMode(REDBACK.Enum.DRAW_MODE.TEXTURE);
+        if (!logged) { console.log('binding buffer ' + faceBuffer); }
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
-        gl.drawElements(gl.TRIANGLES, this.counts.index, gl.UNSIGNED_SHORT, this.offsets.index * 2); //2 for unsigned_short
-        if (!logged) { 
-          //console.log('error status: ' + WebGLDebugUtils.glEnumToString(gl.getError())); 
-        }
+        gl.drawElements(gl.TRIANGLES, this.counts.index, gl.UNSIGNED_SHORT, this.offsets.index);
       }
     });
     logged = true;
