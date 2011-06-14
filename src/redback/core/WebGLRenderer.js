@@ -116,7 +116,7 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
         console.log('num vertices: ' + my_vertices.length);
       }
       
-      this.material.setupShaderProgram(my_vertices);
+      this.material.setupShaderProgram(my_vertices, vertexBuffer);
       if(!logged) { console.log(this.material); }
       var shaderProgram = this.material.getShaderProgram();
       gl.useProgram(shaderProgram);
@@ -124,7 +124,7 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
       // tell shader program which vertices to render
       // 12 stride because 3 floats per vertex at 4bytes each, starting at 0 index for each stride
       gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-      gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, REDBACK.VERTEX_SIZE, gl.FLOAT, false, REDBACK.VERTEX_STRIDE, 0);
+      gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, REDBACK.VERTEX_SIZE, gl.FLOAT, false, REDBACK.VERTEX_STRIDE, REDBACK.VERTEX_OFFSET * REDBACK.VERTEX_SIZE);
       // tell shader program about the perspective matrix
       gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, new Float32Array(perspectiveMatrix));
       // tells the shader about the vertex position matrix (move matrix) (CONSIDER REMOVING FROM SHADER AND HERE)
@@ -167,7 +167,9 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
         this.material.setDrawMode(REDBACK.Enum.DRAW_MODE.TEXTURE);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
         gl.drawElements(gl.TRIANGLES, this.counts.index, gl.UNSIGNED_SHORT, this.offsets.index * 2); //2 for unsigned_short
-        if (!logged) { console.log('error status: ' + gl.getError()); }
+        if (!logged) { 
+          //console.log('error status: ' + WebGLDebugUtils.glEnumToString(gl.getError())); 
+        }
       }
     });
     logged = true;

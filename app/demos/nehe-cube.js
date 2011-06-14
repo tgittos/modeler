@@ -53,6 +53,8 @@ function render() {
   }
   lastTime = timeNow;
 
+  //bail on render errors
+  if (gl.getError() != 0) { return; }
   renderer.render();
   requestAnimationFrame(render);
 };

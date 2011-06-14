@@ -37,10 +37,10 @@ REDBACK.Core.WebGLSceneGraphNode = function(params, my) {
     var vertices = obj.getVertices();
     var transformed_buffer = [];
     // restriction: faces are sent as tris only.
-    for (var offset = 0; offset < vertices.length; offset += 3) {
+    for (var offset = 0; offset < vertices.length; offset += REDBACK.ELEMENT_SIZE) {
       face_vector = [vertices[0 + offset], vertices[1 + offset], vertices[2 + offset]];
       var multiplied_matrix = V3.mul4x4(matrix, face_vector);
-      transformed_buffer = transformed_buffer.concat(multiplied_matrix);
+      transformed_buffer = transformed_buffer.concat(multiplied_matrix).concat(vertices.slice(offset + 3, offset + REDBACK.ELEMENT_SIZE));
     };
     return {
       vertices: transformed_buffer,

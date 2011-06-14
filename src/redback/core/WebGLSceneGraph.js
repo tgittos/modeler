@@ -154,10 +154,10 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
         // the index entries reference vertices by index
         // hence adding the vertex offset to the indices
         for (var i = 0; i < index_buffer.length; i++) {
-          index_buffer[i] += material.offsets.vertex / REDBACK.VERTEX_SIZE;
+          index_buffer[i] += material.offsets.vertex / REDBACK.ELEMENT_SIZE;
         };
         for (var i = 0; i < line_buffer.length; i++) {
-          line_buffer[i] += material.offsets.vertex / REDBACK.VERTEX_SIZE;
+          line_buffer[i] += material.offsets.vertex / REDBACK.ELEMENT_SIZE;
         };
         buffer.vertex = buffer.vertex.concat(vertex_buffer);
         buffer.index = buffer.index.concat(index_buffer);
