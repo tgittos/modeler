@@ -2,14 +2,16 @@
 <html>
   <head>
     <title>Modeler - DEBUG</title>
-    <link href="http://meyerweb.com/eric/tools/css/reset/reset.css" rel="stylesheet" />
+    <link href="css/reset.css" rel="stylesheet" />
     <script type="text/javascript" src="../lib/webgl-mjs/mjs.js"></script>
+    <script type="text/javascript" src="../lib/webgl-debug.js"></script>
     <script type="text/javascript" src="../src/utils/mjs.js"></script>
     <script type="text/javascript" src="../src/utils/language.js"></script>
     <script type="text/javascript" src="../src/Modeler.js"></script>
     <script type="text/javascript" src="../src/utils/Event.js"></script>
     <script type="text/javascript" src="../src/keyboard/Listener.js"></script>
     <script type="text/javascript" src="../src/io/SyncLoader.js"></script>
+		<script type="text/javascript" src="../src/io/FileManager.js"></script>
     <script type="text/javascript" src="../src/core/Vertex.js"></script>
     <script type="text/javascript" src="../src/core/Face3.js"></script>
     <script type="text/javascript" src="../src/core/Face4.js"></script>
@@ -20,117 +22,22 @@
     <script type="text/javascript" src="../src/primitives/Pyramid.js"></script>
     <script type="text/javascript" src="../src/primitives/Plane.js"></script>
     <script type="text/javascript" src="../src/primitives/Sphere.js"></script>
-    <script type="text/javascript" src="../src/materials/Enums.js"></script>
     <script type="text/javascript" src="../src/core/Scene.js"></script>
     <script type="text/javascript" src="../src/core/Camera.js"></script>
     <script type="text/javascript" src="../src/core/Object3D.js"></script>
     <script type="text/javascript" src="../src/core/Shader.js"></script>
-    <script type="text/javascript" src="../src/renderer/WebGLRenderer.js"></script>
-    <script type="text/javascript" src="../src/materials/WebGLShader.js"></script>
-    <script type="text/javascript" src="../src/materials/WebGLTexture.js"></script>
-    <script type="text/javascript" src="../src/materials/WebGLMaterial.js"></script>
-    <script type="text/javascript" src="../src/materials/WebGLSolidColourMaterial.js"></script>
-    <script type="text/javascript" src="../src/materials/WebGLTextureMaterial.js"></script>
-    <!--script type="text/javascript" src="demos/rotating-objects.js" -->
-    <script type="text/javascript">
-    var renderer;
-    function pageLoaded() {
-      
-      //set up keyboard event testing
-      function debugKeyboard(e) {
-        console.log(e.which);
-      }
-      //MODELER.Keyboard.Listener.start(debugKeyboard);
-
-      var scene = MODELER.Scene();
-      var camera = MODELER.Camera();
-      
-      function cameraMove(e) {
-        var key = e.which; //GOOD FOR MAC ONLY SO FAR
-        switch (key) {
-          // todo: move this to a camera.moveForward and camera.lookAt model
-          // todo: make the rendering of the movement interpolate much better, for less
-          // jerky movement
-          case MODELER.EVENTS.KEYBOARD.W: camera.z += 0.5; break;
-          case MODELER.EVENTS.KEYBOARD.A: camera.x += 0.5; break;
-          case MODELER.EVENTS.KEYBOARD.S: camera.z -= 0.5; break;
-          case MODELER.EVENTS.KEYBOARD.D: camera.x -= 0.5; break;
-        }
-      }
-      MODELER.Keyboard.Listener.start(cameraMove);
-      
-      var sphere, cube;
-      
-      // first load texture
-      var material;
-      material = MODELER.Materials.WebGLSolidColourMaterial({ 
-        wireframe: true, 
-        wireframe_mode: MODELER.Materials.WIREFRAME_MODE.WIREFRAME_ONLY
-      });
-      
-      /*
-      var texture = MODELER.Materials.WebGLTexture({
-        //src: '../assets/textures/nehe.gif'
-        src: '../assets/textures/glass.gif'
-      });
-      
-      MODELER.Event.listen(MODELER.EVENTS.TEXTURE.TEXTURE_LOADED, function(d){
-        material = MODELER.Materials.WebGLTextureMaterial({
-          texture: d.data
-          , alpha: 0.8
-        });
-      });  
-      */
-      
-      MODELER.Event.listen(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, function(d){
-        //Send some geometry to the scene
-        sphere = MODELER.Sphere({
-          radius: 2, longitudes: 8, latitudes: 8,
-          x: -1.5, y: 0.0, z: -5.0,
-          rotVector: V3.y,
-          material: material
-        });
-        scene.addChild(sphere);
-        console.log(sphere.getForRender());
-
-        cube = MODELER.Cube({
-          width: 2, height: 2, depth: 2,
-          x: 1.5, y: 0.0, z: -5.0,
-          rotVector: [1, 1, 0],
-          rotDegrees: 45,
-          material: material
-        });
-        scene.addChild(cube);
-        render();
-      }, true);
-      
-      renderer = MODELER.WebGLRenderer( { scene: scene, camera: camera} );
-      resizeViewport();
-      
-      //Render loop
-      var lastTime = 0;
-      function render() {
-        /*
-        var timeNow = new Date().getTime();
-        if (lastTime != 0) {
-          var elapsed = timeNow - lastTime;
-          
-          //Do rendering magicks
-          cube.rotDegrees += (90 * elapsed) / 1000.0;
-          plane.rotDegrees += (90 * elapsed) / 1000.0;
-        }
-        lastTime = timeNow;
-        */
-        renderer.render();
-        requestAnimationFrame(render);
-      };
-    };
-    function resizeViewport(e) {
-      renderer.setSize(window.innerWidth - 4, window.innerHeight - 4);
-    };
-    window.onload = pageLoaded;
-    window.onresize = resizeViewport;
-    </script>
+    <script type="text/javascript" src="../src/redback/Redback.js"></script>
+    <script type="text/javascript" src="../src/redback/core/WebGLRenderer.js"></script>
+    <script type="text/javascript" src="../src/redback/core/WebGLObject.js"></script>
+    <script type="text/javascript" src="../src/redback/core/WebGLSceneGraph.js"></script>
+    <script type="text/javascript" src="../src/redback/core/WebGLSceneGraphNode.js"></script>
+    <script type="text/javascript" src="../src/redback/materials/Enums.js"></script>
+    <script type="text/javascript" src="../src/redback/materials/WebGLMaterial.js"></script>
+    <script type="text/javascript" src="../src/redback/materials/WebGLSolidColourMaterial.js"></script>
+    <script type="text/javascript" src="../src/redback/materials/WebGLTextureMaterial.js"></script>
+    <script type="text/javascript" src="../src/redback/shaders/WebGLShader.js"></script>
+    <script type="text/javascript" src="../src/redback/textures/WebGLTexture.js"></script>
+    <script type="text/javascript" src="demos/glass-cube.js"></script>
   </head>
   <body>
   </body>

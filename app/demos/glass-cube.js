@@ -18,17 +18,18 @@ function pageLoaded() {
 	MODELER.IO.FileManager.preload([
 		'/src/shaders/webgltexture.vshader',
 		'/src/shaders/webgltexture.fshader',
-		'/assets/textures/nehe.gif'
+		'/assets/textures/glass.gif'
 	]);
 	
 	function fileManagerPreloaded(){
 		var cube_mat, cube_tex;
 		cube_tex = REDBACK.Textures.WebGLTexture({
-      image: MODELER.IO.FileManager.get('/assets/textures/nehe.gif')
+      image: MODELER.IO.FileManager.get('/assets/textures/glass.gif')
     });
     console.log(cube_tex.getTexture());
     cube_mat = REDBACK.Materials.WebGLTextureMaterial({
       texture: cube_tex.getTexture()
+      ,alpha: 0.5
     });
     cube = MODELER.Primitive.Cube({
       material: cube_mat

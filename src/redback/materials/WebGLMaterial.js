@@ -1,9 +1,9 @@
 // base material for all WebGL materials
-MODELER.Materials.WebGLMaterial = function(params, my) {
+REDBACK.Materials.WebGLMaterial = function(params, my) {
   var that, my = my || {},
   wireframe = false,
   wireframe_colour = [0.5, 0.5, 0.5, 1], //muddy grey
-  wireframe_mode = MODELER.Materials.WIREFRAME_MODE.WIREFRAME_ONLY,
+  wireframe_mode = REDBACK.Enum.WIREFRAME_MODE.WIREFRAME_ONLY,
   wireframe_width = 2,
   shaderProgram = null,
   edge_colour_buffer = null;
@@ -14,39 +14,30 @@ MODELER.Materials.WebGLMaterial = function(params, my) {
     if (params.wireframe_width) { wireframe_width = params.wireframe_width; }
     if (!params.shaders) { params.shaders = {}; }
     if (params.shaders.fragmentShader && params.shaders.vertexShader) {
-      MODELER.WebGLShader({
+      my.shaderProgram = REDBACK.Shaders.WebGLShader({
         fragmentShader: params.shaders.fragmentShader,
         vertexShader: params.shaders.vertexShader
       }).getShaderProgram();
-      MODELER.Event.listen(MODELER.EVENTS.SHADER.PROGRAM_LOADED, function(d) {
-        my.shaderProgram = d.data;
-        my.initShaderProgram();
-        MODELER.Event.dispatch(MODELER.EVENTS.MATERIAL.MATERIAL_LOADED, my.shaderProgram);
-      }, true);
+      my.initShaderProgram();
     }
   };
   var setupShaderProgram = function(vertices) {
     // override this method in child materials, and call super
     var edge_colours = [];
-    vertices.each(function(){
-      edge_colours = edge_colours.concat(wireframe_colour);
-    });
+    for (var i = 0; i < vertices.length; i+= REDBACK.ELEMENT_SIZE) {
+      for (var j = 0; j < 3; j++) { 
+        edge_colours = edge_colours.concat(wireframe_colour);
+      }
+    };
     edge_colour_buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, edge_colour_buffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(edge_colours), gl.STATIC_DRAW);
   };
   var setDrawMode = function(mode) {
     // override this method in child materials, and call super
-    if (mode == MODELER.Materials.DRAW_MODE.WIREFRAME) { 
+    if (mode == REDBACK.Enum.DRAW_MODE.WIREFRAME) { 
       pointShaderToArray(my.shaderProgram.vertexColorAttribute, edge_colour_buffer, MODELER.Object3D.ColourSize);
     }
-  };
-  var pointShaderToArray = function(attribute, buffer, element_size) {
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.vertexAttribPointer(
-      attribute, 
-      element_size, 
-      gl.FLOAT, false, 0, 0);
   };
   function getShaderProgram() { return my.shaderProgram; }
   function inspect() {
@@ -67,7 +58,6 @@ MODELER.Materials.WebGLMaterial = function(params, my) {
   my.edge_colour_buffer = edge_colour_buffer;
   my.setupShaderProgram = setupShaderProgram;
   my.setDrawMode = setDrawMode;
-  my.pointShaderToArray = pointShaderToArray;
   
   initialize();
   
