@@ -4,6 +4,12 @@ OUTPUT_FILE = "app/modeler.min.js"
 COMPILER_JAR = "lib/closure/compiler.jar"
 COMPILER_MAIN_CLASS = "com.google.javascript.jscomp.CommandLineRunner"
 COMPILER_DOWNLOAD_URI = 'http://closure-compiler.googlecode.com/files/compiler-latest.zip'
+BLACKLIST = [
+  'demos/glass-cube.js',
+  'demos/rotating-objects.js',
+  'demos/nehe-cube.js',
+  'lib/webgl-debug.js'
+]
 
 namespace :modeler do
 
@@ -53,24 +59,34 @@ namespace :modeler do
 
     IO.foreach(INPUT_FILE) do |line|
       if !(line =~ /<script.*src="https*:/) && line =~ /<script.*src="(.*)"/
-        files << $1.gsub(/\.\.\//, '')
+        filename = $1.gsub(/^\//, '')
+        files << filename unless BLACKLIST.include? filename
       else
         new_index << line
       end
     end
+
+    # clear console.log lines
+    #files.each do |file|
+    #  lines = File.readlines file
+    #  lines.each_index do |i|
+    #    lines.delete_at i if lines[i] =~ /console.log/
+    #  end
+    #  File.open(file, "w") do |f| 
+    #    lines.each{|line| f.puts(line)}
+    #  end
+    #end
     
     # set options
     compiler_options = {}
     compiler_options['--js_output_file'] = OUTPUT_FILE
-    compiler_options['--compilation_level'] = 'SIMPLE_OPTIMIZATIONS'
+    compiler_options['--compilation_level'] = 'SIMPLE_OPTIMIZATIONS' # 'ADVANCED_OPTIMIZATIONS'
     compiler_options['--accept_const_keyword'] = ''
-    compiler_files = files.collect { |file| "--js #{file}" }.join(' ')
+    compiler_files = files.collect { |file| "--js #{file}" }
 
     # building
-
-    puts "compiling #{files.size} javascript file(s) into #{INPUT_FILE}"
-    system "java -jar #{COMPILER_JAR} #{compiler_options.to_a.join(' ')} #{compiler_files}"
-    #puts "java -jar #{COMPILER_JAR} #{compiler_options.to_a.join(' ')} #{compiler_files}"
+    puts "compiling #{compiler_files.size} javascript file(s) into #{OUTPUT_FILE}"
+    system "java -jar #{COMPILER_JAR} #{compiler_options.to_a.join(' ')} #{compiler_files.join(' ')}"
     puts "compiled #{OUTPUT_FILE}"
 
   end
