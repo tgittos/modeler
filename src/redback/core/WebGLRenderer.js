@@ -131,7 +131,7 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
       gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, new Float32Array(M4x4.I));
       
       // set blending/depth testing based on material transparency
-      if (this.alpha < 1) {
+      if (this.material.alpha < 1) {
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
         gl.enable(gl.BLEND);
         gl.disable(gl.DEPTH_TEST);
