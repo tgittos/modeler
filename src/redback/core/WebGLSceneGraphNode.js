@@ -9,9 +9,15 @@ REDBACK.Core.WebGLSceneGraphNode = function(params, my) {
       if (params.obj) { obj = params.obj; }
     }
   };
-  var getTransformedObject = function() {
-    return applyTransform(getGlobalTransform());
-  };
+  var getObject = function() { 
+    return {
+      id: obj.id,
+      vertices: obj.getVertices(),
+      indices: obj.getIndices(),
+      lines: obj.getLines(),
+      materials: obj.getMaterials()
+    }; 
+  }
   var getGlobalTransform = function() {
     var parent_transform = M4x4.I;
     if (parent) { parent_transform = parent.getGlobalTransform(); }
@@ -21,6 +27,7 @@ REDBACK.Core.WebGLSceneGraphNode = function(params, my) {
     var local_transform = M4x4.mul(translation, rotation);
     return M4x4.mul(local_transform, parent_transform);
   };
+  
   var addObject = function(obj) {
     children.push(obj);
     obj.parent = this;
@@ -33,6 +40,10 @@ REDBACK.Core.WebGLSceneGraphNode = function(params, my) {
     });
     obj.parent = null;
   };
+  
+  // not used right now
+  // keeping it because I might need it later
+  /*
   var applyTransform = function(matrix) {
     var vertices = obj.getVertices();
     var transformed_buffer = [];
@@ -50,13 +61,15 @@ REDBACK.Core.WebGLSceneGraphNode = function(params, my) {
       materials: obj.getMaterials()
     };
   }
+  */
   
   that = {};
   initialize();
   that.parent = parent;
   that.children = children;
-  that.getTransformedObject = getTransformedObject;
   that.addObject = addObject;
   that.removeObject = removeObject;
+  that.getObject = getObject;
+  that.getGlobalTransform = getGlobalTransform;
   return that;
 };

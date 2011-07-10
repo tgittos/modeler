@@ -91,6 +91,7 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
       console.log(buffers.line);
       console.log('line: ' + buffers.line.length);
       console.log(buffers.material);
+      console.log('materials: ' + buffers.material.length);
     }
     // END DEBUG
     
@@ -113,11 +114,14 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
       if(!logged) { 
         console.log('vertices sent to material: ' + buffers.vertex); 
         console.log('num vertices: ' + buffers.vertex.length);
+        console.log('transforms: ');
+        console.log(this.transforms);
       }
+      var that = this;
       
-      this.material.setupShaderProgram(buffers.vertex, vertexBuffer);
-      if(!logged) { console.log(this.material); }
-      var shaderProgram = this.material.getShaderProgram();
+      that.material.setupShaderProgram(buffers.vertex, vertexBuffer);
+      if(!logged) { console.log(that.material); }
+      var shaderProgram = that.material.getShaderProgram();
       gl.useProgram(shaderProgram);
       
       // tell shader program which vertices to render
@@ -126,12 +130,9 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
       gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, REDBACK.VERTEX_SIZE, gl.FLOAT, false, REDBACK.VERTEX_STRIDE, REDBACK.VERTEX_OFFSET * REDBACK.VERTEX_BYTES);
       // tell shader program about the perspective matrix
       gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, new Float32Array(perspectiveMatrix));
-      // tells the shader about the vertex position matrix (move matrix) (CONSIDER REMOVING FROM SHADER AND HERE)
-      // THIS IS THE JOB OF THE SCENE GRAPH
-      gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, new Float32Array(M4x4.I));
       
       // set blending/depth testing based on material transparency
-      if (this.material.alpha < 1) {
+      if (that.material.alpha < 1) {
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
         gl.enable(gl.BLEND);
         gl.disable(gl.DEPTH_TEST);
@@ -140,34 +141,42 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
         gl.depthFunc(gl.LEQUAL); 
       }
 
+      this.transforms.each(function(){
+        // tells the shader about the vertex position matrix (move matrix) (CONSIDER REMOVING FROM SHADER AND HERE)
+        gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, new Float32Array(this.matrix));
+      
+      //START OLD
       // render lines
-      if (this.material.wireframe) {
+      if (that.material.wireframe) {
         if (!logged) {
-          console.log('line offset: ' + this.offsets.line);
-          console.log('line counts: ' + this.counts.line);
+          console.log('line offset: ' + that.offsets.line);
+          console.log('line counts: ' + that.counts.line);
           console.log('line buffer: ' + buffers.line);
-          console.log('Now rendering: ' + buffers.line.slice(this.offsets.line / 2, this.offsets.line / 2 + this.counts.line)); 
+          console.log('Now rendering: ' + buffers.line.slice(that.offsets.line / 2, that.offsets.line / 2 + that.counts.line)); 
         }
-        this.material.setDrawMode(REDBACK.Enum.DRAW_MODE.WIREFRAME);
-        gl.lineWidth(this.material.wireframe_width);
+        that.material.setDrawMode(REDBACK.Enum.DRAW_MODE.WIREFRAME);
+        gl.lineWidth(that.material.wireframe_width);
         if (!logged) { console.log('binding buffer ' + lineBuffer); }
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lineBuffer);
         gl.drawElements(gl.LINES, this.counts.line, gl.UNSIGNED_SHORT, this.offsets.line);
       }
       // render faces
-      if (!this.material.wireframe || 
-          (this.material.wireframe && this.material.wireframe_mode == REDBACK.Enum.WIREFRAME_MODE.BOTH)) {
+      if (!that.material.wireframe || 
+          (that.material.wireframe && that.material.wireframe_mode == REDBACK.Enum.WIREFRAME_MODE.BOTH)) {
         if (!logged) {
-          console.log('face offset: ' + this.offsets.index);
-          console.log('face counts: ' + this.counts.index);
+          console.log('face offset: ' + that.offsets.index);
+          console.log('face counts: ' + that.counts.index);
           console.log('face buffer: ' + buffers.index);
-          console.log('Now rendering: ' + buffers.index.slice(this.offsets.index / 2, this.offsets.index / 2 + this.counts.index)); 
+          console.log('Now rendering: ' + buffers.index.slice(that.offsets.index / 2, that.offsets.index / 2 + that.counts.index)); 
         }
-        this.material.setDrawMode(REDBACK.Enum.DRAW_MODE.TEXTURE);
+        that.material.setDrawMode(REDBACK.Enum.DRAW_MODE.TEXTURE);
         if (!logged) { console.log('binding buffer ' + faceBuffer); }
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
         gl.drawElements(gl.TRIANGLES, this.counts.index, gl.UNSIGNED_SHORT, this.offsets.index);
       }
+      //END OLD
+            });
+            
     });
     logged = true;
   };

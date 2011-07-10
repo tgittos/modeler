@@ -91,13 +91,15 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
     node_stack = node_stack.concat(root_obj.children);
     while (node_stack.length > 0) {
       var current_object = node_stack.pop();
-      processObject(current_object.getTransformedObject()); //modifies the buffer - is this a good idea?
+      var obj = current_object.getObject();
+      var obj_global_transform = current_object.getGlobalTransform();
+      processObject(obj, obj_global_transform);
       node_stack = node_stack.concat(current_object.children);
     }
     //dirty = false;
     return buffer;
   };
-  var processObject = function(obj) {
+  var processObject = function(obj, global_transform) {
     //console.log('processing ' + obj.id);
     /*
       Get the object's vertex, index, line and material buffers.
@@ -118,6 +120,7 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
     var index_buffer = obj.indices.slice(0);
     var line_buffer = obj.lines.slice(0);
     var material_buffer = obj.materials.slice(0);
+    var transform = global_transform.slice(0);
     
     // so far, this just packs materials and vertices, not indices or lines
     // TODO: There is an issue with the offset calculation that's borking up a scene with
@@ -128,17 +131,42 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
       var found = false;
       buffer.material.each(function(){
         if (equals(this.material, material)) {
+          // THIS HAS NEVER BEEN TESTED AS WORKING
+          // NEED TO GET THE OBJ COMPARISON FUNCTION EVALUATING PROPERLY
+          
           // material was found in our material buffer already
           var mat = this;
-          buffer.vertex.splice(mat.offsets.vertex / REBACK.VERTEX_BYTES, 0, vertex_buffer);
-          buffer.index.splice(mat.offsets.index / 2, 0, index_buffer);
-          buffer.line.splice(mat.offsets.line / 2, 0, line_buffer);
+          // adding offsets to each index so that it references the correct vertex in the buffer
           for (var i = 0; i < index_buffer.length; i++) {
             index_buffer[i] += mat.offsets.vertex / REDBACK.ELEMENT_SIZE;
           };
           for (var i = 0; i < line_buffer.length; i++) {
             line_buffer[i] += mat.offsets.vertex / REDBACK.ELEMENT_SIZE;
           };
+          //insert our object's buffers into the global buffers, at the material's current offset
+          //the offset doesn't change because the material starts at the same point
+          //in the global buffer, it just has more vertices, which is why we update the counts
+          buffer.vertex.splice(mat.offsets.vertex / REBACK.VERTEX_BYTES, 0, vertex_buffer);
+          buffer.index.splice(mat.offsets.index / 2, 0, index_buffer);
+          buffer.line.splice(mat.offsets.line / 2, 0, line_buffer);
+          // adding transform and offsets for transform
+          mat.transforms = [];
+          mat.transforms.push({
+            matrix: transform,
+            //offsets are the original offset, plus the old length. Do this before
+            //we update the length
+            offsets: {
+              vertex: mat.offsets.vertex + mat.counts.vertex,
+              index: mat.offsets.index + mat.counts.index,
+              line: mat.offsets.line + mat.counts.line
+            },
+            counts: {
+              vertex: vertex_buffer.length,
+              index: index_buffer.length,
+              line: line_buffer.length
+            }
+          });
+          // need this to at least keep count of where our object boundaries are
           mat.counts.vertex += vertex_buffer.length;
           mat.counts.index += index_buffer.length;
           mat.counts.line += line_buffer.length;
@@ -147,10 +175,6 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
         }
       });
       if (!found) {
-        // offsets are in bytes
-        material.offsets.vertex = buffer.vertex.length * REDBACK.VERTEX_BYTES;
-        material.offsets.index = buffer.index.length * 2; // 2 for gl.UNSIGNED_SHORT
-        material.offsets.line = buffer.line.length * 2; // 2 for gl.UNSIGNED_SHORT
         // the index entries reference vertices by index
         // hence adding the vertex offset to the indices
         for (var i = 0; i < index_buffer.length; i++) {
@@ -159,6 +183,28 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
         for (var i = 0; i < line_buffer.length; i++) {
           line_buffer[i] += buffer.vertex.length / REDBACK.ELEMENT_SIZE;
         };
+        // adding transform and offsets for transform
+        material.transforms = [];
+        material.transforms.push({
+          matrix: transform,
+          //offsets are the original offset, plus the old length. Do this before
+          //we update the length
+          offsets: {
+            vertex: material.offsets.vertex,
+            index: material.offsets.index,
+            line: material.offsets.line
+          },
+          counts: {
+            vertex: vertex_buffer.length,
+            index: index_buffer.length,
+            line: line_buffer.length
+          }
+        });
+        // offsets are in bytes
+        material.offsets.vertex = buffer.vertex.length * REDBACK.VERTEX_BYTES;
+        material.offsets.index = buffer.index.length * 2; // 2 for gl.UNSIGNED_SHORT
+        material.offsets.line = buffer.line.length * 2; // 2 for gl.UNSIGNED_SHORT
+        
         buffer.vertex = buffer.vertex.concat(vertex_buffer);
         buffer.index = buffer.index.concat(index_buffer);
         buffer.line = buffer.line.concat(line_buffer);
