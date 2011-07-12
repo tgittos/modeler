@@ -8,7 +8,13 @@
 REDBACK.Lighting.WebGLDirectionalLight = function(params, my) {
   var that, my = my || {};
   var initialize = function(){
-    
+    /*
+    Compute normal matrix - should probably live in the scene graph
+    var normalMatrix = mat3.create();
+    mat4.toInverseMat3(mvMatrix, normalMatrix);
+    mat3.transpose(normalMatrix);
+    gl.uniformMatrix3fv(shaderProgram.nMatrixUniform, false, normalMatrix);
+    */
   };
   that = {};
   initialize();
