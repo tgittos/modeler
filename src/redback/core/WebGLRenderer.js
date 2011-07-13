@@ -86,6 +86,7 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
     // view frustrum gets sent to the GPU
     
     var buffers = scene.getRenderBuffers();
+    var lights = scene.getLights();
     
     //DEBUG
     if (!logged) {
@@ -147,6 +148,7 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
       }
 
       this.transforms.each(function(){
+        // send in move matrix
         gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, new Float32Array(this.matrix));
       
         // render lines
@@ -177,7 +179,22 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
           gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
           gl.drawElements(gl.TRIANGLES, this.counts.index, gl.UNSIGNED_SHORT, this.offsets.index);
         }
-      });          
+        // render lighting (multipass)
+        var that = this;
+        lights.each(function(){
+          // bind the lights shading program
+          var lightingProgram = this.getShaderProgram();
+          gl.useProgram(lightingProgram);
+          // compute normal matrix
+          var normalMatrix = M4x4.inverseTo3x3(that.matrix);
+          M3x3.transposeSelf();
+          // send to the light
+          gl.uniformMatrix3fv(lightingProgram.nMatrixUniform, false, normalMatrix);
+          // draw all the elements again, but this time with the lighting program
+          gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
+          gl.drawElements(gl.TRIANGLES, that.counts.index, gl.UNSIGNED_SHORT, that.offsets.index);
+        });
+      });      
     });
     logged = true;
   };

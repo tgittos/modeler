@@ -25,6 +25,13 @@ M3x3.make4x4 = function(m) {
   r[12] = r[13] = r[14] = r[15] = 1;
   return r;
 }
+M3x3.transposeSelf = function M3x3_transposeSelf (m) {
+  // columns become rows, rows become columns
+  var tmp = m[1]; m[1] = m[3]; m[3] = tmp;
+  tmp = m[2]; m[2] = m[6]; m[6] = tmp;
+  tmp = m[5]; m[5] = m[7]; m[7] = tmp;
+  return m;
+};
 
 M4x4.left4x3 = function(m) {
   console.log('M4x4.left4x3');
