@@ -12,7 +12,7 @@ REDBACK.Materials.WebGLTextureMaterial = function(params, my) {
   };
   var initShaderProgram = function() {
     // assigning these attributes to variables on the shaderProgram is a construct from the learningwebgl blog
-    // I can remove them and replace them with smarter checkes, such as seeing if the attribute is not null
+    // I can remove them and replace them with smarter checks, such as seeing if the attribute is not null
     // See the webgl-md5 demo for more details
     
     my.shaderProgram.textureCoordAttribute = gl.getAttribLocation(my.shaderProgram, "aTextureCoord");

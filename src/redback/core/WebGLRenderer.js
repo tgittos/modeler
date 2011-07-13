@@ -72,14 +72,19 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
     // [DONE]
 
     // 2. line drawing can be implemented in the shader level, meaning we don't need to construct
-    // a line buffer and send it in
+    // a line buffer and send it in [WRONG]
 
     // 3. normals (when we have them) and texture coords (u, v) can be stuffed into the same
-    // buffer as the vertices, and then point the shader to them
+    // buffer as the vertices, and then point the shader to them  [DONE FOR NORMALS]
     // see: http://blog.tojicode.com/2011/05/interleaved-array-basics.html
 
     // 4. remove dependency on slow abstractions, operate only on buffers and WebGL objects
     // [DONE?]
+    
+    // MORE CHANGES
+    // 1. Implement frustrum view culling to make sure that only the geometry that is in the
+    // view frustrum gets sent to the GPU
+    
     var buffers = scene.getRenderBuffers();
     
     //DEBUG
@@ -142,41 +147,37 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
       }
 
       this.transforms.each(function(){
-        // tells the shader about the vertex position matrix (move matrix) (CONSIDER REMOVING FROM SHADER AND HERE)
         gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, new Float32Array(this.matrix));
       
-      //START OLD
-      // render lines
-      if (that.material.wireframe) {
-        if (!logged) {
-          console.log('line offset: ' + that.offsets.line);
-          console.log('line counts: ' + that.counts.line);
-          console.log('line buffer: ' + buffers.line);
-          console.log('Now rendering: ' + buffers.line.slice(that.offsets.line / 2, that.offsets.line / 2 + that.counts.line)); 
+        // render lines
+        if (that.material.wireframe) {
+          if (!logged) {
+            console.log('line offset: ' + that.offsets.line);
+            console.log('line counts: ' + that.counts.line);
+            console.log('line buffer: ' + buffers.line);
+            console.log('Now rendering: ' + buffers.line.slice(that.offsets.line / 2, that.offsets.line / 2 + that.counts.line)); 
+          }
+          that.material.setDrawMode(REDBACK.Enum.DRAW_MODE.WIREFRAME);
+          gl.lineWidth(that.material.wireframe_width);
+          if (!logged) { console.log('binding buffer ' + lineBuffer); }
+          gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lineBuffer);
+          gl.drawElements(gl.LINES, this.counts.line, gl.UNSIGNED_SHORT, this.offsets.line);
         }
-        that.material.setDrawMode(REDBACK.Enum.DRAW_MODE.WIREFRAME);
-        gl.lineWidth(that.material.wireframe_width);
-        if (!logged) { console.log('binding buffer ' + lineBuffer); }
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lineBuffer);
-        gl.drawElements(gl.LINES, this.counts.line, gl.UNSIGNED_SHORT, this.offsets.line);
-      }
-      // render faces
-      if (!that.material.wireframe || 
-          (that.material.wireframe && that.material.wireframe_mode == REDBACK.Enum.WIREFRAME_MODE.BOTH)) {
-        if (!logged) {
-          console.log('face offset: ' + that.offsets.index);
-          console.log('face counts: ' + that.counts.index);
-          console.log('face buffer: ' + buffers.index);
-          console.log('Now rendering: ' + buffers.index.slice(that.offsets.index / 2, that.offsets.index / 2 + that.counts.index)); 
+        // render faces
+        if (!that.material.wireframe || 
+            (that.material.wireframe && that.material.wireframe_mode == REDBACK.Enum.WIREFRAME_MODE.BOTH)) {
+          if (!logged) {
+            console.log('face offset: ' + that.offsets.index);
+            console.log('face counts: ' + that.counts.index);
+            console.log('face buffer: ' + buffers.index);
+            console.log('Now rendering: ' + buffers.index.slice(that.offsets.index / 2, that.offsets.index / 2 + that.counts.index)); 
+          }
+          that.material.setDrawMode(REDBACK.Enum.DRAW_MODE.TEXTURE);
+          if (!logged) { console.log('binding buffer ' + faceBuffer); }
+          gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
+          gl.drawElements(gl.TRIANGLES, this.counts.index, gl.UNSIGNED_SHORT, this.offsets.index);
         }
-        that.material.setDrawMode(REDBACK.Enum.DRAW_MODE.TEXTURE);
-        if (!logged) { console.log('binding buffer ' + faceBuffer); }
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
-        gl.drawElements(gl.TRIANGLES, this.counts.index, gl.UNSIGNED_SHORT, this.offsets.index);
-      }
-      //END OLD
-            });
-            
+      });          
     });
     logged = true;
   };
