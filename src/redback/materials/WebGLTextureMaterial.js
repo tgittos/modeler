@@ -38,6 +38,7 @@ REDBACK.Materials.WebGLTextureMaterial = function(params, my) {
     if (mode == REDBACK.Enum.DRAW_MODE.WIREFRAME) { 
       //pointShaderToArray(shaderProgram.vertexColorAttribute, my.edge_colour_buffer, MODELER.Object3D.ColourSize);
     } else {
+      // TODO: Maybe move this into the renderer. Aren't we always going to have texels?
       gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
       gl.vertexAttribPointer(my.shaderProgram.textureCoordAttribute, REDBACK.TEXEL_SIZE, gl.FLOAT, false, REDBACK.VERTEX_STRIDE, REDBACK.TEXEL_OFFSET * REDBACK.VERTEX_BYTES); //offsets are in bytes
       // now set up gl to take the texture

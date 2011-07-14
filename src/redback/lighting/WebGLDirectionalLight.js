@@ -31,7 +31,7 @@ REDBACK.Lighting.WebGLDirectionalLight = function(params, my) {
     gl.enableVertexAttribArray(my.shaderProgram.vertexPositionAttribute);
     
     my.shaderProgram.vertexNormalAttribute = gl.getAttribLocation(my.shaderProgram, "aVertexNormal");
-    gl.enableVertexAttribArray(my.shaderProgram.vertexNormalAttribute);
+    //gl.enableVertexAttribArray(my.shaderProgram.vertexNormalAttribute);
     
     my.shaderProgram.samplerUniform = gl.getUniformLocation(my.shaderProgram, "uSampler");
     my.shaderProgram.pMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uPMatrix");

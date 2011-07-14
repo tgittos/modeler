@@ -39,6 +39,7 @@ function pageLoaded() {
 			,rotVector: [1, 1, 0]
 			,rotDegrees: 45
     });
+    
     d_light = REDBACK.Lighting.WebGLDirectionalLight({
       direction: [-1.0, -1.0, 1.0]
     });

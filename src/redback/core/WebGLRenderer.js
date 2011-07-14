@@ -178,24 +178,28 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
           if (!logged) { console.log('binding buffer ' + faceBuffer); }
           gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
           gl.drawElements(gl.TRIANGLES, this.counts.index, gl.UNSIGNED_SHORT, this.offsets.index);
-        }
-        /*
+        };
         // render lighting (multipass)
-        var that = this;
+        var modelMatrix = this.matrix;
         lights.each(function(){
+          if (!logged) { console.log('processing lighting'); }
+          /*
           // bind the lights shading program
           var lightingProgram = this.getShaderProgram();
           gl.useProgram(lightingProgram);
+          // send normals to the lighting program
+          gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+          gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, REDBACK.NORMAL_SIZE, gl.FLOAT, false, REDBACK.VERTEX_STRIDE, REDBACK.NORMAL_OFFSET * REDBACK.VERTEX_BYTES);
           // compute normal matrix
-          var normalMatrix = M4x4.inverseTo3x3(that.matrix);
+          var normalMatrix = M4x4.inverseTo3x3(modelMatrix);
           M3x3.transposeSelf();
           // send to the light
           gl.uniformMatrix3fv(lightingProgram.nMatrixUniform, false, normalMatrix);
           // draw all the elements again, but this time with the lighting program
           gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
           gl.drawElements(gl.TRIANGLES, that.counts.index, gl.UNSIGNED_SHORT, that.offsets.index);
+          */
         });
-        */
       });      
     });
     logged = true;
