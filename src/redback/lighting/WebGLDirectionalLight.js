@@ -47,7 +47,8 @@ REDBACK.Lighting.WebGLDirectionalLight = function(params, my) {
     fragmentShader: MODELER.BASE + 'shaders/webgldirectionallighting.fshader',
     vertexShader: MODELER.BASE + 'shaders/webgldirectionallighting.vshader'
   };
-  that = REDBACK.Materials.WebGLMaterial(params, my);
+  //that = REDBACK.Materials.WebGLMaterial(params, my);
+  that = {};
   initialize();
   
   that.getColour = getColour;

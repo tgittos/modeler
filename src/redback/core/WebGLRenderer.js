@@ -134,6 +134,7 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
       // 12 stride because 3 floats per vertex at 4bytes each, starting at 0 index for each stride
       gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
       gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, REDBACK.VERTEX_SIZE, gl.FLOAT, false, REDBACK.VERTEX_STRIDE, REDBACK.VERTEX_OFFSET * REDBACK.VERTEX_BYTES);
+      gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, REDBACK.NORMAL_SIZE, gl.FLOAT, false, REDBACK.VERTEX_STRIDE, REDBACK.NORMAL_OFFSET * REDBACK.VERTEX_BYTES);
       // tell shader program about the perspective matrix
       gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, new Float32Array(perspectiveMatrix));
       
@@ -146,10 +147,34 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(gl.LEQUAL); 
       }
+      
+      // set up light 
+      // at the moment, we only support one light. kinda lame, but easy. baby steps
+      var light = lights[0];
+      var colour = light.getColour();
+      var direction = light.getDirection();
+      // adjust direction
+      var adjustedDirection = V3.normalize(direction);
+      V3.scale(adjustedDirection, -1);
+      if (!logged) {
+        console.log('colour: ' + colour);
+        console.log('direction: ' + adjustedDirection);
+      }
+      gl.uniform3f(shaderProgram.directionalColorUniform, colour[0], colour[1], colour[2]);
+      //gl.uniform3f(shaderProgram.lightingDirectionUniform, adjustedDirection[0], adjustedDirection[1], adjustedDirection[2]);
+      gl.uniform3f(shaderProgram.lightingDirectionUniform, direction[0], direction[1], direction[2]);
 
       this.transforms.each(function(){
         // send in move matrix
         gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, new Float32Array(this.matrix));
+        // normal matrix
+        var normalMatrix = M4x4.inverseTo3x3(this.matrix);
+        M3x3.transposeSelf(normalMatrix);
+        if (!logged) { 
+          console.log('normal matrix: ')
+          console.log(normalMatrix);
+        }
+        gl.uniformMatrix3fv(shaderProgram.nMatrixUniform, false, new Float32Array(normalMatrix));
       
         // render lines
         if (that.material.wireframe) {
@@ -179,6 +204,9 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
           gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
           gl.drawElements(gl.TRIANGLES, this.counts.index, gl.UNSIGNED_SHORT, this.offsets.index);
         };
+        /*
+        // this was for multipass light rendering, however it didn't work out so well,
+        // but I'm not about to give up just yet.
         // render lighting (multipass)
         var modelMatrix = this.matrix;
         var faceCount = this.counts.index;
@@ -215,8 +243,10 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
           gl.uniform3f(lightingProgram.lightingDirectionUniform, direction[0], direction[1], direction[2]);
           // draw all the elements again, but this time with the lighting program
           gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
-          //gl.drawElements(gl.TRIANGLES, faceCount, gl.UNSIGNED_SHORT, faceOffset);
+          // draw!
+          gl.drawElements(gl.TRIANGLES, faceCount, gl.UNSIGNED_SHORT, faceOffset);
         });
+        */
       });      
     });
     logged = true;

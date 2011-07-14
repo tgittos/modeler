@@ -20,6 +20,9 @@ REDBACK.Materials.WebGLTextureMaterial = function(params, my) {
     
     my.shaderProgram.vertexPositionAttribute = gl.getAttribLocation(my.shaderProgram, "aVertexPosition");
     gl.enableVertexAttribArray(my.shaderProgram.vertexPositionAttribute);
+    
+    my.shaderProgram.vertexNormalAttribute = gl.getAttribLocation(my.shaderProgram, "aVertexNormal");
+    gl.enableVertexAttribArray(my.shaderProgram.vertexNormalAttribute);
 
     // wireframe won't work without this, but this isn't in the shader program yet
     //my.shaderProgram.vertexColorAttribute = gl.getAttribLocation(my.shaderProgram, "aVertexColor");
@@ -29,6 +32,8 @@ REDBACK.Materials.WebGLTextureMaterial = function(params, my) {
     my.shaderProgram.alphaUniform = gl.getUniformLocation(my.shaderProgram, "uAlpha");
     my.shaderProgram.pMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uPMatrix");
     my.shaderProgram.mvMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uMVMatrix");
+    my.shaderProgram.lightingDirectionUniform = gl.getUniformLocation(my.shaderProgram, "uLightingDirection");
+    my.shaderProgram.directionalColorUniform = gl.getUniformLocation(my.shaderProgram, "uDirectionalColor");
   };
   var setupShaderProgram = function(vertices, pVertexBuffer) {
     //store a ref to the vertex buffer

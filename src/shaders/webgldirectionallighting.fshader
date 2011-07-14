@@ -11,5 +11,5 @@ varying vec3 vLightWeighting;
 void main(void) {
   //vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
   //gl_FragColor = vec4(textureColor.rgb * vLightWeighting, textureColor.a * uAlpha);
-  gl_FragColor = min(gl_FragColor, vec4(vLightWeighting, 1));
+  gl_FragColor = vec4(vLightWeighting, 1);
 }
