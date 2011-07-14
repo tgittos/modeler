@@ -31,7 +31,7 @@ function pageLoaded() {
     console.log(cube_tex.getTexture());
     cube_mat = REDBACK.Materials.WebGLTextureMaterial({
       texture: cube_tex.getTexture()
-      ,alpha: 0.5
+      //,alpha: 0.5
     });
     cube = MODELER.Primitive.Cube({
       material: cube_mat

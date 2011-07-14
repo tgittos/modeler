@@ -24,8 +24,8 @@ REDBACK.Lighting.WebGLDirectionalLight = function(params, my) {
     // I can remove them and replace them with smarter checks, such as seeing if the attribute is not null
     // See the webgl-md5 demo for more details
     
-    my.shaderProgram.textureCoordAttribute = gl.getAttribLocation(my.shaderProgram, "aTextureCoord");
-    gl.enableVertexAttribArray(my.shaderProgram.textureCoordAttribute);
+    //my.shaderProgram.textureCoordAttribute = gl.getAttribLocation(my.shaderProgram, "aTextureCoord");
+    //gl.enableVertexAttribArray(my.shaderProgram.textureCoordAttribute);
     
     my.shaderProgram.vertexPositionAttribute = gl.getAttribLocation(my.shaderProgram, "aVertexPosition");
     gl.enableVertexAttribArray(my.shaderProgram.vertexPositionAttribute);
@@ -34,12 +34,12 @@ REDBACK.Lighting.WebGLDirectionalLight = function(params, my) {
     //TODO: Maybe don't enable these until we're about to use them
     //gl.enableVertexAttribArray(my.shaderProgram.vertexNormalAttribute);
     
-    my.shaderProgram.samplerUniform = gl.getUniformLocation(my.shaderProgram, "uSampler");
+    //my.shaderProgram.samplerUniform = gl.getUniformLocation(my.shaderProgram, "uSampler");
     my.shaderProgram.pMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uPMatrix");
     my.shaderProgram.mvMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uMVMatrix");
     my.shaderProgram.nMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uNMatrix");
-    my.shaderProgram.lightingDirection = gl.getUniformLocation(my.shaderProgram, "uLightingDirection");
-    my.shaderProgram.directionalColor = gl.getUniformLocation(my.shaderProgram, "uDirectionalColor");
+    my.shaderProgram.lightingDirectionUniform = gl.getUniformLocation(my.shaderProgram, "uLightingDirection");
+    my.shaderProgram.directionalColorUniform = gl.getUniformLocation(my.shaderProgram, "uDirectionalColor");
   };
   
   my.initShaderProgram = initShaderProgram;
@@ -49,6 +49,11 @@ REDBACK.Lighting.WebGLDirectionalLight = function(params, my) {
   };
   that = REDBACK.Materials.WebGLMaterial(params, my);
   initialize();
+  
+  that.getColour = getColour;
+  that.setColour = setColour;
+  that.getDirection = getDirection;
+  that.setDirection = setDirection;
   
   return that;
 }
