@@ -161,8 +161,7 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
         console.log('direction: ' + adjustedDirection);
       }
       gl.uniform3f(shaderProgram.directionalColorUniform, colour[0], colour[1], colour[2]);
-      //gl.uniform3f(shaderProgram.lightingDirectionUniform, adjustedDirection[0], adjustedDirection[1], adjustedDirection[2]);
-      gl.uniform3f(shaderProgram.lightingDirectionUniform, direction[0], direction[1], direction[2]);
+      gl.uniform3f(shaderProgram.lightingDirectionUniform, adjustedDirection[0], adjustedDirection[1], adjustedDirection[2]);
 
       this.transforms.each(function(){
         // send in move matrix
@@ -204,49 +203,6 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
           gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
           gl.drawElements(gl.TRIANGLES, this.counts.index, gl.UNSIGNED_SHORT, this.offsets.index);
         };
-        /*
-        // this was for multipass light rendering, however it didn't work out so well,
-        // but I'm not about to give up just yet.
-        // render lighting (multipass)
-        var modelMatrix = this.matrix;
-        var faceCount = this.counts.index;
-        var faceOffset = this.offsets.index;
-        lights.each(function(){
-          if (!logged) { console.log('processing lighting'); }
-          // bind the lights shading program
-          var lightingProgram = this.getShaderProgram();
-          gl.useProgram(lightingProgram);
-          // send normals to the lighting program
-          gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-          // THIS IS KIND OF EXPERIMENTAL
-          gl.enableVertexAttribArray(lightingProgram.vertexNormalAttribute);
-          gl.vertexAttribPointer(lightingProgram.vertexNormalAttribute, REDBACK.NORMAL_SIZE, gl.FLOAT, false, REDBACK.VERTEX_STRIDE, REDBACK.NORMAL_OFFSET * REDBACK.VERTEX_BYTES);
-          // send vertex positions to the lighting program
-          gl.vertexAttribPointer(lightingProgram.vertexPositionAttribute, REDBACK.VERTEX_SIZE, gl.FLOAT, false, REDBACK.VERTEX_STRIDE, REDBACK.VERTEX_OFFSET * REDBACK.VERTEX_BYTES);
-          // send vertex move matrix to the lighting program
-          gl.uniformMatrix4fv(lightingProgram.mvMatrixUniform, false, new Float32Array(modelMatrix));
-          // send perspective matrix to the lighting program
-          gl.uniformMatrix4fv(lightingProgram.pMatrixUniform, false, new Float32Array(perspectiveMatrix));
-          // compute normal matrix
-          var normalMatrix = M4x4.inverseTo3x3(modelMatrix);
-          M3x3.transposeSelf(normalMatrix);
-          // send to the light
-          gl.uniformMatrix3fv(lightingProgram.nMatrixUniform, false, normalMatrix);
-          // send the colour and direction to the light
-          var colour = this.getColour();
-          var direction = this.getDirection();
-          if (!logged) {
-            console.log('colour: ' + colour);
-            console.log('direction: ' + direction);
-          }
-          gl.uniform3f(lightingProgram.directionalColorUniform, colour[0], colour[1], colour[2]);
-          gl.uniform3f(lightingProgram.lightingDirectionUniform, direction[0], direction[1], direction[2]);
-          // draw all the elements again, but this time with the lighting program
-          gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
-          // draw!
-          gl.drawElements(gl.TRIANGLES, faceCount, gl.UNSIGNED_SHORT, faceOffset);
-        });
-        */
       });      
     });
     logged = true;

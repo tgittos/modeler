@@ -32,6 +32,7 @@ REDBACK.Materials.WebGLTextureMaterial = function(params, my) {
     my.shaderProgram.alphaUniform = gl.getUniformLocation(my.shaderProgram, "uAlpha");
     my.shaderProgram.pMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uPMatrix");
     my.shaderProgram.mvMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uMVMatrix");
+    my.shaderProgram.nMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uNMatrix");
     my.shaderProgram.lightingDirectionUniform = gl.getUniformLocation(my.shaderProgram, "uLightingDirection");
     my.shaderProgram.directionalColorUniform = gl.getUniformLocation(my.shaderProgram, "uDirectionalColor");
   };

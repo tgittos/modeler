@@ -18,8 +18,6 @@ function pageLoaded() {
 	MODELER.IO.FileManager.preload([
 		'/src/shaders/webgltexture.vshader',
 		'/src/shaders/webgltexture.fshader',
-		'/src/shaders/webgldirectionallighting.vshader',
-		'/src/shaders/webgldirectionallighting.fshader',
 		'/assets/textures/glass.gif'
 	]);
 	
@@ -41,7 +39,7 @@ function pageLoaded() {
     });
     
     d_light = REDBACK.Lighting.WebGLDirectionalLight({
-      direction: [-1.0, -1.0, 1.0]
+      direction: [-1.0, 1.0, 1.0]
     });
     
     scene.addObject(cube);
