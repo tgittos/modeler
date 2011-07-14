@@ -18,11 +18,13 @@ function pageLoaded() {
 	MODELER.IO.FileManager.preload([
 		'/src/shaders/webgltexture.vshader',
 		'/src/shaders/webgltexture.fshader',
+		'/src/shaders/webgldirectionallighting.vshader',
+		'/src/shaders/webgldirectionallighting.fshader',
 		'/assets/textures/glass.gif'
 	]);
 	
 	function fileManagerPreloaded(){
-		var cube_mat, cube_tex;
+		var cube_mat, cube_tex, d_light;
 		cube_tex = REDBACK.Textures.WebGLTexture({
       image: MODELER.IO.FileManager.get('/assets/textures/glass.gif')
     });
@@ -37,8 +39,12 @@ function pageLoaded() {
 			,rotVector: [1, 1, 0]
 			,rotDegrees: 45
     });
+    d_light = REDBACK.Lighting.WebGLDirectionalLight({
+      direction: [-1.0, -1.0, 1.0]
+    });
     
     scene.addObject(cube);
+    scene.addLight(d_light);
 
     resizeViewport();
     render();

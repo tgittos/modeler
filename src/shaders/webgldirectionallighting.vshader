@@ -6,7 +6,7 @@ attribute vec3 aVertexNormal; //NEW
 
 uniform mat4 uMVMatrix;
 uniform mat4 uPMatrix;
-uniform mat4 uNMatrix; //NEW
+uniform mat3 uNMatrix; //NEW
 
 uniform vec3 uLightingDirection; //NEW
 uniform vec3 uDirectionalColor; //NEW

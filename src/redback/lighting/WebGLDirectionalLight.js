@@ -7,8 +7,8 @@
 */
 REDBACK.Lighting.WebGLDirectionalLight = function(params, my) {
   var that, my = my || {},
-  colour: [1.0, 1.0, 1.0], //default to white light
-  direction: null;
+  colour = [1.0, 1.0, 1.0], //default to white light
+  direction = null;
   
   var initialize = function(){
     if (params.colour) { colour = params.colour; }
@@ -30,8 +30,8 @@ REDBACK.Lighting.WebGLDirectionalLight = function(params, my) {
     my.shaderProgram.vertexPositionAttribute = gl.getAttribLocation(my.shaderProgram, "aVertexPosition");
     gl.enableVertexAttribArray(my.shaderProgram.vertexPositionAttribute);
     
-    my.shaderProgram.vertexNormalAttribute = gl.getAttributeLocation(my.shaderProgram, "aVertexNormal");
-    gl.enableVertexArrtribArray(my.shaderProgram.vertexNormalAttribute);
+    my.shaderProgram.vertexNormalAttribute = gl.getAttribLocation(my.shaderProgram, "aVertexNormal");
+    gl.enableVertexAttribArray(my.shaderProgram.vertexNormalAttribute);
     
     my.shaderProgram.samplerUniform = gl.getUniformLocation(my.shaderProgram, "uSampler");
     my.shaderProgram.pMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uPMatrix");

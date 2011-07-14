@@ -179,6 +179,7 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
           gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
           gl.drawElements(gl.TRIANGLES, this.counts.index, gl.UNSIGNED_SHORT, this.offsets.index);
         }
+        /*
         // render lighting (multipass)
         var that = this;
         lights.each(function(){
@@ -194,6 +195,7 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
           gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
           gl.drawElements(gl.TRIANGLES, that.counts.index, gl.UNSIGNED_SHORT, that.offsets.index);
         });
+        */
       });      
     });
     logged = true;

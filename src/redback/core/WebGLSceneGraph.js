@@ -54,6 +54,7 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
   buffer = null,
   dirty = false,
   object_counter = 0,
+  lights = [],
   VERTEX_STRIDE = 12; // vertex stride is how many elements in a vertex - x, y, z * 4 bytes = 12
   
   var initialize = function() {
@@ -74,7 +75,14 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
   var moveObject = function(obj, new_parent) {
     removeObject(obj);
     addObject(obj, new_parent);
-  }
+  };
+  var addLight = function(light) {
+    lights.push(light);
+  };
+  var removeLight = function(light) {
+    lights.remove(light);
+  };
+  var getLights = function() { return lights; }
   var getRenderBuffers = function() {    
     // hit the buffer first
     if (!dirty && buffer) { return buffer; }
@@ -218,6 +226,9 @@ REDBACK.Core.WebGLSceneGraph = function(params, my) {
   that.initialize = initialize;
   that.addObject = addObject;
   that.removeObject = removeObject;
+  that.addLight = addLight;
+  that.removeLight = removeLight;
+  that.getLights = getLights;
   that.getRenderBuffers = getRenderBuffers;
   return that;
 };
