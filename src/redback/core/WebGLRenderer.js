@@ -150,19 +150,27 @@ REDBACK.Core.WebGLRenderer = function(params, my) {
       
       // set up light 
       // at the moment, we only support one light. kinda lame, but easy. baby steps
-      var light = lights[0];
-      var colour = light.getColour();
-      var direction = light.getDirection();
-      // adjust direction
-      var adjustedDirection = V3.normalize(direction);
-      V3.scale(adjustedDirection, -1);
-      if (!logged) {
-        console.log('colour: ' + colour);
-        console.log('direction: ' + adjustedDirection);
+      // if we have no light, set some defaults anyway
+      if (lights.length > 0) {
+        var light = lights[0];
+        var colour = light.getColour();
+        var direction = light.getDirection();
+        var ambient_colour = light.getAmbientColour();
+        // adjust direction
+        var adjustedDirection = V3.normalize(direction);
+        V3.scale(adjustedDirection, -1);
+        if (!logged) {
+          console.log('colour: ' + colour);
+          console.log('direction: ' + adjustedDirection);
+        }
+        gl.uniform3f(shaderProgram.ambientColorUniform, ambient_colour[0], ambient_colour[1], ambient_colour[2]);
+        gl.uniform3f(shaderProgram.directionalColorUniform, colour[0], colour[1], colour[2]);
+        gl.uniform3f(shaderProgram.lightingDirectionUniform, adjustedDirection[0], adjustedDirection[1], adjustedDirection[2]);
+      } else {
+        gl.uniform3f(shaderProgram.ambientColorUniform, 1.0, 1.0, 1.0);
+        gl.uniform3f(shaderProgram.directionalColorUniform, 1.0, 1.0, 1.0);
+        gl.uniform3f(shaderProgram.lightingDirectionUniform, -1.0, 1.0, -1.0);
       }
-      gl.uniform3f(shaderProgram.directionalColorUniform, colour[0], colour[1], colour[2]);
-      gl.uniform3f(shaderProgram.lightingDirectionUniform, adjustedDirection[0], adjustedDirection[1], adjustedDirection[2]);
-
       this.transforms.each(function(){
         // send in move matrix
         gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, new Float32Array(this.matrix));

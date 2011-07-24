@@ -29,7 +29,7 @@ function pageLoaded() {
     console.log(cube_tex.getTexture());
     cube_mat = REDBACK.Materials.WebGLTextureMaterial({
       texture: cube_tex.getTexture()
-      //,alpha: 0.5
+      ,alpha: 0.5
     });
     cube = MODELER.Primitive.Cube({
       material: cube_mat
@@ -37,12 +37,13 @@ function pageLoaded() {
 			,rotVector: [1, 1, 0]
 			,rotDegrees: 45
     });
-    
-    d_light = REDBACK.Lighting.WebGLDirectionalLight({
-      direction: [-1.0, 1.0, 1.0]
-    });
-    
     scene.addObject(cube);
+
+    d_light = REDBACK.Lighting.WebGLDirectionalLight({
+      direction: [-1.0, 1.0, 1.0],
+      colour: [1.0, 1.0, 1.0],
+      ambientColour: [0.2, 0.2, 0.2]
+    });
     scene.addLight(d_light);
 
     resizeViewport();

@@ -35,6 +35,7 @@ REDBACK.Materials.WebGLTextureMaterial = function(params, my) {
     my.shaderProgram.nMatrixUniform = gl.getUniformLocation(my.shaderProgram, "uNMatrix");
     my.shaderProgram.lightingDirectionUniform = gl.getUniformLocation(my.shaderProgram, "uLightingDirection");
     my.shaderProgram.directionalColorUniform = gl.getUniformLocation(my.shaderProgram, "uDirectionalColor");
+    my.shaderProgram.ambientColorUniform = gl.getUniformLocation(my.shaderProgram, "uAmbientColor");
   };
   var setupShaderProgram = function(vertices, pVertexBuffer) {
     //store a ref to the vertex buffer
